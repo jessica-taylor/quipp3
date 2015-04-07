@@ -1,7 +1,22 @@
+var _ = require('underscore');
 
 var expfam = require('./expfam');
 var ad = require('./autodiff');
 
+function defaultParameters(signature) {
+  var argTypes = signature[0];
+  var retType = signature[1];
+  var nfeatures = 0;
+  argTypes.forEach(function(at) {
+    nfeatures += expfam.featuresDim(at);
+  });
+  return {
+    base: retType.defaultNatParam,
+    weights: _.times(expfam.featuresDim(retType), function() {
+      return _.times(nfeatures, function() { return 0; });
+    });
+  };
+}
 
 function getArgFeatures(argTypes, argVals) {
   return concat(argTypes.map(function(at, i) { return expfam.getFeatures(at, argVals[i]); }));
@@ -47,13 +62,16 @@ UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
   return function(s, k, a) {
     s._quippCallLog = _.times(self.signatures.length, function() { return []; });
     s._quippParams = params;
-    return self.sampler(s, k, a);
-  }
+    return self.sampler(s,
+      function(s2, x) { k([s2._quippCallLog, x]); },
+      a);
+  };
 };
 
 UnknownParametersModel.prototype.inferParameters = function() {
-  var params = ...;
+  var params = this.signatures.map(defaultParameters);
   for (int i = 0; i < 10; ++i) {
+    var samps = MH({}, function() { }, '', this.getSamplerWithParameters(params), 1000);
   }
 };
 

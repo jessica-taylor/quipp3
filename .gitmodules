@@ -1,0 +1,3 @@
+[submodule "webppl"]
+	path = webppl
+	url = git@github.com:probmods/webppl.git
