@@ -1,0 +1,17 @@
+{
+  "name": "quipp",
+  "version": "0.0.1",
+  "description": "Parameter inference for probabilistic programs",
+  "author": "Jessica Taylor <jessica.liu.taylor@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jessica-taylor/quipp3"
+  },
+  "dependencies": {
+    "underscore": "*",
+    "webppl": "*"
+  },
+  "private": true,
+  "analyze": true,
+  "license": "MIT"
+}

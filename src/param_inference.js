@@ -14,7 +14,7 @@ function defaultParameters(signature) {
     base: retType.defaultNatParam,
     weights: _.times(expfam.featuresDim(retType), function() {
       return _.times(nfeatures, function() { return 0; });
-    });
+    })
   };
 }
 
@@ -69,9 +69,30 @@ UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
 };
 
 UnknownParametersModel.prototype.inferParameters = function() {
+  var self = this;
+  var numIters = 10;
+  var numSamps = 1000;
+  var burnIn = Math.floor(numSamps/4);
+  var skip = 10;
+  
   var params = this.signatures.map(defaultParameters);
-  for (int i = 0; i < 10; ++i) {
-    var samps = MH({}, function() { }, '', this.getSamplerWithParameters(params), 1000);
+  for (var i = 0; i < numIters; ++i) {
+    // TODO start from a trace?
+    var allSamps = MH({}, function() { }, '', this.getSamplerWithParameters(params), numSamps - skip + 1);
+    var samps = [];
+    for (var j = burnIn; j < numSamps; j += skip) {
+      samps.push(allSamps[j]);
+    }
+    var combinedCallLog = _.times(self.signatures.length, function() { return []; });
+    samps.forEach(function(samp) {
+      var callLog = samps[0];
+      for (var j = 0; j < self.signatures.length; ++j) {
+        [].push.apply(combinedCallLog[j], callLog[j]);
+      }
+    });
+    for (var j = 0; j < self.signatures.length; ++j) {
+      params[j] = trainParameters(self.signatures[j], combinedCallLog[j], params[j]);
+    }
   }
 };
 
@@ -82,5 +103,10 @@ function unknownParametersModel(fun) {
     model.sampler = sampler;
   };
   return model;
+}
+
+function inferParameters(fun) {
+  var model = unknownParametersModel(fun);
+  model.inferParameters();
 }
 
