@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "underscore": "*",
-    "webppl": "*"
+    "webppl": "git://github.com/probmods/webppl#dev",
+    "numeric": "*"
   },
   "private": true,
   "analyze": true,

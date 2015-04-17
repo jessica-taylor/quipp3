@@ -1,7 +1,9 @@
 
-inferParameters(function(randFunction) {
+console.log('hiii');
+console.log(inferParameters(function(randFunction) {
   var getNum = randFunction(Double);
   return function() {
-    return repeat(100, getNum);
+    return repeat(5, getNum);
   };
-});
+}));
+console.log('bye');

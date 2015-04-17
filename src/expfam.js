@@ -1,7 +1,12 @@
 
-var util = require('util');
+var erp = require('webppl/src/erp');
+var webpplUtil = require('webppl/src/util');
+
+
 var optimization = require('./optimization');
 var ad = require('./autodiff'); 
+var util = require('./util');
+
 
 // ExpFam interface
 //
@@ -34,11 +39,27 @@ function getFeatures(ef, value) {
   return feats;
 }
 
+function featuresToSufStat(t, ef, features) {
+  var i = 0;
+  return ef.featuresMask.map(function(mask) {
+    return mask ? features[i++] : t.num(0);
+  });
+}
+
 var Double = {
   name: 'Double',
   sufStat: function(value) { return [value, value*value]; },
-  g: function(nps) { ... },
-  sample: function(nps) { ... },
+  g: function(t, nps) {
+    // return -Math.pow(nps[0], 2) / nps[1] - 0.5 * Math.log(-2 * nps[1]);
+    return t.sub(t.num(0),
+                 t.add(t.div(t.mul(nps[0], nps[0]), nps[1])),
+                 t.mul(t.num(0.5), t.log(t.mul(t.num(-2), nps[1]))));
+  },
+  sample: function(s, k, a, nps) {
+    var variance = -1 / (2 * nps[1]);
+    var mean = nps[1] * variance;
+    return global.sample(s, k, a, erp.gaussianERP, [mean, Math.sqrt(variance)]);
+  },
   defaultNatParam: [0.0, -0.001],
   featuresMask: [true, false]
 };
@@ -52,35 +73,33 @@ function Categorical(n) {
       });
     },
     g: function(nps) {
-      return util.logsumexp([0].concat(nps));
+      return webpplUtil.logsumexp([0].concat(nps));
     },
-    sample: function(nps) { },
+    sample: function(s, k, a, nps) {
+      var lse = webpplUtil.logsumexp([0].concat(nps));
+      var probs = nps.map(function(np) { return Math.exp(np - lse); });
+      return global.sample(s, k, a, erp.discreteERP, [probs]);
+    },
     defaultNatParam: _.times(n-1, function() { return 0.0; }),
     featuresMask: _.times(n-1, function() { return true; })
   };
-}
-
-function concat(lsts) {
-  var c = [];
-  lst.forEach(function(lst) {
-    c.extend(lst);
-  });
-  return c;
 }
 
 function Tuple(types) {
   return {
     name: 'Tuple(' + _.pluck(types, 'name').join(', ') + ')',
     sufStat: function(value) {
-      return concat(types.map(function(type, i) {
+      return util.concat(types.map(function(type, i) {
         return type.sufStat(value[i]);
-      });
+      }));
     },
     g: function(nps) {
       return util.sum(types.map(function(type, i) { return type.g(nps[i]); }));
     },
-    sample: function(nps) {
-      return types.map(function(type, i) { return type.sample(nps[i]); });
+    sample: function(s, k, a, nps) {
+      util.wpplMap(s, k, a, function(s2, k2, a2, type, i) {
+        type.sample(s2, k2, a2, nps[i]);
+      });
     },
     defaultNatParam: concat(_.pluck(types, 'defaultNatParam')),
     featuresMask: concat(_.pluck(types, 'featuresMask'))
@@ -101,30 +120,30 @@ function groupSamplesByFeatures(samps) {
   var samps2 = [];
   for (var stringFeatures in totWeightAndSufStats) {
     var tot = totWeightAndSufStats[stringFeatures];
-    samps2.push([tot[0], JSON.parse(stringFeatures), vecScale(1/tot[0], tot[2]));
+    samps2.push([tot[0], JSON.parse(stringFeatures), vecScale(1/tot[0], tot[2])]);
   }
   return samps2;
 }
 
 function paramsToVector(params) {
-  return params.base.concat(matElements(params.weights));
+  return params.base.concat(optimization.matElements(params.weights));
 }
 
 function vectorToParams(ef, vec) {
   return {
-    base: vec.splice(0, efDim(ef)),
-    weights: elementsToMat(efFeaturesDim(ef), vec.splice(efDim(ef)))
+    base: vec.splice(0, dim(ef)),
+    weights: optimization.elementsToMat(featuresDim(ef), vec.splice(dim(ef)))
   };
 }
 
 function getNatParam(t, ef, params, argFeatures) {
   var weightPart = ad.numMatMulByVector(t, params.weights, argFeatures.map(t.num));
-  return ad.numVecAdd(t, params.base, efFeaturesToSufStat(ef, weightPart));
+  return ad.numVecAdd(t, params.base, featuresToSufStat(t, ef, weightPart));
 }
 
 function logProbability(t, ef, params, argFeatures, ss) {
   var np = getNatParam(t, ef, params, argFeatures);
-  return t.sub(ad.numDotProduct(np, ss.map(t.num)), ef.g(t, np));
+  return t.sub(ad.numDotProduct(t, np, ss.map(t.num)), ef.g(t, np));
 }
 
 function paramsScoreFunction(ef, samples) {
@@ -141,7 +160,7 @@ function paramsScoreFunction(ef, samples) {
 
 function mle(ef, samples, params) {
   var score = paramsScoreFunction(ef, samples);
-  return vectorToParams(ef, optimize.newtonMethod(
+  return vectorToParams(ef, optimization.newtonMethod(
       function(eta) {
         return score(ad.standardNumType, eta);
       },

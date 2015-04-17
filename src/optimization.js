@@ -1,6 +1,6 @@
 
 var assert = require('assert');
-var lapack = require('lapack');
+var numeric = require('numeric');
 var _ = require('underscore');
 
 var expfam = require('./expfam');
@@ -87,8 +87,7 @@ function lineSearch(f, x, dir) {
 }
 
 function linSolve(A, b) {
-  var result = lapack.sgesv(A, _.map(b, function(x) { return [x]; }));
-  return _.map(result.X, function(x) { return x[0]; });
+  return numeric.solve(A, b);
 }
 
 function newtonMethod(f, gradf, hessf, x) {
@@ -100,6 +99,8 @@ function newtonMethod(f, gradf, hessf, x) {
 
 
 module.exports = {
+  matElements: matElements,
+  elementsToMat: elementsToMat,
   newtonMethod: newtonMethod
 };
 

@@ -1,3 +1,5 @@
+var assert = require('assert');
+
 
 // NumType interface:
 // .num(n)
@@ -7,25 +9,29 @@
 // .div(x, y)
 
 
+
 var standardNumType = {
   num: function(x) { return x; },
   add: function(x, y) { return x+y; },
   sub: function(x, y) { return x-y; },
   mul: function(x, y) { return x*y; },
-  div: function(x, y) { return x/y; }
+  div: function(x, y) { return x/y; },
+  log: function(x) { return Math.log(x); }
 };
 
 function numVecAdd(t, x, y) {
+  assert.equal(x.length, y.length);
   var res = [];
-  for (int i = 0; i < x.length; ++i) {
+  for (var i = 0; i < x.length; ++i) {
     res.push(t.add(x[i], y[i]));
   }
   return res;
 }
 
 function numVecSub(t, x, y) {
+  assert.equal(x.length, y.length);
   var res = [];
-  for (int i = 0; i < x.length; ++i) {
+  for (var i = 0; i < x.length; ++i) {
     res.push(t.sub(x[i], y[i]));
   }
   return res;
@@ -33,8 +39,26 @@ function numVecSub(t, x, y) {
 
 function numVecScale(t, s, x) {
   var res = [];
-  for (int i = 0; i < x.length; ++i) {
+  for (var i = 0; i < x.length; ++i) {
     res.push(t.mul(s, x[i]));
+  }
+  return res;
+}
+
+function numDotProduct(t, x, y) {
+  console.log('ndp', t, x, y);
+  assert.equal(x.length, y.length);
+  var tot = t.num(0);
+  for (var i = 0; i < x.length; ++i) {
+    tot = t.add(tot, t.mul(x[i], y[i]));
+  }
+  return tot;
+}
+
+function numMatMulByVector(t, m, x) {
+  var res = [];
+  for (var i = 0; i < m.length; ++i) {
+    res.push(numDotProduct(t, m[i], x));
   }
   return res;
 }
@@ -58,11 +82,12 @@ function dualNumType(t, varVals) {
     },
     add: function(x, y) {
       return new Dual(
-          basetype.add(x.value, y.value),
+          t.add(x.value, y.value),
           numVecAdd(t, x.grad, y.grad)
       );
     },
     sub: function(x, y) {
+      console.log('sub', x, y);
       return new Dual(
           t.sub(x.value, y.value),
           numVecAdd(t, x.grad, numVecScale(t.num(-1), y.grad))
@@ -85,6 +110,13 @@ function dualNumType(t, varVals) {
                                 numVecScale(t, y.value, x.grad),
                                 numVecScale(t, x.value, y.grad)))
       );
+    },
+    log: function(x) {
+      return new Dual(
+          t.log(x.value),
+          numVecScale(t,
+                      t.div(t.num(1), x.value),
+                      x.grad));
     }
   };
 }
@@ -120,6 +152,8 @@ module.exports = {
   numVecAdd: numVecAdd,
   numVecSub: numVecSub,
   numVecScale: numVecScale,
+  numDotProduct: numDotProduct,
+  numMatMulByVector: numMatMulByVector,
   Dual: Dual,
   dualNumType: dualNumType,
   gradient: gradient,

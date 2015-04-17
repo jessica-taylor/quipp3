@@ -1,7 +1,8 @@
 var _ = require('underscore');
 
-var expfam = require('./expfam');
 var ad = require('./autodiff');
+var expfam = require('./expfam');
+var util = require('./util');
 
 function defaultParameters(signature) {
   var argTypes = signature[0];
@@ -19,7 +20,7 @@ function defaultParameters(signature) {
 }
 
 function getArgFeatures(argTypes, argVals) {
-  return concat(argTypes.map(function(at, i) { return expfam.getFeatures(at, argVals[i]); }));
+  return util.concat(argTypes.map(function(at, i) { return expfam.getFeatures(at, argVals[i]); }));
 }
 
 function natParamWithArguments(argTypes, retType, params, argVals) {
@@ -40,20 +41,23 @@ function UnknownParametersModel() {
   this.sampler = null;
 }
 
-UnknownParametersModel.prototype.randFunction = function() {
+UnknownParametersModel.prototype.randFunction = function(s0, k0, a0) {
   var self = this;
-  var args = [].splice.call(arguments);
+  var args = [].splice.call(arguments, 3);
+  assert(args.length >= 1);
   var argTypes = args.splice(0, args.length - 1);
   var retType = args[args.length - 1];
   var i = this.signatures.length;
   this.signatures.push([argTypes, retType]);
-  return function(s, k, a) {
+  return k0(s0, function(s, k, a) {
     var args = [].splice.call(arguments, 3);
-    var natParam = natParamWithArguments(self.signatures[i][0], s._quippParams[i], args);
-    var result = self.signatures[i][1].sample(natParam);
-    s._quippCallLog[i].push([args, result]);
-    return result;
-  };
+    var natParam = natParamWithArguments(self.signatures[i][0], self.signatures[i][1], s._quippParams[i], args);
+    function k2(s2, result) {
+      s._quippCallLog[i].push([args, result]);
+      return k(s2, result);
+    }
+    return self.signatures[i][1].sample(s, k2, a, natParam);
+  });
 }
 
 UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
@@ -63,50 +67,69 @@ UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
     s._quippCallLog = _.times(self.signatures.length, function() { return []; });
     s._quippParams = params;
     return self.sampler(s,
-      function(s2, x) { k([s2._quippCallLog, x]); },
-      a);
+      function(s2, x) {
+        return k(s2, [s2._quippCallLog, x]);
+      }, a);
   };
 };
 
-UnknownParametersModel.prototype.inferParameters = function() {
+UnknownParametersModel.prototype.inferParameters = function(s, k, a) {
   var self = this;
   var numIters = 10;
-  var numSamps = 1000;
+  var numSamps = 10;
   var burnIn = Math.floor(numSamps/4);
-  var skip = 10;
+  var skip = 2;
   
-  var params = this.signatures.map(defaultParameters);
-  for (var i = 0; i < numIters; ++i) {
-    // TODO start from a trace?
-    var allSamps = MH({}, function() { }, '', this.getSamplerWithParameters(params), numSamps - skip + 1);
-    var samps = [];
-    for (var j = burnIn; j < numSamps; j += skip) {
-      samps.push(allSamps[j]);
+  var initParams = this.signatures.map(defaultParameters);
+  console.log('initParams', initParams);
+  return trainFrom(s, k, a, 0, initParams);
+  function trainFrom(st, kt, at, i, params) {
+    console.log(arguments);
+    if (i == numIters) {
+      return kt(st, params);
     }
-    var combinedCallLog = _.times(self.signatures.length, function() { return []; });
-    samps.forEach(function(samp) {
-      var callLog = samps[0];
-      for (var j = 0; j < self.signatures.length; ++j) {
-        [].push.apply(combinedCallLog[j], callLog[j]);
+    // TODO start from a trace?
+    return MH(st, mhK, at, self.getSamplerWithParameters(params), numSamps - skip + 1);
+    function mhK(sm, sampsDistr) {
+      // TODO this might be wrong
+      var samps = sampsDistr.support();
+      console.log('samps', samps);
+      var combinedCallLog = _.times(self.signatures.length, function() { return []; });
+      for (var j = burnIn; j < numSamps; j += skip) {
+        var callLog = samps[j][0];
+        console.log('callLog', callLog);
+        for (var k = 0; k < self.signatures.length; ++k) {
+          [].push.apply(combinedCallLog[k], callLog[k]);
+        }
       }
-    });
-    for (var j = 0; j < self.signatures.length; ++j) {
-      params[j] = trainParameters(self.signatures[j], combinedCallLog[j], params[j]);
+      var newParams = [];
+      console.log('signatures', self.signatures);
+      for (var j = 0; j < self.signatures.length; ++j) {
+        newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
+      }
+      return trainFrom(sm, kt, at, i+1, newParams);
     }
   }
 };
 
-function unknownParametersModel(fun) {
+function unknownParametersModel(s, k, a, fun) {
   var model = new UnknownParametersModel();
-  var sampler = fun({}, k, '', model);
-  function k(sampler) {
+  function k2(s2, sampler) {
+    console.log("in unknownparametersmodel continuation!");
     model.sampler = sampler;
+    return k(s2, model);
   };
-  return model;
+  console.log('fun', fun)
+  return fun(s, k2, a, model.randFunction.bind(model));
 }
 
-function inferParameters(fun) {
-  var model = unknownParametersModel(fun);
-  model.inferParameters();
+function inferParameters(s, k, a, fun) {
+  function k2(s2, model) {
+    return model.inferParameters(s2, k, a);
+  }
+  return unknownParametersModel(s, k2, a, fun);
 }
 
+module.exports = {
+  inferParameters: inferParameters
+};
