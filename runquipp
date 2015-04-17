@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+node_modules/.bin/webppl $1 --require-header ./src/quipp.js
