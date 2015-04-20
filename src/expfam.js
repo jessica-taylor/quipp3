@@ -52,8 +52,8 @@ var Double = {
   g: function(t, nps) {
     // return -Math.pow(nps[0], 2) / nps[1] - 0.5 * Math.log(-2 * nps[1]);
     return t.sub(t.num(0),
-                 t.add(t.div(t.mul(nps[0], nps[0]), nps[1])),
-                 t.mul(t.num(0.5), t.log(t.mul(t.num(-2), nps[1]))));
+                 t.add(t.div(t.mul(nps[0], nps[0]), nps[1]),
+                       t.mul(t.num(0.5), t.log(t.mul(t.num(-2), nps[1])))));
   },
   sample: function(s, k, a, nps) {
     var variance = -1 / (2 * nps[1]);
@@ -149,10 +149,10 @@ function logProbability(t, ef, params, argFeatures, ss) {
 function paramsScoreFunction(ef, samples) {
   return function(t, eta) {
     var params = vectorToParams(ef, eta);
-    var score = 0.0;
+    var score = t.num(0.0);
     // TODO: normalize?
     samples.forEach(function(samp) {
-      score += samp[0] * logProbability(t, ef, params, samp[1], samp[2]);
+      score = t.add(score, t.mul(t.num(samp[0]), logProbability(t, ef, params, samp[1], samp[2])));
     });
     return score;
   };
@@ -160,21 +160,21 @@ function paramsScoreFunction(ef, samples) {
 
 function mle(ef, samples, params) {
   var score = paramsScoreFunction(ef, samples);
-  return vectorToParams(ef, optimization.newtonMethod(
+  return vectorToParams(ef, optimization.gradientDescent(
       function(eta) {
         return score(ad.standardNumType, eta);
       },
       function(eta) {
         return ad.gradient(ad.standardNumType, score, eta).grad;
       },
-      function(eta) {
-        var hessDual = ad.hessian(ad.standardNumType, score, eta).grad;
-        var hess = [];
-        for (var i = 0; i < eta.length; ++i) {
-          hess.push(hessDual[i].grad);
-        }
-        return hess;
-      },
+      // function(eta) {
+      //   var hessDual = ad.hessian(ad.standardNumType, score, eta);
+      //   var hess = [];
+      //   for (var i = 0; i < eta.length; ++i) {
+      //     hess.push(hessDual[i].grad);
+      //   }
+      //   return hess;
+      // },
       paramsToVector(params)));
 }
 

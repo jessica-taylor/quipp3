@@ -74,6 +74,104 @@ function matMulByVector(m, x) {
   return res;
 }
 
+
+function PositiveSearcher() {
+  this.min = 0;
+  this.max = null;
+}
+
+PositiveSearcher.prototype.getT = function() {
+  if (this.max === null) {
+    if (this.min === 0) {
+      return 1;
+    } else {
+      return this.min * 2;
+    }
+  } else {
+    return (this.min + this.max) / 2;
+  }
+}
+
+PositiveSearcher.prototype.isAbove = function(min) {
+  this.min = Math.max(this.min, min);
+};
+
+PositiveSearcher.prototype.isBelow = function(max) {
+  if (this.max === null) {
+    this.max = max;
+  } else {
+    this.max = Math.min(this.max, max);
+  }
+};
+
+function LogSearcher() {
+  this.sign = null;
+  this.posSearcher = new PositiveSearcher();
+}
+
+LogSearcher.prototype.getT = function() {
+  if (this.sign === null) {
+    return 1;
+  } else {
+    return Math.exp(this.sign * this.posSearcher.getT());
+  }
+};
+
+LogSearcher.prototype.isAbove = function(min) {
+  if (this.sign === null) {
+    assert(min === 1);
+    this.sign = 1;
+  } else if (this.sign === 1) {
+    this.posSearcher.isAbove(Math.log(min));
+  } else {
+    this.posSearcher.isBelow(-Math.log(min));
+  }
+};
+
+LogSearcher.prototype.isBelow = function(max) {
+  if (this.sign === null) {
+    assert(max === 1);
+    this.sign = -1;
+  } else if (this.sign === 1) {
+    this.posSearcher.isBelow(Math.log(max));
+  } else {
+    this.posSearcher.isAbove(-Math.log(max));
+  }
+};
+
+
+
+function gradLineSearch(f, gradf, x, dir) {
+  function gradfdir(t) {
+    return dotProduct(gradf(vecAdd(x, vecScale(t, dir))), dir);
+  }
+  var searcher = new LogSearcher();
+  for (var iter = 0; iter < 20; iter++) {
+    var t = searcher.getT();
+    // console.log('t', t);
+
+    if (Number.isNaN(f(vecAdd(x, vecScale(t, dir)))) || gradfdir(t) <= 0) {
+      searcher.isBelow(t);
+    } else {
+      searcher.isAbove(t);
+    }
+  }
+  var tfinal = searcher.getT();
+  return vecAdd(x, vecScale(tfinal, dir));
+}
+
+
+function gradientDescent(f, gradf, x) {
+  for (var iter = 0; iter < 100; iter++) {
+    var grad = gradf(x);
+    console.log('x', x, 'grad', grad);
+    var xNew = gradLineSearch(f, gradf, x, grad);
+    x = xNew;
+  }
+  return x;
+}
+
+
 function lineSearch(f, x, dir) {
   var t = 0;
   var fx = f(x);
@@ -101,6 +199,7 @@ function newtonMethod(f, gradf, hessf, x) {
 module.exports = {
   matElements: matElements,
   elementsToMat: elementsToMat,
-  newtonMethod: newtonMethod
+  newtonMethod: newtonMethod,
+  gradientDescent: gradientDescent
 };
 

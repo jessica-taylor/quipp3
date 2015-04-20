@@ -46,7 +46,6 @@ function numVecScale(t, s, x) {
 }
 
 function numDotProduct(t, x, y) {
-  console.log('ndp', t, x, y);
   assert.equal(x.length, y.length);
   var tot = t.num(0);
   for (var i = 0; i < x.length; ++i) {
@@ -87,10 +86,9 @@ function dualNumType(t, varVals) {
       );
     },
     sub: function(x, y) {
-      console.log('sub', x, y);
       return new Dual(
           t.sub(x.value, y.value),
-          numVecAdd(t, x.grad, numVecScale(t.num(-1), y.grad))
+          numVecAdd(t, x.grad, numVecScale(t, t.num(-1), y.grad))
       );
     },
     mul: function(x, y) {
