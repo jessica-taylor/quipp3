@@ -55,6 +55,7 @@ function numDotProduct(t, x, y) {
 }
 
 function numMatMulByVector(t, m, x) {
+  if (m.length > 0) assert.equal(x.length, m[0].length);
   var res = [];
   for (var i = 0; i < m.length; ++i) {
     res.push(numDotProduct(t, m[i], x));

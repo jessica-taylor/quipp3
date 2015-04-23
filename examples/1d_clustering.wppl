@@ -1,0 +1,15 @@
+
+
+
+var points = [0.01, 0.05, 0.1, 0.15, 0.9, 1.01, 1.3, 1.2];
+
+console.log(JSON.stringify((inferParameters(function(randFunction) {
+  var getPoint = randFunction(Categorical(2), Double);
+  return function() {
+    var clusters = map(function(point) { return randomInteger(2); }, points);
+    map2(function(point, cluster) {
+      factorScore(getPoint, cluster, point);
+    }, points, clusters);
+    return clusters;
+  };
+}))));

@@ -131,12 +131,13 @@ function paramsToVector(params) {
 
 function vectorToParams(ef, vec) {
   return {
-    base: vec.splice(0, dim(ef)),
-    weights: optimization.elementsToMat(featuresDim(ef), vec.splice(dim(ef)))
+    base: vec.slice(0, dim(ef)),
+    weights: optimization.elementsToMat(featuresDim(ef), vec.slice(dim(ef)))
   };
 }
 
 function getNatParam(t, ef, params, argFeatures) {
+  if (params.weights.length > 0) assert.equal(params.weights[0].length, argFeatures.length);
   var weightPart = ad.numMatMulByVector(t, params.weights, argFeatures.map(t.num));
   return ad.numVecAdd(t, params.base, featuresToSufStat(t, ef, weightPart));
 }
@@ -185,6 +186,7 @@ module.exports = {
   Double: Double,
   Categorical: Categorical,
   Tuple: Tuple,
+  logProbability: logProbability,
   getNatParam: getNatParam,
   mle: mle
 };

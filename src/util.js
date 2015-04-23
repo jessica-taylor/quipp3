@@ -1,4 +1,12 @@
 
+function makeWpplFunction(fn) {
+  return function(e, k, a) {
+    var args = [].slice.call(arguments, 3);
+    var result = fn.apply(this, args);
+    return k(e, result);
+  };
+}
+
 function concat(lsts) {
   var c = [];
   lsts.forEach(function(lst) {
@@ -48,6 +56,9 @@ function wpplMap(s, k, a, f, xs) {
 }
 
 module.exports = {
+  linkedListToArray: linkedListToArray,
+  arrayToLinkedList: arrayToLinkedList,
+  makeWpplFunction: makeWpplFunction,
   concat: concat,
   wpplMap: wpplMap
 };

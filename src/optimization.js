@@ -162,9 +162,9 @@ function gradLineSearch(f, gradf, x, dir) {
 
 
 function gradientDescent(f, gradf, x) {
-  for (var iter = 0; iter < 100; iter++) {
+  for (var iter = 0; iter < 10; iter++) {
     var grad = gradf(x);
-    console.log('x', x, 'grad', grad);
+    // console.log('x', x, 'grad', grad);
     var xNew = gradLineSearch(f, gradf, x, grad);
     x = xNew;
   }

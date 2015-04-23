@@ -1,9 +1,16 @@
 var _ = require('underscore');
 var param_inference = require('./param_inference');
 var expfam = require('./expfam');
+var util = require('./util');
+
+function factorScore(s, k, a, fn) {
+  var args = [].slice.call(arguments, 4);
+  return fn.factorScore.apply(this, [s, k, a].concat(args));
+}
 
 module.exports = {
-  inferParameters: param_inference.inferParameters
+  factorScore: factorScore,
+  inferParameters: param_inference.inferParameters,
+  Double: expfam.Double,
+  Categorical: util.makeWpplFunction(expfam.Categorical)
 };
-
-_.extend(module.exports, expfam);
