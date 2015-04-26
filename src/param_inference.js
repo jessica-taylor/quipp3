@@ -4,6 +4,8 @@ var ad = require('./autodiff');
 var expfam = require('./expfam');
 var util = require('./util');
 
+var mh = require('./mh')(webpplEnv);
+
 function defaultParameters(signature) {
   var argTypes = signature[0];
   var retType = signature[1];
@@ -39,6 +41,7 @@ function trainParameters(signature, calls, params) {
 function UnknownParametersModel() {
   this.signatures = [];
   this.sampler = null;
+  this.prevTrace = null;
 }
 
 UnknownParametersModel.prototype.randFunction = function(s0, k0, a0) {
@@ -66,14 +69,6 @@ UnknownParametersModel.prototype.randFunction = function(s0, k0, a0) {
     var lp = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
                                    getArgFeatures(self.signatures[i][0], args),
                                    self.signatures[i][1].sufStat(retVal));
-    lp *= 1000;
-    var lp0 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
-                                   [0],
-                                   self.signatures[i][1].sufStat(retVal));
-    var lp1 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
-                                   [1],
-                                   self.signatures[i][1].sufStat(retVal));
-    // console.log(lp0 - lp1);
     s = _.clone(s);
     s._quippCallLog = _.clone(s._quippCallLog);
     s._quippCallLog[i] = [[args, retVal], s._quippCallLog[i]];
@@ -110,8 +105,10 @@ UnknownParametersModel.prototype.inferParameters = function(s, k, a) {
       return kt(st, params);
     }
     // TODO start from a trace?
-    return MH(st, mhK, at, self.getSamplerWithParameters(params), numSamps);
-    function mhK(sm, sampsDistr) {
+    return mh.MH(st, mhK, at, self.getSamplerWithParameters(params), numSamps, self.prevTrace);
+    function mhK(sm, sampsDistrAndTrace) {
+      var sampsDistr = sampsDistrAndTrace[0];
+      self.prevTrace = sampsDistrAndTrace[1];
       var samps = sampsDistr.support();
       var combinedCallLog = _.times(self.signatures.length, function() { return []; });
       samps.forEach(function(samp) {

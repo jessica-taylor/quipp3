@@ -52,7 +52,7 @@ var Double = {
   g: function(t, nps) {
     // return -Math.pow(nps[0], 2) / nps[1] - 0.5 * Math.log(-2 * nps[1]);
     return t.sub(t.num(0),
-                 t.add(t.div(t.mul(nps[0], nps[0]), nps[1]),
+                 t.add(t.div(t.mul(nps[0], nps[0]), t.mul(t.num(4), nps[1])),
                        t.mul(t.num(0.5), t.log(t.mul(t.num(-2), nps[1])))));
   },
   sample: function(s, k, a, nps) {
@@ -76,6 +76,7 @@ function Categorical(n) {
       return webpplUtil.logsumexp([0].concat(nps));
     },
     sample: function(s, k, a, nps) {
+      console.log('aaa', a);
       var lse = webpplUtil.logsumexp([0].concat(nps));
       var probs = nps.map(function(np) { return Math.exp(np - lse); });
       return global.sample(s, k, a, erp.discreteERP, [probs]);
