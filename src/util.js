@@ -15,6 +15,11 @@ function concat(lsts) {
   return c;
 }
 
+function sum(lst) {
+  var tot = 0.0;
+  lst.forEach(function(l) { tot += l; });
+  return tot;
+}
 
 function arrayToLinkedList(xs) {
   function from(i) {
@@ -60,5 +65,6 @@ module.exports = {
   arrayToLinkedList: arrayToLinkedList,
   makeWpplFunction: makeWpplFunction,
   concat: concat,
-  wpplMap: wpplMap
+  wpplMap: wpplMap,
+  sum: sum
 };

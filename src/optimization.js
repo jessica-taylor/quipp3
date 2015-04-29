@@ -5,6 +5,13 @@ var _ = require('underscore');
 
 var expfam = require('./expfam');
 
+function diag(xs) {
+  var ys = [];
+  return xs.map(function(x, i) {
+    return xs.map(function(x, j) { return Number(i == j) * xs[i]; });
+  });
+}
+
 function vecAdd(x, y) {
   var res = [];
   for (var i = 0; i < x.length; ++i) {
@@ -34,7 +41,7 @@ function matRow(m, i) {
 }
 
 function matCol(m, i) {
-  return mat.map(function(row) { return row[i]; });
+  return m.map(function(row) { return row[i]; });
 }
 
 function matElements(m) {
@@ -72,6 +79,12 @@ function matMulByVector(m, x) {
     res.push(dotProduct(m[i], x));
   }
   return res;
+}
+
+function matMul(m1, m2) {
+  return transpose(transpose(m2).map(function(col) {
+    return matMulByVector(m1, col);
+  }));
 }
 
 
@@ -162,7 +175,7 @@ function gradLineSearch(f, gradf, x, dir) {
 
 
 function gradientDescent(f, gradf, x) {
-  for (var iter = 0; iter < 10; iter++) {
+  for (var iter = 0; iter < 20; iter++) {
     var grad = gradf(x);
     var xNew = gradLineSearch(f, gradf, x, grad);
     x = xNew;
@@ -196,6 +209,12 @@ function newtonMethod(f, gradf, hessf, x) {
 
 
 module.exports = {
+  linSolve: linSolve,
+  dotProduct: dotProduct,
+  diag: diag,
+  transpose: transpose,
+  matMulByVector: matMulByVector,
+  matMul: matMul,
   matElements: matElements,
   elementsToMat: elementsToMat,
   newtonMethod: newtonMethod,

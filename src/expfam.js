@@ -3,7 +3,7 @@ var erp = require('webppl/src/erp');
 var webpplUtil = require('webppl/src/util');
 
 
-var optimization = require('./optimization');
+var opt = require('./optimization');
 var ad = require('./autodiff'); 
 var util = require('./util');
 
@@ -51,7 +51,7 @@ var Double = {
   sufStat: function(value) { return [value, value*value]; },
   g: function(t, nps) {
     // return -Math.pow(nps[0], 2) / nps[1] - 0.5 * Math.log(-2 * nps[1]);
-    return t.sub(t.num(0),
+    return t.sub(t.num(0.5 * Math.log(2 * Math.PI)),
                  t.add(t.div(t.mul(nps[0], nps[0]), t.mul(t.num(4), nps[1])),
                        t.mul(t.num(0.5), t.log(t.mul(t.num(-2), nps[1])))));
   },
@@ -76,7 +76,6 @@ function Categorical(n) {
       return webpplUtil.logsumexp([0].concat(nps));
     },
     sample: function(s, k, a, nps) {
-      console.log('aaa', a);
       var lse = webpplUtil.logsumexp([0].concat(nps));
       var probs = nps.map(function(np) { return Math.exp(np - lse); });
       return global.sample(s, k, a, erp.discreteERP, [probs]);
@@ -127,13 +126,13 @@ function groupSamplesByFeatures(samps) {
 }
 
 function paramsToVector(params) {
-  return params.base.concat(optimization.matElements(params.weights));
+  return params.base.concat(opt.matElements(params.weights));
 }
 
 function vectorToParams(ef, vec) {
   return {
     base: vec.slice(0, dim(ef)),
-    weights: optimization.elementsToMat(featuresDim(ef), vec.slice(dim(ef)))
+    weights: opt.elementsToMat(featuresDim(ef), vec.slice(dim(ef)))
   };
 }
 
@@ -145,6 +144,7 @@ function getNatParam(t, ef, params, argFeatures) {
 
 function logProbability(t, ef, params, argFeatures, ss) {
   var np = getNatParam(t, ef, params, argFeatures);
+  // console.log('argFeatures', argFeatures, 'np', np);
   return t.sub(ad.numDotProduct(t, np, ss.map(t.num)), ef.g(t, np));
 }
 
@@ -160,9 +160,56 @@ function paramsScoreFunction(ef, samples) {
   };
 }
 
+function gaussianMle(samples) {
+  // let nxs = let (_, x, _) = head samples in length x
+  //     xss :: Matrix Double = [1:x | (_, x, _) <- samples]
+  //     ys :: [Double] = [y | (_, _, [y, _]) <- samples]
+  //     beta :: [Double] = matInv (matMul (transpose xss) xss) `matMulByVector` matMulByVector (transpose xss) ys
+  //     predYs :: [Double] = map (dotProduct beta) xss
+  //     resid :: Double = mean [(y - p)^2 | (y, p) <- zip ys predYs]
+  //     resid' = max 0.0001 resid
+  // in repeat ([head beta / resid', -1 / (2 * resid')], [map (/ resid') (tail beta)])
+  var nxs = samples[0][1].length;
+  var weights = opt.diag(samples.map(function(s) { return s[0]; }));
+  var xss = samples.map(function(samp) {
+    return [1].concat(samp[1]);
+  });
+  var ys = samples.map(function(samp) {
+    return samp[2][0];
+  });
+  // TODO: avoid creating weights matrix
+  var A = opt.matMul(opt.transpose(xss), opt.matMul(weights, xss));
+  var b = opt.matMulByVector(opt.transpose(xss), opt.matMulByVector(weights, ys));
+  var beta = opt.linSolve(A, b);
+  // var beta = opt.linSolve(
+  //     opt.matMul(opt.transpose(xss), opt.matMul(weights, xss)),
+  //     opt.matMulByVector(opt.transpose(xss), opt.matMulByVector(weights, ys)));
+  var predYs = xss.map(function(row) { return opt.dotProduct(beta, row); });
+  var totResid = 0.0;
+  var totWeight = 0.0;
+  ys.forEach(function(y, i) {
+    totWeight += samples[i][0];
+    totResid += samples[i][0] * Math.pow(y - predYs[i], 2);
+  });
+  var resid2 = Math.max(totResid / totWeight, 0.0001);
+  var params = {
+    base: [beta[0] / resid2, -1 / (2 * resid2)],
+    weights: [beta.slice(1).map(function(b) { return b / resid2; })]
+  };
+  ys.forEach(function(y, i) {
+    var lp = logProbability(ad.standardNumType, Double, params, samples[i][1], samples[i][2]);
+    var predLp = - 0.5 * Math.log(2 * Math.PI * resid2) - Math.pow(y - predYs[i], 2) / (2 * resid2); 
+    assert(Math.abs(lp - predLp) < 0.01);
+  });
+  return params;
+}
+
 function mle(ef, samples, params) {
+  if (ef.name == 'Double') {
+    return gaussianMle(samples);
+  }
   var score = paramsScoreFunction(ef, samples);
-  return vectorToParams(ef, optimization.gradientDescent(
+  return vectorToParams(ef, opt.gradientDescent(
       function(eta) {
         return score(ad.standardNumType, eta);
       },

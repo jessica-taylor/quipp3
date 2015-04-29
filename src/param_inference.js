@@ -41,7 +41,6 @@ function trainParameters(signature, calls, params) {
 function UnknownParametersModel() {
   this.signatures = [];
   this.sampler = null;
-  this.prevTrace = null;
 }
 
 UnknownParametersModel.prototype.randFunction = function(s0, k0, a0) {
@@ -69,6 +68,23 @@ UnknownParametersModel.prototype.randFunction = function(s0, k0, a0) {
     var lp = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
                                    getArgFeatures(self.signatures[i][0], args),
                                    self.signatures[i][1].sufStat(retVal));
+    var lp0 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
+                                   [[0]],
+                                   self.signatures[i][1].sufStat(retVal));
+    var lp1 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
+                                   [[1]],
+                                   self.signatures[i][1].sufStat(retVal));
+    if (false) {
+      var ps = s._quippParams[i];
+      var variance = -1 / (2 * ps.base[1]);
+      var mean0 = variance * ps.base[0];
+      var mean1 = mean0 + variance * ps.weights[0][0];
+      var lp0_est = -Math.pow(mean0 - retVal, 2) / (2 * variance);
+      var lp1_est = -Math.pow(mean1 - retVal, 2) / (2 * variance);
+      assert(Math.abs((lp0 - lp1) - (lp0est - lp1est)) < 0.01);
+      console.log('#', lp0 - lp1, lp0_est - lp1_est);
+    }
+    // console.log('#', lp0, lp1);
     s = _.clone(s);
     s._quippCallLog = _.clone(s._quippCallLog);
     s._quippCallLog[i] = [[args, retVal], s._quippCallLog[i]];
@@ -91,45 +107,49 @@ UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
   };
 };
 
+UnknownParametersModel.prototype.stepParamsAndTrace = function(s, k, a, params, trace) {
+  var self = this;
+  var numSamps = 1000;
+  return mh.MH(s, mhK, a, self.getSamplerWithParameters(params), numSamps, trace);
+  function mhK(sm, sampsDistrAndTrace) {
+    var sampsDistr = sampsDistrAndTrace[0];
+    var newTrace = sampsDistrAndTrace[1];
+    var samps = sampsDistr.support();
+    var combinedCallLog = _.times(self.signatures.length, function() { return []; });
+    samps.forEach(function(samp) {
+      var score = Math.exp(sampsDistr.score([], samp));
+      var callLog = samp[0];
+      for (var j = 0; j < self.signatures.length; ++j) {
+        callLog[j].forEach(function(call) {
+          combinedCallLog[j].push([score, call[0], call[1]]);
+        });
+      }
+    });
+    var newParams = [];
+    for (var j = 0; j < self.signatures.length; ++j) {
+      newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
+    }
+    for (var j = 0; j < 10; ++j) {
+      var samp = sampsDistr.sample([]);
+      console.log(samp[1]);
+    }
+    console.log(JSON.stringify(newParams));
+    return k(sm, [newParams, newTrace]);
+  }
+};
+
 UnknownParametersModel.prototype.inferParameters = function(s, k, a) {
   var self = this;
   var numIters = 1000;
-  var numSamps = 200;
-  var burnIn = Math.floor(numSamps/4);
-  var skip = 2;
-  
   var initParams = this.signatures.map(defaultParameters);
-  return trainFrom(s, k, a, 0, initParams);
-  function trainFrom(st, kt, at, i, params) {
+  return trainFrom(s, k, a, 0, initParams, null);
+  function trainFrom(st, kt, at, i, params, trace) {
     if (i == numIters) {
       return kt(st, params);
     }
-    // TODO start from a trace?
-    return mh.MH(st, mhK, at, self.getSamplerWithParameters(params), numSamps, self.prevTrace);
-    function mhK(sm, sampsDistrAndTrace) {
-      var sampsDistr = sampsDistrAndTrace[0];
-      self.prevTrace = sampsDistrAndTrace[1];
-      var samps = sampsDistr.support();
-      var combinedCallLog = _.times(self.signatures.length, function() { return []; });
-      samps.forEach(function(samp) {
-        var score = Math.exp(sampsDistr.score([], samp));
-        var callLog = samp[0];
-        for (var j = 0; j < self.signatures.length; ++j) {
-          callLog[j].forEach(function(call) {
-            combinedCallLog[j].push([score, call[0], call[1]]);
-          });
-        }
-      });
-      var newParams = [];
-      for (var j = 0; j < self.signatures.length; ++j) {
-        newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
-      }
-      for (var j = 0; j < 10; ++j) {
-        var samp = sampsDistr.sample([]);
-        console.log(samp[1]);
-      }
-      console.log(JSON.stringify(newParams));
-      return trainFrom(sm, kt, at, i+1, newParams);
+    return self.stepParamsAndTrace(st, ksp, at, params, trace);
+    function ksp(s2, paramsAndTrace) {
+      return trainFrom(s2, kt, at, i+1, paramsAndTrace[0], paramsAndTrace[1]);
     }
   }
 };
