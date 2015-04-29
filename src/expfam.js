@@ -144,7 +144,6 @@ function getNatParam(t, ef, params, argFeatures) {
 
 function logProbability(t, ef, params, argFeatures, ss) {
   var np = getNatParam(t, ef, params, argFeatures);
-  // console.log('argFeatures', argFeatures, 'np', np);
   return t.sub(ad.numDotProduct(t, np, ss.map(t.num)), ef.g(t, np));
 }
 

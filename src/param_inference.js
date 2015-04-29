@@ -68,23 +68,12 @@ UnknownParametersModel.prototype.randFunction = function(s0, k0, a0) {
     var lp = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
                                    getArgFeatures(self.signatures[i][0], args),
                                    self.signatures[i][1].sufStat(retVal));
-    var lp0 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
-                                   [[0]],
-                                   self.signatures[i][1].sufStat(retVal));
-    var lp1 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
-                                   [[1]],
-                                   self.signatures[i][1].sufStat(retVal));
-    if (false) {
-      var ps = s._quippParams[i];
-      var variance = -1 / (2 * ps.base[1]);
-      var mean0 = variance * ps.base[0];
-      var mean1 = mean0 + variance * ps.weights[0][0];
-      var lp0_est = -Math.pow(mean0 - retVal, 2) / (2 * variance);
-      var lp1_est = -Math.pow(mean1 - retVal, 2) / (2 * variance);
-      assert(Math.abs((lp0 - lp1) - (lp0est - lp1est)) < 0.01);
-      console.log('#', lp0 - lp1, lp0_est - lp1_est);
-    }
-    // console.log('#', lp0, lp1);
+    // var lp0 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
+    //                                [[0]],
+    //                                self.signatures[i][1].sufStat(retVal));
+    // var lp1 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
+    //                                [[1]],
+    //                                self.signatures[i][1].sufStat(retVal));
     s = _.clone(s);
     s._quippCallLog = _.clone(s._quippCallLog);
     s._quippCallLog[i] = [[args, retVal], s._quippCallLog[i]];
@@ -109,7 +98,7 @@ UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
 
 UnknownParametersModel.prototype.stepParamsAndTrace = function(s, k, a, params, trace) {
   var self = this;
-  var numSamps = 1000;
+  var numSamps = 100;
   return mh.MH(s, mhK, a, self.getSamplerWithParameters(params), numSamps, trace);
   function mhK(sm, sampsDistrAndTrace) {
     var sampsDistr = sampsDistrAndTrace[0];
