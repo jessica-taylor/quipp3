@@ -6,6 +6,8 @@ var util = require('./util');
 
 var mh = require('./mh')(webpplEnv);
 
+var mbind = util.mbind, mreturn = util.mreturn, mbindMethod = util.mbindMethod, fromMonad = util.fromMonad;
+
 function defaultParameters(signature) {
   var argTypes = signature[0];
   var retType = signature[1];
@@ -20,6 +22,28 @@ function defaultParameters(signature) {
     })
   };
 }
+
+var randParameters = fromMonad(function(signature) {
+  var argTypes = signature[0];
+  var retType = signature[1];
+  var nfeatures = 0;
+  argTypes.forEach(function(at) {
+    nfeatures += expfam.featuresDim(at);
+  });
+  return mbind(retType.randNatParam, function(base) {
+    return mbind(replicateM, expfam.featuresDim(retType),
+                 mcurry(replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5])),
+                 function(weights) {
+                   return mreturn({base: base, weights: weights});
+                 });
+  });
+  return {
+    base: retType.defaultNatParam,
+    weights: _.times(expfam.featuresDim(retType), function() {
+      return _.times(nfeatures, function() { return 0; });
+    })
+  };
+});
 
 function getArgFeatures(argTypes, argVals) {
   return util.concat(argTypes.map(function(at, i) { return expfam.getFeatures(at, argVals[i]); }));
@@ -96,11 +120,45 @@ UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
   };
 };
 
-UnknownParametersModel.prototype.stepParamsAndTrace = function(s, k, a, params, trace) {
+UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
+  return getSamplerWithParameters(params)(s, k, a);
+};
+
+// UnknownParametersModel.prototype.stepParamsAndTrace = function(s, k, a, params, trace) {
+//   var self = this;
+//   var numSamps = 100;
+//   return mh.MH(s, mhK, a, self.getSamplerWithParameters(params), numSamps, trace);
+//   function mhK(sm, sampsDistrAndTrace) {
+//     var sampsDistr = sampsDistrAndTrace[0];
+//     var newTrace = sampsDistrAndTrace[1];
+//     var samps = sampsDistr.support();
+//     var combinedCallLog = _.times(self.signatures.length, function() { return []; });
+//     samps.forEach(function(samp) {
+//       var score = Math.exp(sampsDistr.score([], samp));
+//       var callLog = samp[0];
+//       for (var j = 0; j < self.signatures.length; ++j) {
+//         callLog[j].forEach(function(call) {
+//           combinedCallLog[j].push([score, call[0], call[1]]);
+//         });
+//       }
+//     });
+//     var newParams = [];
+//     for (var j = 0; j < self.signatures.length; ++j) {
+//       newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
+//     }
+//     for (var j = 0; j < 10; ++j) {
+//       var samp = sampsDistr.sample([]);
+//       console.log(samp[1]);
+//     }
+//     console.log(JSON.stringify(newParams));
+//     return k(sm, [newParams, newTrace]);
+//   }
+// };
+
+UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params, trace) {
   var self = this;
   var numSamps = 100;
-  return mh.MH(s, mhK, a, self.getSamplerWithParameters(params), numSamps, trace);
-  function mhK(sm, sampsDistrAndTrace) {
+  return mbind(mh.MH, self.getSamplerWithParameters(params), numSamps, trace, function(sampsDistrAndTrace) {
     var sampsDistr = sampsDistrAndTrace[0];
     var newTrace = sampsDistrAndTrace[1];
     var samps = sampsDistr.support();
@@ -123,9 +181,9 @@ UnknownParametersModel.prototype.stepParamsAndTrace = function(s, k, a, params, 
       console.log(samp[1]);
     }
     console.log(JSON.stringify(newParams));
-    return k(sm, [newParams, newTrace]);
-  }
-};
+    return mreturn([newParams, newTrace]);
+  });
+});
 
 UnknownParametersModel.prototype.inferParameters = function(s, k, a) {
   var self = this;
@@ -159,6 +217,59 @@ function inferParameters(s, k, a, fun) {
   return unknownParametersModel(s, k2, a, fun);
 }
 
+function generateRandData(s, k, a, fun, params) {
+  return unknownParametersModel(s, ku, a, function(s2, k2, a2, rf) {
+    return rf(s2, kr, a2, rf);
+    function kr(s3, res) {
+      return k2(s3, res[0]);
+    }
+  });
+  function ku(s2, upm) {
+    return upm.randSample(s2, kd, a);
+    function kd(s3, cld) {
+      return k(s3, cld[1]);
+    }
+  }
+}
+
+var generateRandData = fromMonad(function(fun, params) {
+  var inner = fromMonad(function(rf) {
+    return mbind(fun, rf, function(res) {
+      return res[0];
+    });
+  });
+  return mbind(unknownParametersModel, inner, function(upm) {
+    return mbindMethod(upm, 'randSample', function(cld) {
+      return mreturn(cld[1]);
+    });
+  });
+});
+
+var testParamInference = fromMonad(function(fun) {
+  return mbind(unknownParametersModel, fun, function(upmWrong) {
+    var params = upmWrong.signatures.map(randParameters);
+    console.log('params', params);
+    return mbind(generateRandData, fun, params, function(randData) {
+      var inner = fromMonad(function(randFunction) {
+        return mbind(fun, rf, function(res) {
+          return mbind(res[1], randData, function(result) {
+            return mreturn(result);
+          });
+        });
+      });
+      return mbind(unknownParametersModel, inner, function(upm) {
+        return mbindMethod(upm, 'inferParameters', function(inferParams) {
+          console.log('infpa', inferParams);
+          return mreturn([params, inferParams]);
+        });
+      });
+    });
+  });
+});
+
+
+
 module.exports = {
-  inferParameters: inferParameters
+  inferParameters: inferParameters,
+  testParamInference: testParamInference
 };

@@ -7,6 +7,8 @@ var opt = require('./optimization');
 var ad = require('./autodiff'); 
 var util = require('./util');
 
+var mbind = util.mbind, mreturn = util.mreturn;
+
 
 // ExpFam interface
 //
@@ -14,6 +16,7 @@ var util = require('./util');
 // sufStat(value: *): [double]
 // g(natParam: [double]): double
 // sample(natParam: [double]): *
+// randNatParam(): [double]
 // defaultNatParam: [double]
 // featuresMask: [bool]
 
@@ -61,6 +64,12 @@ var Double = {
     return global.sample(s, k, a, erp.gaussianERP, [mean, Math.sqrt(variance)]);
   },
   defaultNatParam: [0.0, -0.001],
+  randNatParam: mbind(global.sample, erp.gaussianERP, [0, 5], function(mean) {
+    return mbind(global.sample, erp.gaussianERP, [0, 5], function(stdev) {
+      var variance = stdev*stdev;
+      return mreturn([mean / variance, -1 / (2 * variance)]);
+    });
+  }),
   featuresMask: [true, false]
 };
 
@@ -81,6 +90,7 @@ function Categorical(n) {
       return global.sample(s, k, a, erp.discreteERP, [probs]);
     },
     defaultNatParam: _.times(n-1, function() { return 0.0; }),
+    randNatParam: mcurry(replicateM, n-1, global.sample, erp.gaussianERP, [0, 5]),
     featuresMask: _.times(n-1, function() { return true; })
   };
 }
