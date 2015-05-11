@@ -24,7 +24,7 @@ function defaultParameters(signature) {
   };
 }
 
-var randParameters = fromMonad(function(signature) {
+var randParameters = fromMonad('randParameters', function(signature) {
   var argTypes = signature[0];
   var retType = signature[1];
   var nfeatures = 0;
@@ -122,39 +122,8 @@ UnknownParametersModel.prototype.getSamplerWithParameters = function(params) {
 };
 
 UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
-  return getSamplerWithParameters(params)(s, k, a);
+  return this.getSamplerWithParameters(params)(s, k, a);
 };
-
-// UnknownParametersModel.prototype.stepParamsAndTrace = function(s, k, a, params, trace) {
-//   var self = this;
-//   var numSamps = 100;
-//   return mh.MH(s, mhK, a, self.getSamplerWithParameters(params), numSamps, trace);
-//   function mhK(sm, sampsDistrAndTrace) {
-//     var sampsDistr = sampsDistrAndTrace[0];
-//     var newTrace = sampsDistrAndTrace[1];
-//     var samps = sampsDistr.support();
-//     var combinedCallLog = _.times(self.signatures.length, function() { return []; });
-//     samps.forEach(function(samp) {
-//       var score = Math.exp(sampsDistr.score([], samp));
-//       var callLog = samp[0];
-//       for (var j = 0; j < self.signatures.length; ++j) {
-//         callLog[j].forEach(function(call) {
-//           combinedCallLog[j].push([score, call[0], call[1]]);
-//         });
-//       }
-//     });
-//     var newParams = [];
-//     for (var j = 0; j < self.signatures.length; ++j) {
-//       newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
-//     }
-//     for (var j = 0; j < 10; ++j) {
-//       var samp = sampsDistr.sample([]);
-//       console.log(samp[1]);
-//     }
-//     console.log(JSON.stringify(newParams));
-//     return k(sm, [newParams, newTrace]);
-//   }
-// };
 
 UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params, trace) {
   var self = this;
@@ -218,29 +187,17 @@ function inferParameters(s, k, a, fun) {
   return unknownParametersModel(s, k2, a, fun);
 }
 
-function generateRandData(s, k, a, fun, params) {
-  return unknownParametersModel(s, ku, a, function(s2, k2, a2, rf) {
-    return rf(s2, kr, a2, rf);
-    function kr(s3, res) {
-      return k2(s3, res[0]);
-    }
-  });
-  function ku(s2, upm) {
-    return upm.randSample(s2, kd, a);
-    function kd(s3, cld) {
-      return k(s3, cld[1]);
-    }
-  }
-}
 
 var generateRandData = fromMonad(function(fun, params) {
   var inner = fromMonad(function(rf) {
     return mbind(fun, rf, function(res) {
-      return res[0];
+      return mreturn(res[0]);
     });
   });
+  console.log('lalala');
   return mbind(unknownParametersModel, inner, function(upm) {
-    return mbindMethod(upm, 'randSample', function(cld) {
+    console.log('got upm', upm);
+    return mbindMethod(upm, 'randSample', params, function(cld) {
       return mreturn(cld[1]);
     });
   });
@@ -248,11 +205,13 @@ var generateRandData = fromMonad(function(fun, params) {
 
 var testParamInference = fromMonad(function(fun) {
   return mbind(unknownParametersModel, fun, function(upmWrong) {
+    console.log('sigs', upmWrong.signatures[0]);
     return mbind(util.mapM, upmWrong.signatures, randParameters, function(params) {
       console.log('params', params);
       return mbind(generateRandData, fun, params, function(randData) {
+        console.log('randData', randData);
         var inner = fromMonad(function(randFunction) {
-          return mbind(fun, rf, function(res) {
+          return mbind(fun, randFunction, function(res) {
             return mbind(res[1], randData, function(result) {
               return mreturn(result);
             });
