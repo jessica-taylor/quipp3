@@ -212,12 +212,11 @@ var testParamInference = fromMonad(function(fun) {
         console.log('randData', randData);
         var inner = fromMonad(function(randFunction) {
           return mbind(fun, randFunction, function(res) {
-            return mbind(res[1], randData, function(result) {
-              return mreturn(result);
-            });
+            return mreturn(mcurry(res[1], randData));
           });
         });
         return mbind(unknownParametersModel, inner, function(upm) {
+          console.log('upm', upm);
           return mbindMethod(upm, 'inferParameters', function(inferParams) {
             console.log('infpa', inferParams);
             return mreturn([params, inferParams]);
