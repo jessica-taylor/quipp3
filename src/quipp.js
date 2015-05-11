@@ -11,7 +11,7 @@ function factorScore(s, k, a, fn) {
 module.exports = {
   factorScore: factorScore,
   inferParameters: param_inference.inferParameters,
-  testParamInference: param_inferenc.testParamInference,
+  testParamInference: param_inference.testParamInference,
   Double: expfam.Double,
   Categorical: util.makeWpplFunction(expfam.Categorical)
 };

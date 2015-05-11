@@ -7,7 +7,7 @@ var opt = require('./optimization');
 var ad = require('./autodiff'); 
 var util = require('./util');
 
-var mbind = util.mbind, mreturn = util.mreturn;
+var mbind = util.mbind, mreturn = util.mreturn, mcurry = util.mcurry;
 
 
 // ExpFam interface
@@ -90,7 +90,7 @@ function Categorical(n) {
       return global.sample(s, k, a, erp.discreteERP, [probs]);
     },
     defaultNatParam: _.times(n-1, function() { return 0.0; }),
-    randNatParam: mcurry(replicateM, n-1, global.sample, erp.gaussianERP, [0, 5]),
+    randNatParam: mcurry(util.replicateM, n-1, global.sample, erp.gaussianERP, [0, 5]),
     featuresMask: _.times(n-1, function() { return true; })
   };
 }

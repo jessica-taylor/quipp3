@@ -1,12 +1,13 @@
 var _ = require('underscore');
 
+var erp = require('webppl/src/erp');
 var ad = require('./autodiff');
 var expfam = require('./expfam');
 var util = require('./util');
 
 var mh = require('./mh')(webpplEnv);
 
-var mbind = util.mbind, mreturn = util.mreturn, mbindMethod = util.mbindMethod, fromMonad = util.fromMonad;
+var mbind = util.mbind, mreturn = util.mreturn, mbindMethod = util.mbindMethod, fromMonad = util.fromMonad, mcurry = util.mcurry;
 
 function defaultParameters(signature) {
   var argTypes = signature[0];
@@ -31,8 +32,8 @@ var randParameters = fromMonad(function(signature) {
     nfeatures += expfam.featuresDim(at);
   });
   return mbind(retType.randNatParam, function(base) {
-    return mbind(replicateM, expfam.featuresDim(retType),
-                 mcurry(replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5])),
+    return mbind(util.replicateM, expfam.featuresDim(retType),
+                 mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5])),
                  function(weights) {
                    return mreturn({base: base, weights: weights});
                  });
@@ -247,20 +248,21 @@ var generateRandData = fromMonad(function(fun, params) {
 
 var testParamInference = fromMonad(function(fun) {
   return mbind(unknownParametersModel, fun, function(upmWrong) {
-    var params = upmWrong.signatures.map(randParameters);
-    console.log('params', params);
-    return mbind(generateRandData, fun, params, function(randData) {
-      var inner = fromMonad(function(randFunction) {
-        return mbind(fun, rf, function(res) {
-          return mbind(res[1], randData, function(result) {
-            return mreturn(result);
+    return mbind(util.mapM, upmWrong.signatures, randParameters, function(params) {
+      console.log('params', params);
+      return mbind(generateRandData, fun, params, function(randData) {
+        var inner = fromMonad(function(randFunction) {
+          return mbind(fun, rf, function(res) {
+            return mbind(res[1], randData, function(result) {
+              return mreturn(result);
+            });
           });
         });
-      });
-      return mbind(unknownParametersModel, inner, function(upm) {
-        return mbindMethod(upm, 'inferParameters', function(inferParams) {
-          console.log('infpa', inferParams);
-          return mreturn([params, inferParams]);
+        return mbind(unknownParametersModel, inner, function(upm) {
+          return mbindMethod(upm, 'inferParameters', function(inferParams) {
+            console.log('infpa', inferParams);
+            return mreturn([params, inferParams]);
+          });
         });
       });
     });

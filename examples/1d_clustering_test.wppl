@@ -11,7 +11,7 @@ testParamInference(function(randFunction) {
         var cluster = randomInteger(2);
         return getPoint(cluster);
       });
-    }
+    },
     function(points) {
       // var points = [0.01, 0.05, 0.02, 0.03, 0.99, 1.01, 1.02, 1.04];
       var clusters = map(function(point) { return randomInteger(2); }, points);

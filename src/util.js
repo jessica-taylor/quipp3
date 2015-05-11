@@ -11,6 +11,8 @@
 // }
 
 function mbind(x) {
+  assert(x != null);
+  console.log('mbind', x);
   var args = [].slice.call(arguments);
   var extraArgs = args.slice(1, args.length - 1);
   var f = args[args.length - 1];
@@ -42,7 +44,7 @@ function mreturn(x) {
 
 function fmap(x) {
   var args = [].slice.call(arguments);
-  var extraArgs = args.slice(2, args.length - 1);
+  var extraArgs = args.slice(1, args.length - 1);
   var f = args[args.length - 1];
   return mbind.apply(null, [x].concat(extraArgs).concat([function(res) {
     return mreturn(f(res));
@@ -50,8 +52,10 @@ function fmap(x) {
 }
 
 function fromMonad(f) {
+  assert(f != null);
   return function(s, k, a) {
     var args = [].slice.call(arguments, 3);
+    console.log('f', f, f.apply(this, args));
     return f.apply(this, args)(s, k, a);
   };
 }
@@ -80,6 +84,7 @@ var replicateM = fromMonad(function(n, f) {
 });
 
 var mapMlist = fromMonad(function(xs, f) {
+  assert(f != null);
   if (xs == null) {
     return mreturn(null);
   }
