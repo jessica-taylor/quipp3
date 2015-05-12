@@ -7,7 +7,7 @@ var util = require('./util');
 
 var mh = require('./mh')(webpplEnv);
 
-var mbind = util.mbind, mreturn = util.mreturn, mbindMethod = util.mbindMethod, fromMonad = util.fromMonad, mcurry = util.mcurry;
+var mbind = util.mbind, mreturn = util.mreturn, mbindMethod = util.mbindMethod, fromMonad = util.fromMonad, mcurry = util.mcurry, mcurryMethod = util.mcurryMethod;
 
 function defaultParameters(signature) {
   var argTypes = signature[0];
@@ -125,6 +125,12 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
   return this.getSamplerWithParameters(params)(s, k, a);
 };
 
+UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
+  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), 20, 5, function(dist) {
+    return mreturn(dist.normalizationConstant);
+  });
+});
+
 UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params, trace) {
   var self = this;
   var numSamps = 100;
@@ -146,47 +152,45 @@ UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params,
     for (var j = 0; j < self.signatures.length; ++j) {
       newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
     }
-    for (var j = 0; j < 10; ++j) {
-      var samp = sampsDistr.sample([]);
-      console.log(samp[1]);
-    }
+    // for (var j = 0; j < 10; ++j) {
+    //   var samp = sampsDistr.sample([]);
+    //   console.log(samp[1]);
+    // }
     console.log(JSON.stringify(newParams));
     return mreturn([newParams, newTrace]);
   });
 });
 
-UnknownParametersModel.prototype.inferParameters = function(s, k, a) {
+UnknownParametersModel.prototype.inferParameters = fromMonad(function(reducer) {
   var self = this;
-  var numIters = 1000;
   var initParams = this.signatures.map(defaultParameters);
-  return trainFrom(s, k, a, 0, initParams, null);
-  function trainFrom(st, kt, at, i, params, trace) {
-    if (i == numIters) {
-      return kt(st, params);
-    }
-    return self.stepParamsAndTrace(st, ksp, at, params, trace);
-    function ksp(s2, paramsAndTrace) {
-      return trainFrom(s2, kt, at, i+1, paramsAndTrace[0], paramsAndTrace[1]);
-    }
-  }
-};
+  var trainFrom = fromMonad(function(i, params, trace) {
+    var rest = mbindMethod(self, 'stepParamsAndTrace', params, trace, function(paramsAndTrace) {
+      return mcurry(trainFrom, i+1, paramsAndTrace[0], paramsAndTrace[1]);
+    });
+    return mcurry(reducer, params, trace, rest);
+  });
+  return mcurry(trainFrom, 0, initParams, null);
+});
 
-function unknownParametersModel(s, k, a, fun) {
+var unknownParametersModel = fromMonad(function(fun) {
   var model = new UnknownParametersModel();
-  function k2(s2, sampler) {
+  return mbind(fun, model.randFunction.bind(model), function(sampler) {
     model.sampler = sampler;
-    return k(s2, model);
-  };
-  return fun(s, k2, a, model.randFunction.bind(model));
-}
+    return mreturn(model);
+  });
+});
 
-function inferParameters(s, k, a, fun) {
-  function k2(s2, model) {
-    return model.inferParameters(s2, k, a);
-  }
-  return unknownParametersModel(s, k2, a, fun);
-}
+var printReducer = fromMonad(function(params, trace, rest) {
+  console.log('yay', params);
+  return rest;
+});
 
+var inferParameters = fromMonad(function(fun) {
+  return mbind(unknownParametersModel, fun, function(upm) {
+    return mcurryMethod(model, 'inferParameters', printReducer);
+  });
+});
 
 var generateRandData = fromMonad(function(fun, params) {
   var inner = fromMonad(function(rf) {
@@ -194,9 +198,7 @@ var generateRandData = fromMonad(function(fun, params) {
       return mreturn(res[0]);
     });
   });
-  console.log('lalala');
   return mbind(unknownParametersModel, inner, function(upm) {
-    console.log('got upm', upm);
     return mbindMethod(upm, 'randSample', params, function(cld) {
       return mreturn(cld[1]);
     });
@@ -205,21 +207,25 @@ var generateRandData = fromMonad(function(fun, params) {
 
 var testParamInference = fromMonad(function(fun) {
   return mbind(unknownParametersModel, fun, function(upmWrong) {
-    console.log('sigs', upmWrong.signatures[0]);
-    return mbind(util.mapM, upmWrong.signatures, randParameters, function(params) {
-      console.log('params', params);
-      return mbind(generateRandData, fun, params, function(randData) {
-        console.log('randData', randData);
+    return mbind(util.mapM, upmWrong.signatures, randParameters, function(origParams) {
+      console.log('orig params', JSON.stringify(origParams));
+      return mbind(generateRandData, fun, origParams, function(randData) {
         var inner = fromMonad(function(randFunction) {
           return mbind(fun, randFunction, function(res) {
             return mreturn(mcurry(res[1], randData));
           });
         });
         return mbind(unknownParametersModel, inner, function(upm) {
-          console.log('upm', upm);
-          return mbindMethod(upm, 'inferParameters', function(inferParams) {
-            console.log('infpa', inferParams);
-            return mreturn([params, inferParams]);
+          return mbindMethod(upm, 'logPartition', origParams, function(origLp) {
+            console.log('orig lp', origLp);
+            var reducer = fromMonad(function(infParams, trace, rest) {
+              console.log('params', infParams);
+              return mbindMethod(upm, 'logPartition', infParams, function(lp) {
+                console.log('inf lp', lp);
+                return rest;
+              });
+            });
+            return mcurryMethod(upm, 'inferParameters', reducer);
           });
         });
       });

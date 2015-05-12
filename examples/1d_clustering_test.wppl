@@ -1,7 +1,7 @@
 
 
 
-var n = 20;
+var n = 50;
 
 testParamInference(function(randFunction) {
   var getPoint = randFunction(Categorical(2), Double);

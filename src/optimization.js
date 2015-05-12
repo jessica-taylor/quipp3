@@ -12,6 +12,10 @@ function diag(xs) {
   });
 }
 
+function zeros(n) {
+  return _.times(n, function() { return 0; });
+}
+
 function vecAdd(x, y) {
   var res = [];
   for (var i = 0; i < x.length; ++i) {
@@ -209,6 +213,9 @@ function newtonMethod(f, gradf, hessf, x) {
 
 
 module.exports = {
+  zeros: zeros,
+  vecAdd: vecAdd,
+  vecScale: vecScale,
   linSolve: linSolve,
   dotProduct: dotProduct,
   diag: diag,

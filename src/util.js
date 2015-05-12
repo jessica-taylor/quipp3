@@ -102,6 +102,11 @@ function mcurry(f) {
   };
 }
 
+function mcurryMethod() {
+  var args = [].slice.call(arguments);
+  return mbindMethod.apply(null, args.concat([mreturn]));
+}
+
 var replicateMlist = fromMonad(function(n, f) {
   if (n == 0) {
     return mreturn(null);
@@ -212,6 +217,7 @@ module.exports = {
   mbindMethod: mbindMethod,
   mreturn: mreturn,
   mcurry: mcurry,
+  mcurryMethod: mcurryMethod,
   fromMonad: fromMonad,
   replicateM: replicateM,
   mapM: mapM,

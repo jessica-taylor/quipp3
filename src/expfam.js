@@ -122,15 +122,15 @@ function groupSamplesByFeatures(samps) {
   var totWeightAndSufStats = {};
   samps.forEach(function(samp) {
     var features = JSON.stringify(samp[1]);
-    if (!totWeightAndSufStats[features]) totWeightAndSufStats[features] = [];
+    if (!totWeightAndSufStats[features]) totWeightAndSufStats[features] = [0, opt.zeros(samp[2].length)];
     var tot = totWeightAndSufStats[features];
     tot[0] += samp[0];
-    tot[1] = vecAdd(tot[1], vecScale(samp[0], samp[2]));
+    tot[1] = opt.vecAdd(tot[1], opt.vecScale(samp[0], samp[2]));
   });
   var samps2 = [];
   for (var stringFeatures in totWeightAndSufStats) {
     var tot = totWeightAndSufStats[stringFeatures];
-    samps2.push([tot[0], JSON.parse(stringFeatures), vecScale(1/tot[0], tot[2])]);
+    samps2.push([tot[0], JSON.parse(stringFeatures), opt.vecScale(1/tot[0], tot[1])]);
   }
   return samps2;
 }
@@ -217,6 +217,7 @@ function mle(ef, samples, params) {
   if (ef.name == 'Double') {
     return gaussianMle(samples);
   }
+  samples = groupSamplesByFeatures(samples);
   var score = paramsScoreFunction(ef, samples);
   return vectorToParams(ef, opt.gradientDescent(
       function(eta) {
