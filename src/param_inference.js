@@ -32,18 +32,13 @@ var randParameters = fromMonad('randParameters', function(signature) {
     nfeatures += expfam.featuresDim(at);
   });
   return mbind(retType.randNatParam, function(base) {
+    assert(global.sample);
     return mbind(util.replicateM, expfam.featuresDim(retType),
                  mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5])),
                  function(weights) {
                    return mreturn({base: base, weights: weights});
                  });
   });
-  return {
-    base: retType.defaultNatParam,
-    weights: _.times(expfam.featuresDim(retType), function() {
-      return _.times(nfeatures, function() { return 0; });
-    })
-  };
 });
 
 function getArgFeatures(argTypes, argVals) {
@@ -206,7 +201,9 @@ var generateRandData = fromMonad(function(fun, params) {
 });
 
 var testParamInference = fromMonad(function(fun) {
+  console.log('testParamInference');
   return mbind(unknownParametersModel, fun, function(upmWrong) {
+    console.log('upmwrong', upmWrong.signatures);
     return mbind(util.mapM, upmWrong.signatures, randParameters, function(origParams) {
       // TODO!
       // origParams = [{"base":[20,-0.5],"weights":[[10]]}]

@@ -1,0 +1,44 @@
+
+var nstates = 5;
+var nobs = 7;
+
+var chainLength = 5;
+
+var n = 20;
+
+
+testParamInference(function(randFunction) {
+  var stateType = Categorical(nstates);
+  var obsType = Categorical(nobs);
+  var transFun = randFunction(stateType, stateType);
+  var obsFun = randFunction(stateType, obsType);
+  var mapStatesFrom = function(f, start, i) {
+    if (i == chainLength) {
+      return [];
+    } else {
+      var first = f(start, i);
+      var rest = mapStatesFrom(f, transFun(start), i+1);
+      return [first, rest];
+    }
+  };
+  var mapStates = function(f) {
+    return mapStatesFrom(f, randomInteger(nstates), 0);
+  };
+  return [
+    function() {
+      return repeat(n, function() {
+        return mapStates(obsFun);
+      });
+    },
+    function(points) {
+      var chains = map(function(point) {
+        var states = mapStates(function(state, i) {
+          factorScore(obsFun, state, point[i]);
+          return state;
+        });
+        return states;
+      }, points);
+      return chains;
+    }
+  ];
+});

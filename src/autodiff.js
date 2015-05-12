@@ -80,9 +80,9 @@ function numLogSumExp(t, xs) {
   });
   var totExp = t.num(0);
   xs.forEach(function(x) {
-    totExp = t.add(totExp, t.exp(t.sub(x, maximum)));
+    totExp = t.add(totExp, t.exp(t.sub(x, t.num(maximum))));
   });
-  var res = t.add(maximum, t.log(totExp));
+  var res = t.add(t.num(maximum), t.log(totExp));
   return res;
 }
 
