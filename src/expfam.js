@@ -7,7 +7,7 @@ var opt = require('./optimization');
 var ad = require('./autodiff'); 
 var util = require('./util');
 
-var mbind = util.mbind, mreturn = util.mreturn, mcurry = util.mcurry;
+var mbind = util.mbind, mreturn = util.mreturn, mcurry = util.mcurry, fromMonad = util.fromMonad;
 
 
 // ExpFam interface
@@ -81,8 +81,8 @@ function Categorical(n) {
         return (value == i ? 1.0 : 0.0);
       });
     },
-    g: function(nps) {
-      return webpplUtil.logsumexp([0].concat(nps));
+    g: function(t, nps) {
+      return ad.numLogSumExp(t, [t.num(0)].concat(nps));
     },
     sample: function(s, k, a, nps) {
       var lse = webpplUtil.logsumexp([0].concat(nps));
@@ -96,6 +96,13 @@ function Categorical(n) {
 }
 
 function Tuple(types) {
+  var cumulativeDim = [0];
+  types.forEach(function(t) {
+    cumulativeDim.push(cumulativeDim[cumulativeDim.length - 1] + dim(t));
+  });
+  function sliceNp(i, nps) {
+    return nps.slice(cumulativeDim[i], cumulativeDim[i+1]);
+  }
   return {
     name: 'Tuple(' + _.pluck(types, 'name').join(', ') + ')',
     sufStat: function(value) {
@@ -103,16 +110,22 @@ function Tuple(types) {
         return type.sufStat(value[i]);
       }));
     },
-    g: function(nps) {
-      return util.sum(types.map(function(type, i) { return type.g(nps[i]); }));
+    g: function(t, nps) {
+      return ad.numSum(t, types.map(function(type, i) {
+        return type.g(t, sliceNp(i, nps));
+      }));
     },
-    sample: function(s, k, a, nps) {
-      util.wpplMap(s, k, a, function(s2, k2, a2, type, i) {
-        type.sample(s2, k2, a2, nps[i]);
-      });
-    },
-    defaultNatParam: concat(_.pluck(types, 'defaultNatParam')),
-    featuresMask: concat(_.pluck(types, 'featuresMask'))
+    sample: fromMonad(function(nps) {
+      return mcurry(util.mapM, types, fromMonad(function(type, i) {
+        var typeNp = sliceNp(i, nps);
+        return mcurry(type.sample, typeNp);
+      }));
+    }),
+    defaultNatParam: util.concat(_.pluck(types, 'defaultNatParam')),
+    randNatParam: mbind(util.mapM, _.pluck(types, 'randNatParam'), fromMonad(function(x) { return x; }), function(res) {
+      return mreturn(util.concat(res));
+    }),
+    featuresMask: util.concat(_.pluck(types, 'featuresMask'))
   };
 }
 

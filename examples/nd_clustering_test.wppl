@@ -1,0 +1,28 @@
+
+
+var nclusters = 4;
+var dim = 3;
+
+var n = 50;
+
+
+testParamInference(function(randFunction) {
+  var pointType = Vector(dim, Double);
+  var getPoint = randFunction(Categorical(nclusters), pointType);
+  return [
+    function() {
+      return repeat(n, function() {
+        var cluster = randomInteger(nclusters);
+        return getPoint(cluster);
+      });
+    },
+    function(points) {
+      var clusters = map(function(point) {
+        var cluster = randomInteger(nclusters);
+        factorScore(getPoint, cluster, point);
+        return cluster;
+      }, points);
+      return clusters;
+    }
+  ];
+});

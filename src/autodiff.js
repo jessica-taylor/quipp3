@@ -16,7 +16,9 @@ var standardNumType = {
   sub: function(x, y) { return x-y; },
   mul: function(x, y) { return x*y; },
   div: function(x, y) { return x/y; },
-  log: function(x) { return Math.log(x); }
+  log: function(x) { return Math.log(x); },
+  exp: function(x) { return Math.exp(x); },
+  toNum: function(x) { return x; }
 };
 
 function numVecAdd(t, x, y) {
@@ -60,6 +62,27 @@ function numMatMulByVector(t, m, x) {
   for (var i = 0; i < m.length; ++i) {
     res.push(numDotProduct(t, m[i], x));
   }
+  return res;
+}
+
+function numSum(t, xs) {
+  var res = t.num(0);
+  xs.forEach(function(x) {
+    res = t.add(res, x);
+  });
+  return res;
+}
+
+function numLogSumExp(t, xs) {
+  var maximum = -Infinity;
+  xs.forEach(function(x) {
+    maximum = Math.max(maximum, t.toNum(x));
+  });
+  var totExp = t.num(0);
+  xs.forEach(function(x) {
+    totExp = t.add(totExp, t.exp(t.sub(x, maximum)));
+  });
+  var res = t.add(maximum, t.log(totExp));
   return res;
 }
 
@@ -116,6 +139,16 @@ function dualNumType(t, varVals) {
           numVecScale(t,
                       t.div(t.num(1), x.value),
                       x.grad));
+    },
+    exp: function(x) {
+      return new Dual(
+          t.exp(x.value),
+          numVecScale(t,
+                      t.exp(x.value),
+                      x.grad));
+    },
+    toNum: function(x) {
+      return t.toNum(x.value);
     }
   };
 }
@@ -148,11 +181,13 @@ function hessian2(t, f, x) {
 
 module.exports = {
   standardNumType: standardNumType,
+  numSum: numSum,
   numVecAdd: numVecAdd,
   numVecSub: numVecSub,
   numVecScale: numVecScale,
   numDotProduct: numDotProduct,
   numMatMulByVector: numMatMulByVector,
+  numLogSumExp: numLogSumExp,
   Dual: Dual,
   dualNumType: dualNumType,
   gradient: gradient,

@@ -126,13 +126,13 @@ var replicateM = fromMonad('replicateM', function(n, f) {
   });
 });
 
-var mapMlist = fromMonad('mapMlist', function(xs, f) {
+var mapMlist = fromMonad('mapMlist', function(xs, f, i) {
   assert(f != null);
   if (xs == null) {
     return mreturn(null);
   }
-  return mbind(f, xs[0], function(first) {
-    return mbind(mapMlist, xs[1], f, function(rest) {
+  return mbind(f, xs[0], i, function(first) {
+    return mbind(mapMlist, xs[1], f, i+1, function(rest) {
       return mreturn([first, rest]);
     });
   });
@@ -140,7 +140,7 @@ var mapMlist = fromMonad('mapMlist', function(xs, f) {
 
 var mapM = fromMonad('mapM', function(xs, f) {
   assert(typeof f == 'function');
-  return mbind(mapMlist, arrayToLinkedList(xs), f, function(res) {
+  return mbind(mapMlist, arrayToLinkedList(xs), f, 0, function(res) {
     return mreturn(linkedListToArray(res));
   });
 });
@@ -209,7 +209,7 @@ function wpplMap(s, k, a, f, xs) {
   function k2(s2, ys) {
     return k(s2, linkedListToArray(ys));
   }
-  return wpplMapLinkedList(s, k2, a, f, 0, xs);
+  return wpplMapToLinkedList(s, k2, a, f, 0, xs);
 }
 
 module.exports = {
