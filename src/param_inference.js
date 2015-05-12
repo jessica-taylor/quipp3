@@ -209,23 +209,31 @@ var testParamInference = fromMonad(function(fun) {
   return mbind(unknownParametersModel, fun, function(upmWrong) {
     return mbind(util.mapM, upmWrong.signatures, randParameters, function(origParams) {
       console.log('orig params', JSON.stringify(origParams));
-      return mbind(generateRandData, fun, origParams, function(randData) {
-        var inner = fromMonad(function(randFunction) {
-          return mbind(fun, randFunction, function(res) {
-            return mreturn(mcurry(res[1], randData));
-          });
-        });
-        return mbind(unknownParametersModel, inner, function(upm) {
-          return mbindMethod(upm, 'logPartition', origParams, function(origLp) {
-            console.log('orig lp', origLp);
-            var reducer = fromMonad(function(infParams, trace, rest) {
-              console.log('params', infParams);
-              return mbindMethod(upm, 'logPartition', infParams, function(lp) {
-                console.log('inf lp', lp);
-                return rest;
+      return mbind(generateRandData, fun, origParams, function(trainingData) {
+        return mbind(generateRandData, fun, origParams, function(testData) {
+
+          function innerSamplerForData(data) {
+            return fromMonad(function(randFunction) {
+              return mbind(fun, randFunction, function(res) {
+                return mreturn(mcurry(res[1], data));
               });
             });
-            return mcurryMethod(upm, 'inferParameters', reducer);
+          }
+
+          return mbind(unknownParametersModel, innerSamplerForData(trainingData), function(upmTrain) {
+            return mbind(unknownParametersModel, innerSamplerForData(trainingData), function(upmTest) {
+              return mbindMethod(upmTest, 'logPartition', origParams, function(origLp) {
+                console.log('orig lp', origLp);
+                var reducer = fromMonad(function(infParams, trace, rest) {
+                  console.log('params', infParams);
+                  return mbindMethod(upmTest, 'logPartition', infParams, function(lp) {
+                    console.log('inf lp', lp);
+                    return rest;
+                  });
+                });
+                return mcurryMethod(upmTrain, 'inferParameters', reducer);
+              });
+            });
           });
         });
       });
