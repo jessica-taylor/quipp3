@@ -93,15 +93,16 @@ UnknownParametersModel.prototype.randFunction = function(s0, k0, a0) {
     var lp = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
                                    getArgFeatures(self.signatures[i][0], args),
                                    self.signatures[i][1].sufStat(retVal));
-    // var lp0 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
-    //                                [[0]],
-    //                                self.signatures[i][1].sufStat(retVal));
-    // var lp1 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
-    //                                [[1]],
-    //                                self.signatures[i][1].sufStat(retVal));
+    var lp0 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
+                                   [[0]],
+                                   self.signatures[i][1].sufStat(retVal));
+    var lp1 = expfam.logProbability(ad.standardNumType, self.signatures[i][1], s._quippParams[i],
+                                   [[1]],
+                                   self.signatures[i][1].sufStat(retVal));
     s = _.clone(s);
     s._quippCallLog = _.clone(s._quippCallLog);
     s._quippCallLog[i] = [[args, retVal], s._quippCallLog[i]];
+    if (Math.random() < 0.00001) console.log('!lp', lp, lp0, lp1, retVal);
     return factor(s, k, a, lp);
   };
   return k0(s0, fn);
@@ -126,7 +127,7 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 };
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
-  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), 20, 5, function(dist) {
+  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), 5, 80, function(dist) {
     return mreturn(dist.normalizationConstant);
   });
 });
@@ -208,8 +209,11 @@ var generateRandData = fromMonad(function(fun, params) {
 var testParamInference = fromMonad(function(fun) {
   return mbind(unknownParametersModel, fun, function(upmWrong) {
     return mbind(util.mapM, upmWrong.signatures, randParameters, function(origParams) {
+      // TODO!
+      origParams = [{"base":[20,-0.5],"weights":[[10]]}]
       console.log('orig params', JSON.stringify(origParams));
       return mbind(generateRandData, fun, origParams, function(trainingData) {
+        console.log('training data', trainingData);
         return mbind(generateRandData, fun, origParams, function(testData) {
 
           function innerSamplerForData(data) {

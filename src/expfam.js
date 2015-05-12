@@ -60,7 +60,7 @@ var Double = {
   },
   sample: function(s, k, a, nps) {
     var variance = -1 / (2 * nps[1]);
-    var mean = nps[1] * variance;
+    var mean = nps[0] * variance;
     return global.sample(s, k, a, erp.gaussianERP, [mean, Math.sqrt(variance)]);
   },
   defaultNatParam: [0.0, -0.001],
