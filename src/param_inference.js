@@ -127,7 +127,7 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 };
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
-  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), 5, 80, function(dist) {
+  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), 50, 0, function(dist) {
     return mreturn(dist.normalizationConstant);
   });
 });
