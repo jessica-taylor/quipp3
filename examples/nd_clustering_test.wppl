@@ -1,7 +1,7 @@
 
 
-var nclusters = 2;
-var dim = 1;
+var nclusters = 4;
+var dim = 2;
 
 var n = 100;
 

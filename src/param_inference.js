@@ -49,16 +49,6 @@ function natParamWithArguments(argTypes, retType, params, argVals) {
   return expfam.getNatParam(ad.standardNumType, retType, params, getArgFeatures(argTypes, argVals));
 }
 
-function formatParams(sig, params) {
-  if (sig[1].name == 'Double' || sig[1].name == 'Tuple(Double)') {
-    var variance = 1 / (-2 * params.base[1]);
-    var baseMean = params.base[0] * variance;
-    return {stdev: Math.sqrt(variance), baseMean: baseMean, coeffs: params.weights[0].map(function(w) { return w * variance; })};
-  } else {
-    return params;
-  }
-}
-
 function trainParameters(signature, calls, params) {
   var argTypes = signature[0];
   var retType = signature[1];
@@ -139,14 +129,14 @@ UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
 UnknownParametersModel.prototype.formatParameters = function(paramsList) {
   var self = this;
   return paramsList.map(function(params, i) {
-    return formatParams(self.signatures[i], params);
+    return self.signatures[i][1].formatParams(params);
   });
 };
 
 UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params, trace) {
   var self = this;
+  // TODO: should this depend on something?
   var numSamps = 1000;
-  console.log('getting samples...');
   return mbind(mh.MH, self.getSamplerWithParameters(params), numSamps, trace, function(sampsDistrAndTrace) {
     console.log('got samples');
     var sampsDistr = sampsDistrAndTrace[0];
@@ -164,7 +154,6 @@ UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params,
     });
     var newParams = [];
     for (var j = 0; j < self.signatures.length; ++j) {
-      console.log('train');
       newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
     }
     for (var j = 0; j < 1; ++j) {

@@ -19,6 +19,8 @@ var mbind = util.mbind, mreturn = util.mreturn, mcurry = util.mcurry, fromMonad 
 // randNatParam(): [double]
 // defaultNatParam: [double]
 // featuresMask: [bool]
+// mle(samples, params): params
+// formatParams(params): json
 
 
 function dim(ef) {
@@ -72,7 +74,15 @@ var Double = {
       });
     });
   }),
-  featuresMask: [true, false]
+  featuresMask: [true, false],
+  mle: function(samples, natParam) {
+    return gaussianMle(samples);
+  },
+  formatParams: function(params) {
+    var variance = 1 / (-2 * params.base[1]);
+    var baseMean = params.base[0] * variance;
+    return {stdev: Math.sqrt(variance), baseMean: baseMean, coeffs: params.weights[0].map(function(w) { return w * variance; })};
+  }
 };
 
 function Categorical(n) {
@@ -95,17 +105,23 @@ function Categorical(n) {
     randNatParam: fromMonad(function() {
       return mcurry(util.replicateM, n-1, mcurry(global.sample, erp.gaussianERP, [0, 5]));
     }),
-    featuresMask: _.times(n-1, function() { return true; })
+    featuresMask: _.times(n-1, function() { return true; }),
+    formatParams: function(params) { return params; }
   };
 }
 
 function Tuple(types) {
   var cumulativeDim = [0];
+  var cumulativeFeaturesDim = [0];
   types.forEach(function(t) {
     cumulativeDim.push(cumulativeDim[cumulativeDim.length - 1] + dim(t));
+    cumulativeFeaturesDim.push(cumulativeFeaturesDim[cumulativeFeaturesDim.length - 1] + featuresDim(t));
   });
   function sliceNp(i, nps) {
     return nps.slice(cumulativeDim[i], cumulativeDim[i+1]);
+  }
+  function sliceFeatures(i, feats) {
+    return feats.slice(cumulativeFeaturesDim[i], cumulativeFeaturesDim[i+1]);
   }
   return {
     name: 'Tuple(' + _.pluck(types, 'name').join(', ') + ')',
@@ -129,7 +145,32 @@ function Tuple(types) {
     randNatParam: mbind(util.mapM, _.pluck(types, 'randNatParam'), fromMonad(function(x) { return x; }), function(res) {
       return mreturn(util.concat(res));
     }),
-    featuresMask: util.concat(_.pluck(types, 'featuresMask'))
+    featuresMask: util.concat(_.pluck(types, 'featuresMask')),
+    mle: function(samples, params) {
+      var subParams = types.map(function(type, i) {
+        var subSamples = samples.map(function(s) {
+          return [s[0], s[1], sliceNp(i, s[2])];
+        });
+        var subParams = {
+          base: sliceNp(i, params.base),
+          weights: sliceFeatures(i, params.weights)
+        };
+        return mle(type, subSamples, subParams);
+      });
+      return {
+        base: util.concat(_.pluck(subParams, 'base')),
+        weights: util.concat(_.pluck(subParams, 'weights'))
+      };
+    },
+    formatParams: function(params) {
+      return types.map(function(type, i) {
+        var subParams = {
+          base: sliceNp(i, params.base),
+          weights: sliceFeatures(i, params.weights)
+        };
+        return type.formatParams(subParams);
+      });
+    }
   };
 }
 
@@ -231,8 +272,8 @@ function gaussianMle(samples) {
 }
 
 function mle(ef, samples, params) {
-  if (ef.name == 'Double' || ef.name == 'Tuple(Double)') {
-    return gaussianMle(samples);
+  if (ef.mle) {
+    return ef.mle(samples, params);
   }
   samples = groupSamplesByFeatures(samples);
   var score = paramsScoreFunction(ef, samples);
