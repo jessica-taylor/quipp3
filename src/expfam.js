@@ -196,7 +196,7 @@ function gaussianMle(samples) {
   //     resid' = max 0.0001 resid
   // in repeat ([head beta / resid', -1 / (2 * resid')], [map (/ resid') (tail beta)])
   var nxs = samples[0][1].length;
-  var weights = opt.diag(samples.map(function(s) { return s[0]; }));
+  var weightsDiag = samples.map(function(s) { return s[0]; });
   var xss = samples.map(function(samp) {
     return [1].concat(samp[1]);
   });
@@ -204,8 +204,8 @@ function gaussianMle(samples) {
     return samp[2][0];
   });
   // TODO: avoid creating weights matrix
-  var A = opt.matMul(opt.transpose(xss), opt.matMul(weights, xss));
-  var b = opt.matMulByVector(opt.transpose(xss), opt.matMulByVector(weights, ys));
+  var A = opt.matMul(opt.transpose(xss), opt.elemMatProduct(weightsDiag, xss));
+  var b = opt.matMulByVector(opt.transpose(xss), opt.elemProduct(weightsDiag, ys));
   var beta = opt.linSolve(A, b);
   // var beta = opt.linSolve(
   //     opt.matMul(opt.transpose(xss), opt.matMul(weights, xss)),
@@ -231,7 +231,7 @@ function gaussianMle(samples) {
 }
 
 function mle(ef, samples, params) {
-  if (ef.name == 'Double') {
+  if (ef.name == 'Double' || ef.name == 'Tuple(Double)') {
     return gaussianMle(samples);
   }
   samples = groupSamplesByFeatures(samples);

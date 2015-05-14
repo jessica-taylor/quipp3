@@ -34,7 +34,7 @@ var randParameters = fromMonad('randParameters', function(signature) {
   return mbind(retType.randNatParam, function(base) {
     assert(global.sample);
     return mbind(util.replicateM, expfam.featuresDim(retType),
-                 mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5])),
+                 mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 500])),
                  function(weights) {
                    return mreturn({base: base, weights: weights});
                  });
@@ -47,6 +47,16 @@ function getArgFeatures(argTypes, argVals) {
 
 function natParamWithArguments(argTypes, retType, params, argVals) {
   return expfam.getNatParam(ad.standardNumType, retType, params, getArgFeatures(argTypes, argVals));
+}
+
+function formatParams(sig, params) {
+  if (sig[1].name == 'Double' || sig[1].name == 'Tuple(Double)') {
+    var variance = 1 / (-2 * params.base[1]);
+    var baseMean = params.base[0] * variance;
+    return {stdev: Math.sqrt(variance), baseMean: baseMean, coeffs: params.weights[0].map(function(w) { return w * variance; })};
+  } else {
+    return params;
+  }
 }
 
 function trainParameters(signature, calls, params) {
@@ -126,10 +136,19 @@ UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
   });
 });
 
+UnknownParametersModel.prototype.formatParameters = function(paramsList) {
+  var self = this;
+  return paramsList.map(function(params, i) {
+    return formatParams(self.signatures[i], params);
+  });
+};
+
 UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params, trace) {
   var self = this;
-  var numSamps = 100;
+  var numSamps = 1000;
+  console.log('getting samples...');
   return mbind(mh.MH, self.getSamplerWithParameters(params), numSamps, trace, function(sampsDistrAndTrace) {
+    console.log('got samples');
     var sampsDistr = sampsDistrAndTrace[0];
     var newTrace = sampsDistrAndTrace[1];
     var samps = sampsDistr.support();
@@ -145,13 +164,14 @@ UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params,
     });
     var newParams = [];
     for (var j = 0; j < self.signatures.length; ++j) {
+      console.log('train');
       newParams.push(trainParameters(self.signatures[j], combinedCallLog[j], params[j]));
     }
-    // for (var j = 0; j < 10; ++j) {
-    //   var samp = sampsDistr.sample([]);
-    //   console.log(samp[1]);
-    // }
-    console.log(JSON.stringify(newParams));
+    for (var j = 0; j < 1; ++j) {
+      var samp = sampsDistr.sample([]);
+      // console.log(samp[1]);
+    }
+    // console.log(JSON.stringify(newParams));
     return mreturn([newParams, newTrace]);
   });
 });
@@ -207,7 +227,7 @@ var testParamInference = fromMonad(function(fun) {
     return mbind(util.mapM, upmWrong.signatures, randParameters, function(origParams) {
       // TODO!
       // origParams = [{"base":[20,-0.5],"weights":[[10]]}]
-      console.log('orig params', JSON.stringify(origParams));
+      console.log('orig params', JSON.stringify(upmWrong.formatParameters(origParams)));
       return mbind(generateRandData, fun, origParams, function(trainingData) {
         console.log('training data', trainingData);
         return mbind(generateRandData, fun, origParams, function(testData) {
@@ -225,7 +245,7 @@ var testParamInference = fromMonad(function(fun) {
               return mbindMethod(upmTest, 'logPartition', origParams, function(origLp) {
                 console.log('orig lp', origLp);
                 var reducer = fromMonad(function(infParams, trace, rest) {
-                  console.log('params', JSON.stringify(infParams));
+                  console.log('params', JSON.stringify(upmWrong.formatParameters(infParams)));
                   return mbindMethod(upmTest, 'logPartition', infParams, function(lp) {
                     console.log('inf lp', lp);
                     return rest;

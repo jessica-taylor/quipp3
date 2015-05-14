@@ -1,9 +1,9 @@
 
 
-var nclusters = 3;
-var dim = 2;
+var nclusters = 2;
+var dim = 1;
 
-var n = 50;
+var n = 100;
 
 
 testParamInference(function(randFunction) {

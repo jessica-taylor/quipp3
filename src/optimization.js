@@ -12,6 +12,17 @@ function diag(xs) {
   });
 }
 
+function elemProduct(xs, ys) {
+  assert.equal(xs.length, ys.length);
+  return xs.map(function(x, i) {
+    return x * ys[i];
+  });
+}
+
+function elemMatProduct(xs, ys) {
+  return ys.map(function(row, i) { return vecScale(xs[i], row); });
+}
+
 function zeros(n) {
   return _.times(n, function() { return 0; });
 }
@@ -214,6 +225,8 @@ function newtonMethod(f, gradf, hessf, x) {
 
 module.exports = {
   zeros: zeros,
+  elemProduct: elemProduct,
+  elemMatProduct: elemMatProduct,
   vecAdd: vecAdd,
   vecScale: vecScale,
   linSolve: linSolve,

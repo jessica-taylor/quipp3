@@ -23,6 +23,8 @@ module.exports = function(env) {
     return undefined;
   }
 
+  var totDelta = [0, 0, 0];
+
   function acceptProb(trace, oldTrace, regenFrom, currScore, oldScore) {
     if ((oldTrace === undefined) || oldScore === -Infinity) {
       return 1;
@@ -36,7 +38,14 @@ module.exports = function(env) {
       var nc = findChoice(trace, s.name);
       bw += (!nc || !nc.reused) ? s.choiceScore : 0;
     });
+    // TODO!
     var p = Math.exp(currScore - oldScore + bw - fw);
+    // if (p > 1) console.log('flip!', p, currScore - oldScore, currScore);
+    // if (currScore != oldScore) console.log('!', p, currScore - oldScore, Math.min(p, 1) * (currScore - oldScore));
+    totDelta[0] += Math.min(p, 1) * (currScore - oldScore);
+    if (currScore > oldScore) totDelta[1]++;
+    if (currScore < oldScore) totDelta[2]++;
+    // console.log('currScore', currScore, 'oldScore', oldScore, 'p', p);
     assert.ok(!isNaN(p));
     var acceptance = Math.min(1, p);
     return acceptance;
@@ -45,7 +54,9 @@ module.exports = function(env) {
   function MH(s, k, a, wpplFn, numIterations, startTrace) {
 
     this.trace = [];
-    this.oldTrace = startTrace || undefined;
+    this.oldTrace = undefined;
+    this.startTrace = startTrace || undefined;
+
     this.currScore = 0;
     this.oldScore = -Infinity;
     this.oldVal = undefined;
@@ -67,13 +78,59 @@ module.exports = function(env) {
   }
 
   MH.prototype.run = function() {
+    totDelta = [0, 0, 0];
     var self = this;
-    return this.wpplFn(this.s, env.exit, this.a);
+    if (self.startTrace) {
+      var k = function(s2, recomputedStartTraceAndScore) {
+        self.oldTrace = recomputedStartTraceAndScore[0];
+        // console.log('startTrace', _.pluck(self.startTrace, 'choiceScore'));
+        // console.log('newTrace', _.pluck(self.oldTrace, 'choiceScore'));
+        self.oldScore = recomputedStartTraceAndScore[1];
+        self.startTrace = undefined;
+        return self.wpplFn(self.s, env.exit, self.a);
+      };
+      return self.recomputeTrace(self.s, k, self.a, self.startTrace);
+    } else {
+      return self.wpplFn(self.s, env.exit, self.a);
+    }
   };
 
   MH.prototype.factor = function(s, k, a, score) {
     this.currScore += score;
     return k(s);
+  };
+
+  // Recomputes score and choiceScore in a trace.
+  MH.prototype.recomputeTrace = function(s0, k0, a0, origTrace) {
+    var oldCoro = env.coroutine;
+    var newTrace = [];
+    var currScore = 0;
+    env.coroutine = {
+      sample: function(s, cont, name, erp, params, forceSample) {
+        assert(!forceSample);
+        var prev = findChoice(origTrace, name);
+        assert(prev);
+        var val = prev.val;
+        var choiceScore = erp.score(params, val);
+        // TODO score
+        newTrace.push({
+          k: cont, name: name, erp: erp, params: params,
+          score: currScore, choiceScore: choiceScore,
+          val: val, reused: true, store: _.clone(s)
+        });
+        currScore += choiceScore;
+        return cont(s, val);
+      },
+      exit: function(s, val) {
+        env.coroutine = oldCoro;
+        return k0(s0, [newTrace, currScore]);
+      },
+      factor: function(s, k, a, score) {
+        currScore += score;
+        return k(s);
+      }
+    };
+    return this.wpplFn(this.s, env.exit, this.a);
   };
 
   MH.prototype.sample = function(s, cont, name, erp, params, forceSample) {
@@ -82,6 +139,9 @@ module.exports = function(env) {
     var reuse = !(prev === undefined || forceSample);
     var val = reuse ? prev.val : erp.sample(params);
     var choiceScore = erp.score(params, val);
+    if (forceSample) {
+      // console.log('prevVal', prev.val, 'val', val);
+    }
     this.trace.push({
       k: cont, name: name, erp: erp, params: params,
       score: this.currScore, choiceScore: choiceScore,
@@ -123,6 +183,7 @@ module.exports = function(env) {
 
       return this.sample(_.clone(regen.store), regen.k, regen.name, regen.erp, regen.params, true);
     } else {
+      console.log('d', totDelta);
       var dist = erp.makeMarginalERP(this.returnHist);
 
       // Reinstate previous coroutine:
