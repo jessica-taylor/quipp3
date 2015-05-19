@@ -38,14 +38,15 @@ module.exports = function(env) {
       var nc = findChoice(trace, s.name);
       bw += (!nc || !nc.reused) ? s.choiceScore : 0;
     });
-    // TODO!
     var p = Math.exp(currScore - oldScore + bw - fw);
+    var print = false; // Math.random() < 0.005;
+    if (print) if (currScore < oldScore) console.log('%', currScore - oldScore, p, bw, fw);
     // if (p > 1) console.log('flip!', p, currScore - oldScore, currScore);
     // if (currScore != oldScore) console.log('!', p, currScore - oldScore, Math.min(p, 1) * (currScore - oldScore));
     totDelta[0] += Math.min(p, 1) * (currScore - oldScore);
     if (currScore > oldScore) totDelta[1]++;
     if (currScore < oldScore) totDelta[2]++;
-    // console.log('currScore', currScore, 'oldScore', oldScore, 'p', p);
+    if (print) console.log(currScore);
     assert.ok(!isNaN(p));
     var acceptance = Math.min(1, p);
     return acceptance;
@@ -83,8 +84,6 @@ module.exports = function(env) {
     if (self.startTrace) {
       var k = function(s2, recomputedStartTraceAndScore) {
         self.oldTrace = recomputedStartTraceAndScore[0];
-        // console.log('startTrace', _.pluck(self.startTrace, 'choiceScore'));
-        // console.log('newTrace', _.pluck(self.oldTrace, 'choiceScore'));
         self.oldScore = recomputedStartTraceAndScore[1];
         self.startTrace = undefined;
         return self.wpplFn(self.s, env.exit, self.a);
@@ -123,6 +122,7 @@ module.exports = function(env) {
       },
       exit: function(s, val) {
         env.coroutine = oldCoro;
+        console.log('recompute score', currScore);
         return k0(s0, [newTrace, currScore]);
       },
       factor: function(s, k, a, score) {
@@ -139,9 +139,6 @@ module.exports = function(env) {
     var reuse = !(prev === undefined || forceSample);
     var val = reuse ? prev.val : erp.sample(params);
     var choiceScore = erp.score(params, val);
-    if (forceSample) {
-      // console.log('prevVal', prev.val, 'val', val);
-    }
     this.trace.push({
       k: cont, name: name, erp: erp, params: params,
       score: this.currScore, choiceScore: choiceScore,
@@ -183,7 +180,7 @@ module.exports = function(env) {
 
       return this.sample(_.clone(regen.store), regen.k, regen.name, regen.erp, regen.params, true);
     } else {
-      console.log('d', totDelta);
+      console.log('d', totDelta, this.currScore);
       var dist = erp.makeMarginalERP(this.returnHist);
 
       // Reinstate previous coroutine:

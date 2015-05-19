@@ -1,7 +1,7 @@
 
 
-var nfactors = 2;
-var dim = 5;
+var nfactors = 1;
+var dim = 3;
 
 var n = 50;
 

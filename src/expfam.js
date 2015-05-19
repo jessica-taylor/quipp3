@@ -98,7 +98,7 @@ function Categorical(n) {
     },
     sample: function(s, k, a, nps) {
       var lse = webpplUtil.logsumexp([0].concat(nps));
-      var probs = nps.map(function(np) { return Math.exp(np - lse); });
+      var probs = ([0].concat(nps)).map(function(np) { return Math.exp(np - lse); });
       return global.sample(s, k, a, erp.discreteERP, [probs]);
     },
     defaultNatParam: _.times(n-1, function() { return 0.0; }),
@@ -273,7 +273,10 @@ function gaussianMle(samples) {
 
 function mle(ef, samples, params) {
   if (ef.mle) {
-    return ef.mle(samples, params);
+    var result = ef.mle(samples, params);
+    // console.log('score prev', paramsScoreFunction(ef, samples)(ad.standardNumType, paramsToVector(params)));
+    // console.log('score new', paramsScoreFunction(ef, samples)(ad.standardNumType, paramsToVector(result)));
+    return result;
   }
   samples = groupSamplesByFeatures(samples);
   var score = paramsScoreFunction(ef, samples);
@@ -304,6 +307,7 @@ module.exports = {
   Tuple: Tuple,
   logProbability: logProbability,
   getNatParam: getNatParam,
-  mle: mle
+  mle: mle,
+  paramsScoreFunction: paramsScoreFunction
 };
 

@@ -18,7 +18,7 @@ testParamInference(function(randFunction) {
     } else {
       var first = f(start, i);
       var rest = mapStatesFrom(f, transFun(start), i+1);
-      return [first, rest];
+      return [first].concat(rest);
     }
   };
   var mapStates = function(f) {

@@ -34,7 +34,7 @@ var randParameters = fromMonad('randParameters', function(signature) {
   return mbind(retType.randNatParam, function(base) {
     assert(global.sample);
     return mbind(util.replicateM, expfam.featuresDim(retType),
-                 mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 500])),
+                 mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5])),
                  function(weights) {
                    return mreturn({base: base, weights: weights});
                  });
@@ -121,7 +121,8 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 };
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
-  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), 50, 0, function(dist) {
+  var nparticles = 20;
+  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), nparticles, 0, function(dist) {
     return mreturn(dist.normalizationConstant);
   });
 });
@@ -158,7 +159,7 @@ UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params,
     }
     for (var j = 0; j < 1; ++j) {
       var samp = sampsDistr.sample([]);
-      // console.log(samp[1]);
+      // console.log(JSON.stringify(samp[1]));
     }
     // console.log(JSON.stringify(newParams));
     return mreturn([newParams, newTrace]);
@@ -220,6 +221,7 @@ var testParamInference = fromMonad(function(fun) {
       return mbind(generateRandData, fun, origParams, function(trainingData) {
         console.log('training data', trainingData);
         return mbind(generateRandData, fun, origParams, function(testData) {
+          console.log('test data', testData);
 
           function innerSamplerForData(data) {
             return fromMonad(function(randFunction) {
@@ -230,7 +232,7 @@ var testParamInference = fromMonad(function(fun) {
           }
 
           return mbind(unknownParametersModel, innerSamplerForData(trainingData), function(upmTrain) {
-            return mbind(unknownParametersModel, innerSamplerForData(trainingData), function(upmTest) {
+            return mbind(unknownParametersModel, innerSamplerForData(testData), function(upmTest) {
               return mbindMethod(upmTest, 'logPartition', origParams, function(origLp) {
                 console.log('orig lp', origLp);
                 var reducer = fromMonad(function(infParams, trace, rest) {

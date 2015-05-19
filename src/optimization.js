@@ -176,7 +176,6 @@ function gradLineSearch(f, gradf, x, dir) {
   var searcher = new LogSearcher();
   for (var iter = 0; iter < 20; iter++) {
     var t = searcher.getT();
-    // console.log('t', t);
 
     if (Number.isNaN(f(vecAdd(x, vecScale(t, dir)))) || gradfdir(t) <= 0) {
       searcher.isBelow(t);
