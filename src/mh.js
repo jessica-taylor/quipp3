@@ -122,7 +122,6 @@ module.exports = function(env) {
       },
       exit: function(s, val) {
         env.coroutine = oldCoro;
-        console.log('recompute score', currScore);
         return k0(s0, [newTrace, currScore]);
       },
       factor: function(s, k, a, score) {

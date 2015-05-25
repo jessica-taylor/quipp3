@@ -37,6 +37,20 @@ function catchStack(x) {
   }
 }
 
+function getAddress(s, k, a) {
+  return k(s, a);
+}
+
+function trampoline(f) {
+  return function(s, k, a) {
+    return function() {
+      return f(s, k, a)();
+    };
+  };
+}
+
+// 18008723377
+// 1800 traders
 
 function mbind(x) {
   assert(typeof x == 'function', x);
@@ -44,9 +58,9 @@ function mbind(x) {
   var extraArgs = args.slice(1, args.length - 1);
   var f = args[args.length - 1];
   assert(typeof f == 'function', f);
-  return function(s, k, a) {
+  return trampoline(function(s, k, a) {
     var self = this;
-    return catchStack(function() { return x.apply(self, [s, k2, a].concat(extraArgs)); });
+    return trampoline(catchStack(function() { return x.apply(self, [s, k2, a].concat(extraArgs)); }));
     function k2(s2, res) {
       return catchStack(function() {
         var nextf = f(res);
@@ -54,7 +68,7 @@ function mbind(x) {
         return nextf(s2, k, a);
       });
     }
-  }
+  });
 }
 
 function mbindMethod(x, method) {
@@ -85,21 +99,20 @@ function fromMonad(msg, f) {
   assert(typeof f == 'function');
   return function(s, k, a) {
     var args = [].slice.call(arguments, 3);
-    if (msg == null) {
-      return f.apply(this, args)(s, k, a);
-    } else {
-      return withStackMessage(msg, f.apply(this, args))(s, k, a);
-    }
+    // return function() {
+      if (msg == null) {
+        return f.apply(this, args)(s, k, a);
+      } else {
+        return withStackMessage(msg, f.apply(this, args))(s, k, a);
+      }
+    // };
   };
 }
 
 function mcurry(f) {
   assert(typeof f == 'function');
   var args = [].slice.call(arguments, 1);
-  return function(s, k, a) {
-    var extraArgs = [].slice.call(arguments, 3);
-    return f.apply(this, [s, k, a].concat(args).concat(extraArgs));
-  };
+  return mbind.apply(this, [f].concat(args).concat([mreturn]));
 }
 
 function mcurryMethod() {
@@ -213,6 +226,7 @@ function wpplMap(s, k, a, f, xs) {
 }
 
 module.exports = {
+  getAddress: getAddress,
   mbind: mbind,
   mbindMethod: mbindMethod,
   mreturn: mreturn,

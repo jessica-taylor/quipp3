@@ -19,6 +19,7 @@ module.exports = {
   factorScore: factorScore,
   inferParameters: param_inference.inferParameters,
   testParamInference: param_inference.testParamInference,
+  testParamInference2: param_inference.testParamInference2,
   Double: expfam.Double,
   Tuple: util.makeWpplFunction(expfam.Tuple),
   Vector: Vector,

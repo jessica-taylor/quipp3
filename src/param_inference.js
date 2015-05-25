@@ -6,23 +6,60 @@ var expfam = require('./expfam');
 var util = require('./util');
 
 var mh = require('./mh')(webpplEnv);
+var pfais = require('./pfais')(webpplEnv);
 
 var mbind = util.mbind, mreturn = util.mreturn, mbindMethod = util.mbindMethod, fromMonad = util.fromMonad, mcurry = util.mcurry, mcurryMethod = util.mcurryMethod;
 
-function defaultParameters(signature) {
-  var argTypes = signature[0];
-  var retType = signature[1];
-  var nfeatures = 0;
-  argTypes.forEach(function(at) {
-    nfeatures += expfam.featuresDim(at);
-  });
-  return {
-    base: retType.defaultNatParam,
-    weights: _.times(expfam.featuresDim(retType), function() {
-      return _.times(nfeatures, function() { return Math.random() * 10 - 5; });
-    })
-  };
+function DataSampler() {
+  this.valueMap = {};
 }
+
+DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
+  var self = this;
+  var args = [].slice.call(arguments, 2, arguments.length);
+  if (typeof addr == 'function') {
+    return mbind(util.getAddress, function(a) {
+      return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
+    });
+  }
+  return mbind.apply(null, [rf].concat(args).concat([function(samp) {
+    self.valueMap[addr] = samp;
+    return mreturn(samp);
+  }]));
+});
+
+var sampleData = fromMonad(function(s) {
+  var sampler = new DataSampler();
+  global.observe = sampler.sampleOrCondition.bind(sampler);
+  return mbind(s, function(res) {
+    return mreturn(sampler.valueMap);
+  });
+});
+
+function DataConditioner(valueMap) {
+  this.valueMap = valueMap;
+}
+
+DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
+  var self = this;
+  var args = [].slice.call(arguments, 2, arguments.length);
+  if (typeof addr == 'function') {
+    return mbind(util.getAddress, function(a) {
+      return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
+    });
+  }
+  assert(addr in self.valueMap);
+  var ret = self.valueMap[addr];
+  return mcurry.apply(null, [rf.factorScore].concat(args).concat([ret]));
+});
+
+var conditionData = fromMonad(function(s, valueMap) {
+  var conditioner = new DataConditioner(valueMap);
+  global.observe = conditioner.sampleOrCondition.bind(conditioner);
+  return mbind(s, function(res) {
+    return mreturn(null);
+  });
+});
 
 var randParameters = fromMonad('randParameters', function(signature) {
   var argTypes = signature[0];
@@ -121,9 +158,13 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 };
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
-  var nparticles = 20;
-  return mbind(global.ParticleFilterRejuv, this.getSamplerWithParameters(params), nparticles, 0, function(dist) {
-    return mreturn(dist.normalizationConstant);
+  var self = this;
+  var nparticles = 50;
+  return mbind(global.ParticleFilterRejuv, self.getSamplerWithParameters(params), nparticles, 0, function(dist) {
+    //return mbind(pfais.ParticleFilter, self.getSamplerWithParameters(params), nparticles, 5, function(dist2) {
+      // console.log(dist.normalizationConstant, dist2.normalizationConstant);
+      return mreturn(dist.normalizationConstant);
+    // });
   });
 });
 
@@ -137,7 +178,7 @@ UnknownParametersModel.prototype.formatParameters = function(paramsList) {
 UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params, trace) {
   var self = this;
   // TODO: should this depend on something?
-  var numSamps = 1000;
+  var numSamps = 2000;
   return mbind(mh.MH, self.getSamplerWithParameters(params), numSamps, trace, function(sampsDistrAndTrace) {
     console.log('got samples');
     var sampsDistr = sampsDistrAndTrace[0];
@@ -168,7 +209,7 @@ UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params,
 
 UnknownParametersModel.prototype.inferParameters = fromMonad(function(reducer) {
   var self = this;
-  var initParams = this.signatures.map(defaultParameters);
+  var initParams = this.signatures.map(expfam.defaultParameters);
   var trainFrom = fromMonad(function(i, params, trace) {
     var rest = mbindMethod(self, 'stepParamsAndTrace', params, trace, function(paramsAndTrace) {
       return mcurry(trainFrom, i+1, paramsAndTrace[0], paramsAndTrace[1]);
@@ -198,13 +239,18 @@ var inferParameters = fromMonad(function(fun) {
 });
 
 var generateRandData = fromMonad(function(fun, params) {
+  console.log('generateRandData');
   var inner = fromMonad(function(rf) {
+    console.log('inner1');
     return mbind(fun, rf, function(res) {
+      console.log('inner2', res[0]);
       return mreturn(res[0]);
     });
   });
   return mbind(unknownParametersModel, inner, function(upm) {
+    console.log('upm', upm);
     return mbindMethod(upm, 'randSample', params, function(cld) {
+      console.log('got result');
       return mreturn(cld[1]);
     });
   });
@@ -215,9 +261,10 @@ var testParamInference = fromMonad(function(fun) {
   return mbind(unknownParametersModel, fun, function(upmWrong) {
     console.log('upmwrong', upmWrong.signatures);
     return mbind(util.mapM, upmWrong.signatures, randParameters, function(origParams) {
+      // origParams = [{"base":[-0.2525198567891542,-0.03591206849102666,-18.248036847588864,-2.1923064679508037,-0.11286868833712595,-0.008005218772590184],"weights":[[-4.024192574829005],[7.231811766517399],[2.829228707582246]]}]
       // TODO!
-      // origParams = [{"base":[20,-0.5],"weights":[[10]]}]
       console.log('orig params', JSON.stringify(upmWrong.formatParameters(origParams)));
+      console.log('also', JSON.stringify(origParams));
       return mbind(generateRandData, fun, origParams, function(trainingData) {
         console.log('training data', trainingData);
         return mbind(generateRandData, fun, origParams, function(testData) {
@@ -232,7 +279,9 @@ var testParamInference = fromMonad(function(fun) {
           }
 
           return mbind(unknownParametersModel, innerSamplerForData(trainingData), function(upmTrain) {
+            console.log('upmTrain');
             return mbind(unknownParametersModel, innerSamplerForData(testData), function(upmTest) {
+              console.log('upmTest');
               return mbindMethod(upmTest, 'logPartition', origParams, function(origLp) {
                 console.log('orig lp', origLp);
                 var reducer = fromMonad(function(infParams, trace, rest) {
@@ -252,9 +301,22 @@ var testParamInference = fromMonad(function(fun) {
   });
 });
 
+var testParamInference2 = fromMonad(function(fun) {
+  var fun2 = fromMonad(function(randFunction) {
+    return mbind(fun, randFunction, function(innerSampler) {
+      var gendata = mcurry(sampleData, innerSampler);
+      var condata = fromMonad(function(data) {
+        return mcurry(conditionData, innerSampler, data);
+      });
+      return mreturn([gendata, condata]);
+    });
+  });
+  return mcurry(testParamInference, fun2);
+});
 
 
 module.exports = {
   inferParameters: inferParameters,
-  testParamInference: testParamInference
+  testParamInference: testParamInference,
+  testParamInference2: testParamInference2
 };

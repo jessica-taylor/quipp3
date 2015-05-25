@@ -86,6 +86,7 @@ var Double = {
 };
 
 function Categorical(n) {
+  assert(typeof n == 'number');
   return {
     name: 'Categorical(' + n + ')',
     sufStat: function(value) {
@@ -244,7 +245,8 @@ function gaussianMle(samples) {
   var ys = samples.map(function(samp) {
     return samp[2][0];
   });
-  // TODO: avoid creating weights matrix
+  // console.log('xss', xss);
+  // console.log('ys', ys);
   var A = opt.matMul(opt.transpose(xss), opt.elemMatProduct(weightsDiag, xss));
   var b = opt.matMulByVector(opt.transpose(xss), opt.elemProduct(weightsDiag, ys));
   var beta = opt.linSolve(A, b);
@@ -298,6 +300,32 @@ function mle(ef, samples, params) {
       paramsToVector(params)));
 }
 
+function defaultParameters(signature) {
+  var argTypes = signature[0];
+  var retType = signature[1];
+  var nfeatures = 0;
+  argTypes.forEach(function(at) {
+    nfeatures += featuresDim(at);
+  });
+  return {
+    base: retType.defaultNatParam,
+    weights: _.times(featuresDim(retType), function() {
+      return _.times(nfeatures, function() { return Math.random() * 20 - 10; });
+    })
+  };
+}
+
+var simpleSample = fromMonad(function(expfam, nps) {
+  var oldSample = global.sample;
+  global.sample = fromMonad(function(erp, params) {
+    return mreturn(erp.sample(params));
+  });
+  return mbind(expfam.sample, nps, function(res) {
+    global.sample = oldSample;
+    return mreturn(res);
+  });
+});
+
 module.exports = {
   dim: dim,
   featuresDim: featuresDim,
@@ -308,6 +336,8 @@ module.exports = {
   logProbability: logProbability,
   getNatParam: getNatParam,
   mle: mle,
-  paramsScoreFunction: paramsScoreFunction
+  paramsScoreFunction: paramsScoreFunction,
+  defaultParameters: defaultParameters,
+  simpleSample: simpleSample
 };
 

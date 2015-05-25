@@ -1,10 +1,10 @@
 
-var nstates = 5;
-var nobs = 7;
+var nstates = 2;
+var nobs = 3;
 
-var chainLength = 5;
+var chainLength = 8;
 
-var n = 20;
+var n = 30;
 
 
 testParamInference(function(randFunction) {
