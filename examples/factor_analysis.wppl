@@ -3,8 +3,8 @@ var repeat = function(n, fn) {
   return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
 };
 
-var nfactors = 1;
-var dim = 2;
+var nfactors = 2;
+var dim = 4;
 
 var n = 50;
 

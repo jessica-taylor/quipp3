@@ -12,7 +12,37 @@ var webpplUtil = require('webppl/src/util');
 var erp = require('webppl/src/erp');
 var expfam = require('./expfam');
 var util = require('./util');
+var optimization = require('./optimization'); 
 var mbind = util.mbind, mreturn = util.mreturn, mcurry = util.mcurry, fromMonad = util.fromMonad;
+
+function objective(t, ef, samps, np) {
+  var unnormalizedLps = samps.map(function(samp) {
+    return ad.numDotProduct(t, np, samp[1].map(t.num));
+  });
+  var estG = ad.numLogSumExp(t, unnormalizedLps);
+  estG = t.sub(estG, t.num(Math.log(samps.length)));
+  var actualG = ef.g(t, np);
+  var totLp = t.num(0);
+  unnormalizedLps.forEach(function(lp, i) {
+    var thisLp = t.sub(t.sub(lp, estG), t.mul(t.num(0.01), actualG));
+    totLp = t.add(totLp, t.mul(t.num(samps[i][0]), thisLp));
+  });
+  return totLp;
+}
+
+function optNp(ef, samps, origNp) {
+  function scoreFn(t, np) {
+    return objective(t, ef, samps, np);
+  }
+  return optimization.gradientDescent(
+      function(np) {
+        return scoreFn(ad.standardNumType, np);
+      },
+      function(np) {
+        return ad.gradient(ad.standardNumType, scoreFn, np).grad;
+      },
+      origNp);
+}
 
 
 module.exports = function(env) {
@@ -28,13 +58,15 @@ module.exports = function(env) {
 
   function erpRetType(erpp, params) {
     if (erpp == erp.gaussianERP) {
-      return expfam.Double;
+      var mean = params[0];
+      var variance = params[1];
+      return [expfam.Double, [mean / variance, 1 / (2 * variance)]];
     } else if (erpp == erp.bernoulliERP) {
-      return expfam.Categorical(2);
+      return [expfam.Categorical(2), null];
     } else if (erpp == erp.randomIntegerERP) {
-      return expfam.Categorical(params[0]);
+      return [expfam.Categorical(params[0]), _.times(params[0] - 1, function() { return 0; })];
     } else if (erpp == erp.discreteERP) {
-      return expfam.Categorical(params[0].length);
+      return [expfam.Categorical(params[0].length), null];
     }
     console.log('argh :/', erpp)
     return null;
@@ -86,10 +118,10 @@ module.exports = function(env) {
     var self = this;
     if (this.sampleIndex >= this.aisParams.length) {
       if (this.sampleIndex >= this.aisRetTypes.length) {
-        this.aisRetTypes.push(erpRetType(erp, params));
+        this.aisRetTypes.push(erpRetType(erp, params)[0]);
         this.aisTrainingSamples.push([]);
       }
-      assert.equal(this.aisRetTypes[this.sampleIndex].name, erpRetType(erp, params).name);
+      assert.equal(this.aisRetTypes[this.sampleIndex].name, erpRetType(erp, params)[0].name);
       // TODO make sure type consistent?
       var samp = erp.sample(params);
       this.aisTrainingSamples[this.sampleIndex].push([this.particleIndex, samp]);
@@ -97,8 +129,13 @@ module.exports = function(env) {
       return mreturn(samp);
     } else {
       var retType = this.aisRetTypes[this.sampleIndex];
-      assert.equal(retType.name, erpRetType(erp, params).name);
+      assert.equal(retType.name, erpRetType(erp, params)[0].name);
+      var origParams = erpRetType(erp, params)[1];
       var qParams = this.aisParams[this.sampleIndex];
+      qParams = {
+        base: qParams.base.map(function(q, i) { return 0.5 * q + 0.5 * origParams[i]; }),
+        weights: qParams.weights
+      }
       return mbind(expfam.simpleSample, retType, qParams.base, function(samp) {
         self.aisTrainingSamples[self.sampleIndex].push([self.particleIndex, samp]);
         ++self.sampleIndex;
@@ -158,10 +195,13 @@ module.exports = function(env) {
         var whichParticle = s[0];
         var val = s[1];
         var weight = self.particles.length * Math.exp(self.particles[whichParticle].weight - W);
-        return [weight, [], retType.sufStat(val)];
+        return [weight, retType.sufStat(val)];
       });
-      console.log('samps', samps);
-      var newParams = expfam.mle(retType, samps, oldParams);
+      // var newParams = expfam.mle(retType, samps, oldParams);
+      var newParams = {
+        base: optNp(retType, samps, retType.defaultNatParam),
+        weights: _.times(expfam.featuresDim(retType), function() { return []; })
+      };
       console.log('newParams', newParams);
       this.aisParams[i] = newParams;
     }

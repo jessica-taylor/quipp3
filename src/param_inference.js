@@ -161,9 +161,9 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
   var self = this;
-  var nparticles = 60;
+  var nparticles = 100;
   return mbind(global.ParticleFilterRejuv, self.getSamplerWithParameters(params), nparticles, 0, function(dist) {
-    //return mbind(pfais.ParticleFilter, self.getSamplerWithParameters(params), nparticles, 5, function(dist2) {
+    // return mbind(pfais.ParticleFilter, self.getSamplerWithParameters(params), nparticles, 5, function(dist) {
       // console.log(dist.normalizationConstant, dist2.normalizationConstant);
       return mreturn(dist.normalizationConstant);
     // });
