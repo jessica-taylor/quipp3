@@ -5,24 +5,17 @@ var dim = 2;
 
 var n = 100;
 
+var repeat = function(n, fn) {
+  return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
+};
 
-testParamInference(function(randFunction) {
+testParamInference2(function(randFunction) {
   var pointType = Vector(dim, Double);
   var getPoint = randFunction(Categorical(nclusters), pointType);
-  return [
-    function() {
-      return repeat(n, function() {
-        var cluster = randomInteger(nclusters);
-        return getPoint(cluster);
-      });
-    },
-    function(points) {
-      var clusters = map(function(point) {
-        var cluster = randomInteger(nclusters);
-        factorScore(getPoint, cluster, point);
-        return cluster;
-      }, points);
-      return clusters;
-    }
-  ];
+  return function() {
+    return repeat(n, function(i) {
+      var cluster = randomInteger(nclusters);
+      return observe('point' + i, getPoint, cluster);
+    });
+  };
 });

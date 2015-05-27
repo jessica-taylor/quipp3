@@ -68,10 +68,11 @@ var randParameters = fromMonad('randParameters', function(signature) {
   argTypes.forEach(function(at) {
     nfeatures += expfam.featuresDim(at);
   });
+  if (retType.randParams) return mcurry(retType.randParams, nfeatures);
   return mbind(retType.randNatParam, function(base) {
     assert(global.sample);
     return mbind(util.replicateM, expfam.featuresDim(retType),
-                 mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5])),
+                 mcurry(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 2])),
                  function(weights) {
                    return mreturn({base: base, weights: weights});
                  });
@@ -87,6 +88,7 @@ function natParamWithArguments(argTypes, retType, params, argVals) {
 }
 
 function trainParameters(signature, calls, params) {
+  // console.log('calls', JSON.stringify(calls));
   var argTypes = signature[0];
   var retType = signature[1];
   var samps = calls.map(function(call) {
@@ -159,7 +161,7 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
   var self = this;
-  var nparticles = 50;
+  var nparticles = 60;
   return mbind(global.ParticleFilterRejuv, self.getSamplerWithParameters(params), nparticles, 0, function(dist) {
     //return mbind(pfais.ParticleFilter, self.getSamplerWithParameters(params), nparticles, 5, function(dist2) {
       // console.log(dist.normalizationConstant, dist2.normalizationConstant);
@@ -178,7 +180,8 @@ UnknownParametersModel.prototype.formatParameters = function(paramsList) {
 UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params, trace) {
   var self = this;
   // TODO: should this depend on something?
-  var numSamps = 2000;
+  // var numSamps = 2000;
+  var numSamps = 200;
   return mbind(mh.MH, self.getSamplerWithParameters(params), numSamps, trace, function(sampsDistrAndTrace) {
     console.log('got samples');
     var sampsDistr = sampsDistrAndTrace[0];
@@ -209,14 +212,16 @@ UnknownParametersModel.prototype.stepParamsAndTrace = fromMonad(function(params,
 
 UnknownParametersModel.prototype.inferParameters = fromMonad(function(reducer) {
   var self = this;
-  var initParams = this.signatures.map(expfam.defaultParameters);
-  var trainFrom = fromMonad(function(i, params, trace) {
-    var rest = mbindMethod(self, 'stepParamsAndTrace', params, trace, function(paramsAndTrace) {
-      return mcurry(trainFrom, i+1, paramsAndTrace[0], paramsAndTrace[1]);
+
+  return mbind(util.mapM, self.signatures, randParameters, function(initParams) {
+    var trainFrom = fromMonad(function(i, params, trace) {
+      var rest = mbindMethod(self, 'stepParamsAndTrace', params, trace, function(paramsAndTrace) {
+        return mcurry(trainFrom, i+1, paramsAndTrace[0], paramsAndTrace[1]);
+      });
+      return mcurry(reducer, params, trace, rest);
     });
-    return mcurry(reducer, params, trace, rest);
+    return mcurry(trainFrom, 0, initParams, null);
   });
-  return mcurry(trainFrom, 0, initParams, null);
 });
 
 var unknownParametersModel = fromMonad(function(fun) {
@@ -239,18 +244,13 @@ var inferParameters = fromMonad(function(fun) {
 });
 
 var generateRandData = fromMonad(function(fun, params) {
-  console.log('generateRandData');
   var inner = fromMonad(function(rf) {
-    console.log('inner1');
     return mbind(fun, rf, function(res) {
-      console.log('inner2', res[0]);
       return mreturn(res[0]);
     });
   });
   return mbind(unknownParametersModel, inner, function(upm) {
-    console.log('upm', upm);
     return mbindMethod(upm, 'randSample', params, function(cld) {
-      console.log('got result');
       return mreturn(cld[1]);
     });
   });

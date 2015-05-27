@@ -6,35 +6,12 @@ var repeat = function(n, fn) {
 
 var n = 50;
 
-if (false) {
-  testParamInference(function(randFunction) {
-    var getPoint = randFunction(Categorical(2), Double);
-    return [
-      function() {
-        return repeat(n, function() {
-          var cluster = randomInteger(2);
-          return getPoint(cluster);
-        });
-      },
-      function(points) {
-        // var points = [0.01, 0.05, 0.02, 0.03, 0.99, 1.01, 1.02, 1.04];
-        var clusters = map(function(point) {
-          var cluster = randomInteger(2);
-          factorScore(getPoint, cluster, point);
-          return cluster;
-        }, points);
-        return clusters;
-      }
-    ];
-  });
-} else {
-  testParamInference2(function(randFunction) {
-    var getPoint = randFunction(Categorical(2), Double);
-    return function() {
-      return repeat(n, function(i) {
-        var cluster = randomInteger(2);
-        return observe('point' + i, getPoint, cluster);
-      });
-    };
-  });
-}
+testParamInference2(function(randFunction) {
+  var getPoint = randFunction(Categorical(2), Double);
+  return function() {
+    return repeat(n, function(i) {
+      var cluster = randomInteger(2);
+      return observe('point' + i, getPoint, cluster);
+    });
+  };
+});

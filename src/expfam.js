@@ -74,6 +74,19 @@ var Double = {
       });
     });
   }),
+  randParams: fromMonad(function(nfeatures) {
+    return mbind(global.sample, erp.gaussianERP, [0, 5], function(mean) {
+      return mbind(global.sample, erp.gaussianERP, [0, 5], function(stdev) {
+        return mbind(util.replicateM, nfeatures, mcurry(global.sample, erp.gaussianERP, [0, 5]), function(coeffs) {
+          var variance = stdev*stdev;
+          return mreturn({
+            base: [mean / variance, -1 / (2 * variance)],
+            weights: [coeffs.map(function(coeff) { return coeff / variance; })]
+          });
+        });
+      });
+    });
+  }),
   featuresMask: [true, false],
   mle: function(samples, natParam) {
     return gaussianMle(samples);
@@ -145,6 +158,13 @@ function Tuple(types) {
     defaultNatParam: util.concat(_.pluck(types, 'defaultNatParam')),
     randNatParam: mbind(util.mapM, _.pluck(types, 'randNatParam'), fromMonad(function(x) { return x; }), function(res) {
       return mreturn(util.concat(res));
+    }),
+    randParams: fromMonad(function(nfeatures) {
+      return mbind(util.mapM, types, fromMonad(function(t) { return mcurry(t.randParams, nfeatures); }), function(res) {
+        console.log('res', res);
+        return mreturn({base: util.concat(_.pluck(res, 'base')),
+                        weights: util.concat(_.pluck(res, 'weights'))});
+      });
     }),
     featuresMask: util.concat(_.pluck(types, 'featuresMask')),
     mle: function(samples, params) {
@@ -310,7 +330,7 @@ function defaultParameters(signature) {
   return {
     base: retType.defaultNatParam,
     weights: _.times(featuresDim(retType), function() {
-      return _.times(nfeatures, function() { return Math.random() * 20 - 10; });
+      return _.times(nfeatures, function() { return Math.random() * 10 - 5; });
     })
   };
 }

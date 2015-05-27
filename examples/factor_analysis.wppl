@@ -1,32 +1,25 @@
 
+var repeat = function(n, fn) {
+  return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
+};
 
 var nfactors = 1;
-var dim = 3;
+var dim = 2;
 
 var n = 50;
 
 
-testParamInference(function(randFunction) {
+testParamInference2(function(randFunction) {
   var factorType = Vector(nfactors, Double);
   var pointType = Vector(dim, Double);
   var getPoint = randFunction(factorType, pointType);
   var getFactors = function() {
     return repeat(nfactors, function() { return gaussian(0, 1); });
   };
-  return [
-    function() {
-      return repeat(n, function() {
-        var factors = getFactors();
-        return getPoint(factors);
-      });
-    },
-    function(points) {
-      var factorsList = map(function(point) {
-        var factors = getFactors();
-        factorScore(getPoint, factors, point);
-        return factors;
-      }, points);
-      return factorsList;
-    }
-  ];
+  return function() {
+    return repeat(n, function(i) {
+      var factors = getFactors();
+      return observe('point' + i, getPoint, factors);
+    });
+  };
 });
