@@ -6,7 +6,7 @@ var repeat = function(n, fn) {
 
 var n = 50;
 
-testParamInference2(function(randFunction) {
+testParamInference(function(randFunction) {
   var getPoint = randFunction(Categorical(2), Double);
   return function() {
     return repeat(n, function(i) {

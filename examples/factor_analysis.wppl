@@ -9,7 +9,7 @@ var dim = 4;
 var n = 50;
 
 
-testParamInference2(function(randFunction) {
+testParamInference(function(randFunction) {
   var factorType = Vector(nfactors, Double);
   var pointType = Vector(dim, Double);
   var getPoint = randFunction(factorType, pointType);

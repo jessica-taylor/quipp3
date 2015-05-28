@@ -256,7 +256,7 @@ var generateRandData = fromMonad(function(fun, params) {
   });
 });
 
-var testParamInference = fromMonad(function(fun) {
+var testParamInferenceSplit = fromMonad(function(fun) {
   console.log('testParamInference');
   return mbind(unknownParametersModel, fun, function(upmWrong) {
     console.log('upmwrong', upmWrong.signatures);
@@ -301,7 +301,7 @@ var testParamInference = fromMonad(function(fun) {
   });
 });
 
-var testParamInference2 = fromMonad(function(fun) {
+var testParamInference = fromMonad(function(fun) {
   var fun2 = fromMonad(function(randFunction) {
     return mbind(fun, randFunction, function(innerSampler) {
       var gendata = mcurry(sampleData, innerSampler);
@@ -311,12 +311,12 @@ var testParamInference2 = fromMonad(function(fun) {
       return mreturn([gendata, condata]);
     });
   });
-  return mcurry(testParamInference, fun2);
+  return mcurry(testParamInferenceSplit, fun2);
 });
 
 
 module.exports = {
   inferParameters: inferParameters,
   testParamInference: testParamInference,
-  testParamInference2: testParamInference2
+  testParamInferenceSplit: testParamInferenceSplit
 };

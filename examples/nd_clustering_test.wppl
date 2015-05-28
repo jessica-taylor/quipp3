@@ -1,15 +1,15 @@
 
+var repeat = function(n, fn) {
+  return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
+};
+
 
 var nclusters = 4;
 var dim = 2;
 
 var n = 100;
 
-var repeat = function(n, fn) {
-  return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
-};
-
-testParamInference2(function(randFunction) {
+testParamInference(function(randFunction) {
   var pointType = Vector(dim, Double);
   var getPoint = randFunction(Categorical(nclusters), pointType);
   return function() {
