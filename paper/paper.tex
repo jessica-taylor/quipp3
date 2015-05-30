@@ -132,8 +132,6 @@ Stanford, CA 94305
   implemented in Javascript. Quipp programs are written as webppl programs that have access to special functions.
 
   Here is an example of a Quipp program to cluster 2d points into 3 clusters:
-
-
   \begin{verbatim}
 var nclusters = 3;
 var dim = 2;
@@ -144,29 +142,76 @@ testParamInference(function(randFunction) {
   var pointType = Vector(dim, Double);
   var getPoint = randFunction(Categorical(nclusters), pointType);
   return function() {
-    return repeat(n, function(i) {
+    repeat(n, function(i) {
       var cluster = randomInteger(nclusters);
-      return observe('point' + i, getPoint, cluster);
+      observe('point' + i, getPoint, cluster);
     });
   };
 });
   \end{verbatim}
 
-  It is written as a generative model producing the observations.  Notice that we declared two types (\texttt{PointType} and \texttt{ClusterType})
-  and one random function \texttt{getPoint}).
-  Type annotations are necessary for random functions.  The type
-  \texttt{Vector(2, Double)} expresses the fact that the points are 2-dimensional,
-  and the type \texttt{Categorical(3)} expresses the fact that there are 3
-  possible clusters (so a cluster may be either 0, 1, or 2).  We assume that
-  the distribution over clusters is uniform, but we do not know the distribution
-  of points in each cluster.
-  We will fill in the
+  It is written as a generative model producing the observations.  Notice that
+  we declared two types (\texttt{PointType} and \texttt{ClusterType}) and one
+  random function \texttt{getPoint}).  Type annotations are necessary for random
+  functions.  The type \texttt{Vector(2, Double)} expresses the fact that the
+  points are 2-dimensional, and the type \texttt{Categorical(3)} expresses the
+  fact that there are 3 possible clusters (so a cluster may be either 0, 1, or
+  2).    We assume the distribution over clusters is uniform, but we do not know
+  the distribution of points in each cluster.  We will fill in the
   \texttt{getPoint} function with a learned function that will take a random
-  sample from the given cluster.
+  sample from the given cluster.  The \texttt{observe} function allows us to
+  observe data; here it says that the observation named \texttt{point3} is equal
+  to the result of calling \texttt{getPoint(cluster)}, where \texttt{cluster} is
+  cluster number 3.
+
+
+  To demonstrate, let us run this example on a dataset consisting of 150 points (TODO cite).  When we run the program on this data, we infer the parameters to the random function \texttt{getPoint}.
+  In this case, \texttt{getPoint} is a linear function with Gaussian noise, so it will naturally
+  split the data into 2 clusters with equal variance:
+  \begin{center}
+    \includegraphics[scale=0.5]{../plots/irisclusters_orig.png}
+  \end{center}
+
+  The first cluster is at (6.3, 5.0) and the second is at (5.0, 1.6).  They both
+  have a standard deviation of 0.54 in the x direction and 0.69 in the y direction.
+  We could use these parameters to fill in the generative model:
+  \begin{verbatim}
+    return repeat(n, function(i) {
+      var cluster = randomInteger(nclusters);
+      return [gaussian(cluster == 0 ? 6.3 : 5.0, 0.54),
+              gaussian(cluster == 0 ? 5.0 : 1.6, 0.69)];
+    });
+  \end{verbatim}
+  This model is estimated to assign probability density $e^{-393}$ to the data, or 0.0728 per point.
+
+  Note that, because the two clusters are forced to have the same variance, they do not fit the data well,
+  since the data has a different shape in each location.  To fix this problem, we can substitute the following
+  model:
+  \begin{verbatim}
+testParamInference(function() {
+  var pointType = Vector(dim, Double);
+  var getPointFunctions = repeat(nclusters, function(i) {
+    return randFunction(pointType);
+  });
+  return function() {
+    return repeat(n, function(i) {
+      var cluster = randomInteger(nclusters);
+      return observe('point' + i, getPointFunctions[cluster]);
+    });
+  };
+});
+  \end{verbatim}
+  Using this model, we get the following clusters:
+  \begin{center}
+    \includegraphics[scale=0.5]{../plots/irisclusters_indep.png}
+  \end{center}
+  This model (with the parameters filled in) is estimated to assign probability density $e^{-337}$ to the data, or 0.1058 per point, which means it
+  fits the data better.
+
 
   \section{Family of distributions}
   
-  For unknown functions, the family of random functions used is a kind
+    For unknown functions, the family of random functions used is a kind
     of generalized linear model.  We assume that the distribution
     of the function's return value
     is some exponential family whose natural
@@ -275,21 +320,28 @@ We randomly generated parameters for this example 100 times, and each time took 
 
 {\small
 \begin{verbatim}
-nfeatures = 10
-FeaturesType = Vector(nfeatures, Bool)
+var nfeatures = 10;
+var featuresType = Vector(nfeatures, Bool);
+var nclasses = 2;
+var n = 50;
 
-get_class = rand_function(Unit, Bool)
 
-class_1_features = rand_function(Unit, FeaturesType)
-class_2_features = rand_function(Unit, FeaturesType)
+testParamInference(function(randFunction) {
+  var class0Features = randFunction(featuresType);
+  var class1Features = randFunction(featuresType);
 
-def sample():
-  which_class = get_class()
-  if which_class:
-    features = class_1_features()
-  else:
-    features = class_2_features()
-  return (which_class, features)
+  var getFeatures = randFunction(Categorical(nclusters), pointType);
+  return function() {
+    repeat(n, function(i) {
+      var whichClass = randomInteger(2);
+      if (whichClass == 0) {
+        observe('features' + i, class0Features);
+      } else {
+        observe('features' + i, class1Features);
+      }
+    });
+  };
+});
 \end{verbatim}
 }
 
@@ -302,69 +354,97 @@ a different categorical distribution for each class.
   \subsection{Factor analysis}
 {\small
 \begin{verbatim}
-num_components = 3
-point_dim = 5
 
-ComponentsType = Vector(num_components, Double)
-PointType = Vector(point_dim, Double)
+var nfactors = 2;
+var dim = 4;
 
-get_point = rand_function(ComponentsType, PointType)
+var n = 50;
 
-def sample():
-  components = [normal(0, 1)
-                for i in range(num_components)]
-  return (comenents, get_point(components))
+testParamInference(function(randFunction) {
+  var factorType = Vector(nfactors, Double);
+  var pointType = Vector(dim, Double);
+  var getPoint = randFunction(factorType, pointType);
+  var getFactors = function() {
+    return repeat(nfactors, function() { return gaussian(0, 1); });
+  };
+  return function() {
+    return repeat(n, function(i) {
+      var factors = getFactors();
+      return observe('point' + i, getPoint, factors);
+    });
+  };
+});
 \end{verbatim}
 }
 
 The factor analysis model is very similar to the clustering model.  The main difference is that we replace the categorical \texttt{ClusterType} type with a vector type.  This results in the model attempting to find each point as an affine function of a vector of standard normal values.
 
-(figure should show accuracy by EM iteration.  Accuracy can be measured by distances between different factor coefficients, when ordered according to some permutation)
   \subsection{Hidden Markov model}
 {\small
 \begin{verbatim}
-num_states = 5
-num_observations = 3
-sequence_length = 10
 
-StateType = Categorical(num_states)
-ObsType = Categorical(num_observations)
+var nstates = 2;
+var nobs = 3;
 
-trans_fun = rand_function(StateType, StateType)
-obs_fun = rand_function(StateType, ObsType)
+var chainLength = 8;
 
-def sample():
-  states = [uniform(num_states)]
-  for i in range(sequence_length - 1):
-    states.append(trans_fun(states[-1]))
-  return (states, [obs_fun(s) for s in states])
+var n = 30;
+
+
+testParamInference(function(randFunction) {
+  var stateType = Categorical(nstates);
+  var obsType = Categorical(nobs);
+  var transFun = randFunction(stateType, stateType);
+  var obsFun = randFunction(stateType, obsType);
+
+  var observeStates = function(sampIndex, startState, i) {
+    if (i == chainLength) {
+      return [];
+    } else {
+      observe('obs' + sampIndex + '_' + i, obsFun, startState);
+      return [startState].concat(observeStates(sampIndex, transFun(startState), i+1));
+    }
+  };
+  return function() {
+    return repeat(n, function(sampIndex) {
+      return observeStates(sampIndex, randomInteger(nstates), 0);
+    });
+  };
+});
 \end{verbatim}
 }
 
-In this example, we use the unknown function \texttt{trans\_fun} for state transitions and \texttt{obs\_fun} for observations.  This means that we will learn both the state transitions and the observation distribution.
+In this example, we use the unknown function \texttt{transFun} for state transitions and \texttt{obsFun} for observations.  This means that we will learn both the state transitions and the observation distribution.
 
 
 \subsection{Latent Dirichlet allocation}
 {\small
 \begin{verbatim}
-n_classes = 10
-n_words = 100
-n_words_per_document = 1000
+var nClasses = 2;
+var nWords = 100;
+var maxWordsPerDocument = 1000;
+var nDocuments = 20;
 
-ClassType = Categorical(n_classes)
-WordType = Categorical(n_words)
+var classType = Categorical(nClasses);
+var wordType = Categorical(nWords);
 
-class_to_word = rand_function(ClassType, WordType)
-
-def sample():
-    which_class = uniform_categorical(n_classes)
-    words = [class_to_word(which_class)
-             for i in range(n_words_per_document)]
-    return (which_class, words)
+testParamInference(function(randFunction) {
+  var classToWord = randFunction(ClassType, WordType);
+  return function() {
+    return repeat(nDocuments, function(docIndex) {
+      var whichClass = randomInteger(nClasses);
+      var nWords = observe('len' + docIndex, randomInteger, maxWordsPerDocument);
+      repeat(nWordsPerDocument, function(wordIndex) {
+        observe('word' + doc + '_' + wordIndex, classToWord, whichClass);
+      });
+      return whichClass;
+    });
+  };
+});
 \end{verbatim}
 }
 
-In this example, we use the unknown function \texttt{class\_to\_word} to map classes to word distributions.  Note that each column of the matrix of parameters for \texttt{class\_to\_word} will represent a categorical distribution over words, and there will be one column for each class.
+In this example, we use the unknown function \texttt{classToWord} to map classes to word distributions.  Note that each column of the matrix of parameters for \texttt{classToWord} will represent a categorical distribution over words, and there will be one column for each class.
 
 (figure should show accuracy over time.  Accuracy can be measured as distance between the learned categorical distributions, for some permutation of classes)
 
@@ -372,21 +452,28 @@ In this example, we use the unknown function \texttt{class\_to\_word} to map cla
 
 {\small
 \begin{verbatim}
-input_dim = 100
-hidden_dim = 20
-output_dim = 2
+var inputDim = 100;
+var hiddenDim = 20;
+var outputDim = 2;
 
-InputType = Categorical(input_dim)
-HiddenType = Categorical(hidden_dim)
-OutputType = Categorical(output_dim)
 
-input_to_hidden = rand_function(InputType, HiddenType)
-hidden_to_output = rand_function(HiddenType, OutputType)
+var inputType = Categorical(inputDim);
+var hiddenType = Categorical(hiddenDim);
+var outputType = Categorical(outputDim);
 
-def sample(input_layer):
-  hidden_layer = input_to_hidden(input_layer)
-  output_layer = hidden_to_output(hidden_layer)
-  return ((), output_layer)
+var inputs = [...];
+
+testParamInference(function(randFunction) {
+  var inputToHidden = randFunction(inputType, hiddenType);
+  var hiddenToOutput = randFunction(hiddenType, outputType);
+
+  return function() {
+    return repeat(inputs.length, function(sampIndex) {
+      var hiddenLayer = inputToHidden(inputs[sampIndex]);
+      observe('output' + sampIndex, hiddenToOutput, hiddenLayer);
+    });
+  };
+});
 \end{verbatim}
 }
 

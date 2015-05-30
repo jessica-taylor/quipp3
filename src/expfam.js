@@ -161,7 +161,6 @@ function Tuple(types) {
     }),
     randParams: fromMonad(function(nfeatures) {
       return mbind(util.mapM, types, fromMonad(function(t) { return mcurry(t.randParams, nfeatures); }), function(res) {
-        console.log('res', res);
         return mreturn({base: util.concat(_.pluck(res, 'base')),
                         weights: util.concat(_.pluck(res, 'weights'))});
       });

@@ -8,7 +8,6 @@ var dim = 4;
 
 var n = 50;
 
-
 testParamInference(function(randFunction) {
   var factorType = Vector(nfactors, Double);
   var pointType = Vector(dim, Double);

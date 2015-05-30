@@ -161,7 +161,7 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
   var self = this;
-  var nparticles = 100;
+  var nparticles = 10;
   return mbind(global.ParticleFilterRejuv, self.getSamplerWithParameters(params), nparticles, 0, function(dist) {
     // return mbind(pfais.ParticleFilter, self.getSamplerWithParameters(params), nparticles, 5, function(dist) {
       // console.log(dist.normalizationConstant, dist2.normalizationConstant);
@@ -239,7 +239,15 @@ var printReducer = fromMonad(function(params, trace, rest) {
 
 var inferParameters = fromMonad(function(fun) {
   return mbind(unknownParametersModel, fun, function(upm) {
-    return mcurryMethod(model, 'inferParameters', printReducer);
+    var reducer = fromMonad(function(params, trace, rest) {
+      console.log('yay', JSON.stringify(upm.formatParameters(params)));
+      console.log('also', JSON.stringify(params));
+      return mbindMethod(upm, 'logPartition', params, function(lp) {
+        console.log('score', lp);
+        return rest;
+      });
+    });
+    return mcurryMethod(upm, 'inferParameters', reducer);
   });
 });
 
@@ -283,11 +291,14 @@ var testParamInferenceSplit = fromMonad(function(fun) {
             return mbind(unknownParametersModel, innerSamplerForData(testData), function(upmTest) {
               console.log('upmTest');
               return mbindMethod(upmTest, 'logPartition', origParams, function(origLp) {
-                console.log('orig lp', origLp);
+                console.log('@', origLp);
+                var niters = 0;
                 var reducer = fromMonad(function(infParams, trace, rest) {
                   console.log('params', JSON.stringify(upmWrong.formatParameters(infParams)));
                   return mbindMethod(upmTest, 'logPartition', infParams, function(lp) {
-                    console.log('inf lp', lp);
+                    console.log('#', lp);
+                    niters += 1;
+                    if (niters == 3) process.exit()
                     return rest;
                   });
                 });

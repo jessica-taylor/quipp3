@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  28 MAY 2015 14:43
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  29 MAY 2015 23:37
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -416,8 +416,24 @@ LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
  [1{/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-config/fo
 nts/map/pdftex/updmap/pdftex.map}
 
-] [2]
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 229.
+]
+<../plots/irisclusters_orig.png, id=11, 578.16pt x 433.62pt>
+File: ../plots/irisclusters_orig.png Graphic file (type png)
+
+<use ../plots/irisclusters_orig.png>
+Package pdftex.def Info: ../plots/irisclusters_orig.png used on input line 172.
+
+(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
+ [2 <../plots/irisclusters_orig.png>]
+<../plots/irisclusters_indep.png, id=17, 578.16pt x 433.62pt>
+File: ../plots/irisclusters_indep.png Graphic file (type png)
+
+<use ../plots/irisclusters_indep.png>
+Package pdftex.def Info: ../plots/irisclusters_indep.png used on input line 206
+.
+(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
+ [3 <../plots/irisclusters_indep.png>]
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 274.
 
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
@@ -425,47 +441,60 @@ ex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 229.
- [3] <cluster_accuracy.png, id=25, 578.16pt x 433.62pt>
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 274.
+ [4] <cluster_accuracy.png, id=34, 578.16pt x 433.62pt>
 File: cluster_accuracy.png Graphic file (type png)
 
 <use cluster_accuracy.png>
-Package pdftex.def Info: cluster_accuracy.png used on input line 271.
+Package pdftex.def Info: cluster_accuracy.png used on input line 316.
 (pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
- [4 <./cluster_accuracy.png>] [5] [6] (./paper.aux) ) 
+ [5 <./cluster_accuracy.png>]
+Overfull \hbox (66.91449pt too wide) in paragraph at lines 414--414
+[]      \OT1/pcr/m/n/9 return [startState].concat(observeStates(sampIndex, tran
+sFun(startState), i+1));[] 
+ []
+
+[6]
+Overfull \hbox (39.91452pt too wide) in paragraph at lines 444--444
+[]      \OT1/pcr/m/n/9 var nWords = observe('len' + docIndex, randomInteger, ma
+xWordsPerDocument);[] 
+ []
+
+[7] [8] (./paper.aux) ) 
 Here is how much of TeX's memory you used:
- 3811 strings out of 493109
- 56406 string characters out of 6117083
+ 3821 strings out of 493109
+ 56722 string characters out of 6117083
  130714 words of memory out of 5000000
- 7192 multiletter control sequences out of 15000+600000
+ 7199 multiletter control sequences out of 15000+600000
  18612 words of font info for 44 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 38i,11n,45p,424b,334s stack positions out of 5000i,500n,10000p,200000b,80000s
-{/nix/store/a5h94i4ysxcjzm
-493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/enc/dvips/base/8r.enc}</nix
-/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmbx10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXL
-ive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx7.pfb></nix/store/a5h
-94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/ams
-fonts/cm/cmex10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdi
-r/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></nix/store/a5h94i4ysxcj
-zm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/
-cmmi7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-di
-st/fonts/type1/public/amsfonts/cm/cmr10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4
-cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></
-nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/typ
-e1/public/amsfonts/cm/cmsy10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-T
-eXLive-linkdir/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></nix/store/a5h94i
-4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/helvetic/
-uhvb8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-d
-ist/fonts/type1/urw/times/utmb8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0
-ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></nix/store/a5h9
-4i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/u
-tmri8a.pfb>
-Output written on paper.pdf (6 pages, 162175 bytes).
+ 38i,12n,45p,424b,338s stack positions out of 5000i,500n,10000p,200000b,80000s
+{/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-lin
+kdir/texmf-dist/fonts/enc/dvips/base/8r.enc}</nix/store/a5h94i4ysxcjzm493i07hc4
+cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb>
+</nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/t
+ype1/public/amsfonts/cm/cmbx7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-
+TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></nix/stor
+e/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/publi
+c/amsfonts/cm/cmmi10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-l
+inkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi7.pfb></nix/store/a5h94i4y
+sxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts
+/cm/cmr10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texm
+f-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></nix/store/a5h94i4ysxcjzm493i07
+hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.p
+fb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/font
+s/type1/public/amsfonts/cm/cmsy7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0
+ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb></nix/store/a5
+h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/helve
+tic/uhvb8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/tex
+mf-dist/fonts/type1/urw/times/utmb8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1
+m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></nix/store/
+a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/tim
+es/utmri8a.pfb>
+Output written on paper.pdf (8 pages, 216267 bytes).
 PDF statistics:
- 79 PDF objects out of 1000 (max. 8388607)
- 55 compressed objects within 1 object stream
+ 95 PDF objects out of 1000 (max. 8388607)
+ 64 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
- 6 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 16 words of extra memory for PDF output out of 10000 (max. 10000000)
 
