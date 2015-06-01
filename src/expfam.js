@@ -117,7 +117,15 @@ function Categorical(n) {
     },
     defaultNatParam: _.times(n-1, function() { return 0.0; }),
     randNatParam: fromMonad(function() {
-      return mcurry(util.replicateM, n-1, mcurry(global.sample, erp.gaussianERP, [0, 5]));
+      return mcurry(util.replicateM, n-1, mcurry(global.sample, erp.gaussianERP, [0, 1]));
+    }),
+    randParams: fromMonad(function(nfeatures) {
+      var getRow = mcurry(util.replicateM, n-1, mcurry(global.sample, erp.gaussianERP, [0, 1]));
+      return mbind(getRow, function(base) {
+        return mbind(util.replicateM, nfeatures, getRow, function(weights) {
+          return mreturn({base: base, weights: opt.transpose(weights)});
+        });
+      });
     }),
     featuresMask: _.times(n-1, function() { return true; }),
     formatParams: function(params) { return params; }

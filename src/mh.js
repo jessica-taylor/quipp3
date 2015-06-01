@@ -179,7 +179,6 @@ module.exports = function(env) {
 
       return this.sample(_.clone(regen.store), regen.k, regen.name, regen.erp, regen.params, true);
     } else {
-      console.log('d', totDelta, this.currScore);
       var dist = erp.makeMarginalERP(this.returnHist);
 
       // Reinstate previous coroutine:

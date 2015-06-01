@@ -10,6 +10,9 @@ var pfais = require('./pfais')(webpplEnv);
 
 var mbind = util.mbind, mreturn = util.mreturn, mbindMethod = util.mbindMethod, fromMonad = util.fromMonad, mcurry = util.mcurry, mcurryMethod = util.mcurryMethod;
 
+var argv = require('yargs').argv;
+console.log('argv', argv);
+
 function DataSampler() {
   this.valueMap = {};
 }
@@ -22,6 +25,14 @@ DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
       return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
     });
   }
+
+  if (rf.constructor == erp.ERP) {
+    return mbind(global.sample, rf, args, function(samp) {
+      self.valueMap[addr] = samp;
+      return mreturn(samp);
+    });
+  }
+
   return mbind.apply(null, [rf].concat(args).concat([function(samp) {
     self.valueMap[addr] = samp;
     return mreturn(samp);
@@ -48,8 +59,16 @@ DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
       return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
     });
   }
+
   assert(addr in self.valueMap);
   var ret = self.valueMap[addr];
+
+  if (rf.constructor == erp.ERP) {
+    return mbind(global.factor, rf.score(args, ret), function() {
+      return mreturn(ret);
+    });
+  }
+
   return mcurry.apply(null, [rf.factorScore].concat(args).concat([ret]));
 });
 
@@ -161,12 +180,14 @@ UnknownParametersModel.prototype.randSample = function(s, k, a, params) {
 
 UnknownParametersModel.prototype.logPartition = fromMonad(function(params) {
   var self = this;
-  var nparticles = 10;
+  var nparticles = 30;
   return mbind(global.ParticleFilterRejuv, self.getSamplerWithParameters(params), nparticles, 0, function(dist) {
+  return mbind(global.ParticleFilterRejuv, self.getSamplerWithParameters(params), nparticles, 0, function(dist2) {
     // return mbind(pfais.ParticleFilter, self.getSamplerWithParameters(params), nparticles, 5, function(dist) {
       // console.log(dist.normalizationConstant, dist2.normalizationConstant);
+      console.log(dist.normalizationConstant, dist2.normalizationConstant);
       return mreturn(dist.normalizationConstant);
-    // });
+    });
   });
 });
 
@@ -253,6 +274,7 @@ var inferParameters = fromMonad(function(fun) {
 
 var generateRandData = fromMonad(function(fun, params) {
   var inner = fromMonad(function(rf) {
+    console.log('in inner');
     return mbind(fun, rf, function(res) {
       return mreturn(res[0]);
     });
@@ -292,13 +314,16 @@ var testParamInferenceSplit = fromMonad(function(fun) {
               console.log('upmTest');
               return mbindMethod(upmTest, 'logPartition', origParams, function(origLp) {
                 console.log('@', origLp);
-                var niters = 0;
+                var lps = [];
                 var reducer = fromMonad(function(infParams, trace, rest) {
                   console.log('params', JSON.stringify(upmWrong.formatParameters(infParams)));
                   return mbindMethod(upmTest, 'logPartition', infParams, function(lp) {
                     console.log('#', lp);
-                    niters += 1;
-                    if (niters == 3) process.exit()
+                    lps.push(lp);
+                    if (argv.iters !== undefined && lps.length == argv.iters) {
+                      console.log(JSON.stringify({tag: 'results!', origLp: origLp, infLps: lps}));
+                      process.exit();
+                    }
                     return rest;
                   });
                 });

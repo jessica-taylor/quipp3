@@ -4,7 +4,7 @@ var repeat = function(n, fn) {
 };
 
 
-var nclusters = 4;
+var nclusters = 3;
 var dim = 2;
 
 var n = 100;
