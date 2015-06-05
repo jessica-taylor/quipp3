@@ -1,4 +1,5 @@
 from pylab import *
+from matplotlib import pyplot as plt
 import sys
 import sys
 import json
@@ -53,14 +54,21 @@ burn = 1
 regret_distrs = [[r['origLp'] - r['infLps'][i] for r in run_results] for i in range(burn, niters)]
 print 'rd', len(regret_distrs), niters
 
-for q in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
+xlabel('iteration')
+ylabel('regret')
+
+quantiles = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
+quantiles = [0.1, 0.3, 0.5, 0.7, 0.9]
+for q in quantiles:
   quants = []
   for i in range(burn, niters):
     regrets = regret_distrs[i-burn]
     quants.append(max(0, quantile(regrets, q)))
-  plot(range(burn, niters), quants)
+  plot(range(burn, niters), quants, label=str(q))
   
 
+title('Regret quantiles by iteration')
+legend()
 
 
 plot_name = 'plots/accuracy_' + program_name + '.png'

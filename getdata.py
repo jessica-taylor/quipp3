@@ -13,6 +13,8 @@ if program_name == 'factor_analysis':
   niters = 12
 if program_name == 'hmm':
   niters = 10
+if program_name == 'lda':
+  niters = 10
 
 
 
