@@ -27,6 +27,15 @@
 \DeclareMathOperator*{\Prob}{\mathbf{P}}
 
 
+\lstdefinelanguage{JavaScript}{
+      morekeywords={break, case, catch, continue, debugger, default, delete,         do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with},
+      morecomment=[s]{/*}{*/},
+      morecomment=[l]//,
+      morestring=[b]",
+      morestring=[b]'
+    }
+  \lstset{language=JavaScript, xleftmargin=0.5in}
+
 \title{Qualitative Probabilistic Programming}
 
 
@@ -139,26 +148,15 @@ Stanford, CA 94305
   and estimating expectations. Quipp programs are written as webppl programs that have access to additional special functions.
 
   Here is an example of a Quipp program to cluster 2d points into 2 clusters:
-\lstdefinelanguage{JavaScript}{
-      morekeywords={break, case, catch, continue, debugger, default, delete,         do, else, false, finally, for, function, if, in, instanceof, new, null, return, switch, this, throw, true, try, typeof, var, void, while, with},
-      morecomment=[s]{/*}{*/},
-      morecomment=[l]//,
-      morestring=[b]",
-      morestring=[b]'
-    }
-  \lstset{language=JavaScript, xleftmargin=0.5in}
 
   \begin{lstlisting}
-var n = 100;
-
 var Cluster = Categorical(2);
 var Point = Vector(2, Double);
 var getPoint = randFunction(Cluster, Point);
-return function() {
-  repeat(n, function(i) {
-    var cluster = randomValue(Cluster);
-    observe(getPoint, cluster);
-  });
+
+var model = function() {
+  var cluster = randomValue(Cluster);
+  observe(getPoint, cluster);
 };
   \end{lstlisting}
 
@@ -188,11 +186,11 @@ return function() {
   have a standard deviation of 0.54 in the x direction and 0.69 in the y direction.
   We could use these parameters to fill in the generative model:
   \begin{lstlisting}
-return repeat(n, function(i) {
+var model = function() {
   var cluster = randomInteger(nclusters);
   return [gaussian(cluster == 0 ? 6.3 : 5.0, 0.54),
           gaussian(cluster == 0 ? 5.0 : 1.6, 0.69)];
-});
+};
   \end{lstlisting}
   This model is estimated to assign probability density $e^{-393}$ to the data, yielding a perplexity of $e^{-393/150} = 0.0728$.
 
@@ -203,10 +201,11 @@ return repeat(n, function(i) {
 var Cluster = Categorical(2);
 var Point = Vector(2, Double);
 var getPointFunctions = [randFunction(Point), randFunction(Point)];
-return repeat(n, function(i) {
+
+var model = function() {
   var cluster = randomValue(Cluster);
   observe(getPointFunctions[cluster]);
-});
+};
 \end{lstlisting}
   Using this model, we get the following clusters:
   \begin{center}
@@ -218,17 +217,14 @@ return repeat(n, function(i) {
   we can use the following model:
 
 \begin{lstlisting}
-
 var Cluster = Categorical(2);
 var getX = [randFunction(Double), randFunction(Double)];
 var getY = [randFunction(Double, Double), randFunction(Double, Double)];
 
-return function() {
-  return repeat(n, function(i) {
-    var cluster = randomInteger(nclusters);
-    var x = observe(getX[cluster]);
-    var y = observe(getY[cluster], x);
-  });
+var model = function() {
+  var cluster = randomInteger(nclusters);
+  var x = observe(getX[cluster]);
+  var y = observe(getY[cluster], x);
 };
 \end{lstlisting}
   
