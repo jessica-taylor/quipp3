@@ -32,7 +32,7 @@ var resetObsIndex = function(s, k, a) {
 DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
-  if (typeof addr == 'function') {
+  if (typeof addr == 'function' || typeof addr == 'object') {
     // return mbind(util.getAddress, function(a) {
     return mbind(nextObsIndex, function(a) {
       return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
@@ -70,7 +70,7 @@ function DataConditioner(valueMap) {
 DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
-  if (typeof addr == 'function') {
+  if (typeof addr == 'function' || typeof addr == 'object') {
     return mbind(nextObsIndex, function(a) {
     // return mbind(util.getAddress, function(a) {
       return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
@@ -318,9 +318,9 @@ var testParamInferenceSplit = fromMonad(function(fun, opts) {
       console.log('orig params', JSON.stringify(upmWrong.formatParameters(origParams)));
       console.log('also', JSON.stringify(origParams));
       return mbind(generateRandData, fun, opts, origParams, function(trainingData) {
-        console.log('training data', trainingData);
+        // console.log('training data', trainingData);
         return mbind(generateRandData, fun, opts, origParams, function(testData) {
-          console.log('test data', testData);
+          // console.log('test data', testData);
 
           function innerSamplerForData(data) {
             return fromMonad(function(randFunction) {

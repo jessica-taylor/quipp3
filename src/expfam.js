@@ -101,6 +101,15 @@ var Double = {
   }
 };
 
+var randCategoricalNp = fromMonad(function(n) {
+  var alphas = _.times(n, function() { return 1; });
+  return mbind(global.sample, erp.dirichletERP, alphas, function(p) {
+    return mreturn(_.range(1, n).map(function(i) {
+      return Math.log(p[i] / p[0]);
+    }));
+  });
+});
+
 function Categorical(n) {
   assert(typeof n == 'number');
   return {
@@ -119,11 +128,9 @@ function Categorical(n) {
       return global.sample(s, k, a, erp.discreteERP, [probs]);
     },
     defaultNatParam: _.times(n-1, function() { return 0.0; }),
-    randNatParam: fromMonad(function() {
-      return mcurry(util.replicateM, n-1, mcurry(global.sample, erp.gaussianERP, [0, 1]));
-    }),
+    randNatParam: mcurry(randCategoricalNp, n),
     randParams: fromMonad(function(nfeatures) {
-      var getRow = mcurry(util.replicateM, n-1, mcurry(global.sample, erp.gaussianERP, [0, 1]));
+      var getRow = mcurry(randCategoricalNp, n);
       return mbind(getRow, function(base) {
         return mbind(util.replicateM, nfeatures, getRow, function(weights) {
           return mreturn({base: base, weights: opt.transpose(weights)});

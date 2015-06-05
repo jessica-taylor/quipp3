@@ -58,7 +58,7 @@ for q in [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]:
   for i in range(burn, niters):
     regrets = regret_distrs[i-burn]
     quants.append(max(0, quantile(regrets, q)))
-  plot(quants)
+  plot(range(burn, niters), quants)
   
 
 

@@ -18,7 +18,7 @@ var Tuple2 = fromMonad(function(args) {
   return mreturn(expfam.Tuple([].slice.call(args)));
 });
 
-var Bool = util.Categorical(2);
+var Bool = expfam.Categorical(2);
 
 
 module.exports = {
