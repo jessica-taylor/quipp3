@@ -337,12 +337,13 @@ var dim = 2;
 
 var n = 100;
 
-var pointType = Vector(dim, Double);
-var getPoint = randFunction(Categorical(nclusters), pointType);
+var Point = Vector(3, Double);
+var Cluster = Categorical(3);
+var getPoint = randFunction(Cluster, Point);
 return function() {
   return repeat(n, function(i) {
-    var cluster = randomInteger(nclusters);
-    return observe('point' + i, getPoint, cluster);
+    var cluster = randomValue(Cluster);
+    observe(getPoint, cluster);
   });
 };
 \end{verbatim}
@@ -360,23 +361,17 @@ We randomly generated parameters for this example 100 times, and each time took 
 
 {\small
 \begin{verbatim}
-var nfeatures = 10;
-var featuresType = Vector(nfeatures, Bool);
-var nclasses = 2;
 var n = 50;
 
-var class0Features = randFunction(featuresType);
-var class1Features = randFunction(featuresType);
+var Class = Categorical(2);
+var Features = Vector(10, Bool);
 
-var getFeatures = randFunction(Categorical(nclusters), pointType);
+var classFeatures = [randFunction(Features), randFunction(Features)];
+
 return function() {
   repeat(n, function(i) {
-    var whichClass = randomInteger(2);
-    if (whichClass == 0) {
-      observe('features' + i, class0Features);
-    } else {
-      observe('features' + i, class1Features);
-    }
+    var whichClass = randomValue(Class);
+    observe(classFeatures, whichClass);
   });
 };
 \end{verbatim}
@@ -397,16 +392,14 @@ var dim = 4;
 
 var n = 50;
 
-var factorType = Vector(nfactors, Double);
-var pointType = Vector(dim, Double);
-var getPoint = randFunction(factorType, pointType);
-var getFactors = function() {
-  return repeat(nfactors, function() { return gaussian(0, 1); });
-};
+var Factors = Vector(2, Double);
+var Point = Vector(5, Double);
+var getPoint = randFunction(Factors, Point);
+
 return function() {
   return repeat(n, function(i) {
-    var factors = getFactors();
-    return observe('point' + i, getPoint, factors);
+    var factors = randomValue(Factors);
+    observe(getPoint, factors);
   });
 };
 \end{verbatim}
@@ -418,31 +411,28 @@ The factor analysis model is very similar to the clustering model.  The main dif
 {\small
 \begin{verbatim}
 
-var nstates = 2;
-var nobs = 3;
 
-var chainLength = 8;
+var chainLength = 20;
 
-var n = 30;
+var n = 10;
 
+var State = Categorical(2);
+var Obs = Categorical(4);
+var transFun = randFunction(State, State);
+var obsFun = randFunction(State, Obs);
 
-var stateType = Categorical(nstates);
-var obsType = Categorical(nobs);
-var transFun = randFunction(stateType, stateType);
-var obsFun = randFunction(stateType, obsType);
-
-var observeStates = function(sampIndex, startState, i) {
+var observeStates = function(startState, i) {
   if (i == chainLength) {
     return [];
   } else {
-    observe('obs' + sampIndex + '_' + i, obsFun, startState);
-    return [startState].concat(observeStates(sampIndex, transFun(startState), i+1));
+    observe(obsFun, startState);
+    observeStates(transFun(startState), i+1);
   }
 };
 
 return function() {
   return repeat(n, function(sampIndex) {
-    return observeStates(sampIndex, randomInteger(nstates), 0);
+    observeStates(randomValue(State), 0);
   });
 };
 \end{verbatim}
@@ -454,25 +444,25 @@ In this example, we use the unknown function \texttt{transFun} for state transit
 \subsection{Latent Dirichlet allocation}
 {\small
 \begin{verbatim}
-var nClasses = 2;
-var nWords = 100;
-var maxWordsPerDocument = 1000;
+
+var maxWordsPerDocument = 100;
 var nDocuments = 20;
 
-var classType = Categorical(nClasses);
-var wordType = Categorical(nWords);
+var Class = Categorical(3);
+var Word = Categorical(10);
+var classToWord = randFunction(Class, Word);
 
-var classToWord = randFunction(ClassType, WordType);
 return function() {
-  return repeat(nDocuments, function(docIndex) {
-    var whichClass = randomInteger(nClasses);
-    var nWords = observe('len' + docIndex, randomInteger, maxWordsPerDocument);
-    repeat(nWordsPerDocument, function(wordIndex) {
-      observe('word' + doc + '_' + wordIndex, classToWord, whichClass);
+  return repeat(nDocuments, function() {
+    var whichClass = randomValue(Class);
+    var nWords = observe(randomIntegerERP, maxWordsPerDocument);
+    repeat(nWords, function(wordIndex) {
+      observe(classToWord, whichClass);
     });
     return whichClass;
   });
 };
+
 \end{verbatim}
 }
 
@@ -484,28 +474,22 @@ In this example, we use the unknown function \texttt{classToWord} to map classes
 
 {\small
 \begin{verbatim}
-var inputDim = 100;
-var hiddenDim = 20;
-var outputDim = 2;
 
-
-var inputType = Categorical(inputDim);
-var hiddenType = Categorical(hiddenDim);
-var outputType = Categorical(outputDim);
+var Input = Categorical(30);
+var Hidden = Categorical(10);
+var Output = Categorical(2);
 
 var inputs = [...];
 
-testParamInference(function(randFunction) {
-  var inputToHidden = randFunction(inputType, hiddenType);
-  var hiddenToOutput = randFunction(hiddenType, outputType);
+var inputToHidden = randFunction(Input, Hidden);
+var hiddenToOutput = randFunction(Hidden, Output);
 
-  return function() {
-    return repeat(inputs.length, function(sampIndex) {
-      var hiddenLayer = inputToHidden(inputs[sampIndex]);
-      observe('output' + sampIndex, hiddenToOutput, hiddenLayer);
-    });
-  };
-});
+return function() {
+  return repeat(inputs.length, function(sampIndex) {
+    var hiddenLayer = inputToHidden(inputs[sampIndex]);
+    observe(hiddenToOutput, hiddenLayer);
+  });
+};
 \end{verbatim}
 }
 

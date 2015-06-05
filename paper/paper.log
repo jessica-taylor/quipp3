@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 18:56
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 20:36
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -574,38 +574,23 @@ LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
 File: cluster_accuracy.png Graphic file (type png)
 
 <use cluster_accuracy.png>
-Package pdftex.def Info: cluster_accuracy.png used on input line 356.
+Package pdftex.def Info: cluster_accuracy.png used on input line 357.
 (pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
- [6 <./cluster_accuracy.png>]
-Overfull \hbox (56.1145pt too wide) in paragraph at lines 448--448
-[]    \OT1/pcr/m/n/9 return [startState].concat(observeStates(sampIndex, transF
-un(startState), i+1));[] 
- []
+ [6 <./cluster_accuracy.png>] [7] (./paper.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 506.
 
-[7]
-Overfull \hbox (29.11453pt too wide) in paragraph at lines 476--476
-[]    \OT1/pcr/m/n/9 var nWords = observe('len' + docIndex, randomInteger, maxW
-ordsPerDocument);[] 
- []
-
-(./paper.bbl
-Underfull \vbox (badness 4328) has occurred while \output is active []
-
- [8])
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 522.
-
-[9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 522.
+[8]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 506.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 522.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 522.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 506.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 506.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 522.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 506.
  ) 
 Here is how much of TeX's memory you used:
- 7365 strings out of 493109
- 110332 string characters out of 6117083
+ 7364 strings out of 493109
+ 110326 string characters out of 6117083
  209980 words of memory out of 5000000
  10696 multiletter control sequences out of 15000+600000
  18612 words of font info for 44 fonts, out of 8000000 for 9000
@@ -632,10 +617,10 @@ store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/u
 rw/times/utmb8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdi
 r/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></nix/store/a5h94i4ysxcjzm493i07h
 c4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (9 pages, 241822 bytes).
+Output written on paper.pdf (8 pages, 240972 bytes).
 PDF statistics:
- 136 PDF objects out of 1000 (max. 8388607)
- 101 compressed objects within 2 object streams
- 25 named destinations out of 1000 (max. 500000)
+ 130 PDF objects out of 1000 (max. 8388607)
+ 97 compressed objects within 1 object stream
+ 24 named destinations out of 1000 (max. 500000)
  21 words of extra memory for PDF output out of 10000 (max. 10000000)
 
