@@ -140,7 +140,7 @@ var n = 100;
 
 var Cluster = Categorical(2);
 var Point = Vector(2, Double);
-var getPoint = randFunction(Categorical(2), pointType);
+var getPoint = randFunction(Cluster, Point);
 return function() {
   repeat(n, function(i) {
     var cluster = randomValue(Cluster);
