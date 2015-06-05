@@ -2,12 +2,17 @@
 \usepackage{cite}
 \usepackage{listings}
 \usepackage{amsmath}
+\usepackage{array}
 % \usepackage{minted1}
 \usepackage{hyperref}
 \usepackage{amsfonts}
 \usepackage{multicol} \usepackage{fancyheadings} \usepackage{pdfpages}
 \usepackage{nips15submit_e,times}
 \setlength{\emergencystretch}{10em}
+
+\newcolumntype{L}[1]{>{\raggedright\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{C}[1]{>{\centering\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
+\newcolumntype{R}[1]{>{\raggedleft\let\newline\\\arraybackslash\hspace{0pt}}m{#1}}
 
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
@@ -195,7 +200,7 @@ var model = function() {
   \section{Family of distributions}
   
     
-  In the previous example, we that \texttt{randFunction(Categorical(2), Vector(2, Double))} represented 2 axis-aligned Gaussian clusters with equal variances.  In general, \texttt{randFunction} returns a randomized function that is a member of some generalized linear model
+  In the previous example, we that \texttt{randFunction(Categorical(2), Vector(2, Double))} represented 2 axis-aligned 2-dimensional Gaussian clusters with equal variances.  In general, \texttt{randFunction} returns a randomized function that is a member of some generalized linear model
     determined by the desired argument types and return type.
     The distribution
     of the function's return value $y$
@@ -224,28 +229,44 @@ var model = function() {
     where $\mathbf{N}$ is a matrix containing our parameters.  It must have 0 for each entry whose row corresponds
     to a sufficient statistics of $y$ that is not a feature and whose column is not 1.
     This ensures that only the
-    natural parameters that are features of $y$ are affected by $x$.  The following shows the types
+    natural parameters that are features of $y$ are affected by $x$.
+    
+    Additionally, we provide a $\texttt{randomValue}$ function for convenience, which
+    returns a sample from the ``default'' distribution for a given type.  The following shows the types
     in Quipp and their corresponding sufficient statistics, features, and English descriptions.
 
-    \begin{tabular}{| c | c | c | c|}
+    \begin{center}
+    {\scriptsize
+      \begin{tabular}{| c | c | c | c | C{3cm} |}
       \hline
-      T & $\phi_T(X)$ & $\psi_T(X)$ & Random function class \\
+      T & $\phi_T(X)$ & $\psi_T(X)$ & \texttt{randomValue(T)} & Random function class \\
 
       \hline
-    \texttt{Double} & $\begin{bmatrix} X \\ X^2 \end{bmatrix}$ & $\begin{bmatrix} X \end{bmatrix}$ & Linear regression with Gaussian noise \\
+    \texttt{Double} & $\begin{bmatrix} X \\ X^2 \end{bmatrix}$ & $\begin{bmatrix} X \end{bmatrix}$ & 
+      $\mathcal{N}(0, 1)$ &
+      Linear regression\\
 
       \hline
-    \texttt{Categorical(n)} & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $n$-class logistic regression \\
+    \texttt{Categorical(n)} & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & uniform & $n$-class logistic regression \\
 
       \hline
     \texttt{Tuple(T1, T2)} & $\begin{bmatrix} \phi_{T1}(X_1) \\ \phi_{T2}(X_2) \end{bmatrix}$
                            & $\begin{bmatrix} \psi_{T1}(X_1) \\ \psi_{T2}(X_2) \end{bmatrix}$ &
-      Independent regression of each component
+      \begin{tabular}{l}
+        \texttt{[randomValue(T1),}
+       \\
+     \texttt{ randomValue(T2)]}
+      \end{tabular}
+                           &
+      Independent regression
       \\
       \hline
     \end{tabular}
+  }
+\end{center}
 
-    Note that $\texttt{Vector(n, T)}$ is shorthand for $Tuple(T, T, ..., T)$, with $n$ copies of $T$.
+  Note that \texttt{Vector(n, T)} is shorthand for \texttt{Tuple([T, T, ..., T])} (with $n$ copies of $T$),
+  and \texttt{Bool} is shorthand for \texttt{Categorical(2)}.
 
   \section{Example: improving the clustering model}
   Using this knowledge about the form of the random functions, we can improve the clustering model from before.
@@ -299,7 +320,7 @@ var model = function() {
     To infer both latent variables and parameters, we use a Monte Carlo
     expectation maximization algorithm \cite{mcem} on the probabilistic model, iterating stages of
     estimating latent variables using Metropolis Hastings and inferring
-    parameters using gradient descent.
+    parameters using gradient descent.  The first iteration uses randomly generated parameters.
 
     For the expectation step, we must estimate latent variable distributions given
     fixed values for the parameters.  To do this, we can replace unknown random functions in the Quipp program
@@ -335,10 +356,10 @@ var model = function() {
       \item
         Use the EM algorithm to infer approximate parameters $\hat{\theta}$ from $x_{train}$
       \item
-        Estimate $\log P(x_{test} | \hat{\theta})$ and compare to $\log P(x_{test} | \theta)$
+        Estimate the regret $\log P(x_{test} | \hat{\theta}) - \log P(x_{test} | \theta)$
     \end{itemize}
     Estimating $\log P(x_{test} | \theta)$ is nontrivial, given that the model contains latent variables.
-    We use the Sequential Monte Carlo algorithm for this.  Between observations,
+    We use the Sequential Monte Carlo algorithm for this, as described in \cite{dippl}.
 
 
   \section{Examples}

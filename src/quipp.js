@@ -14,7 +14,11 @@ var Vector = fromMonad(function(n, t) {
   return mreturn(expfam.Tuple(_.times(n, function() { return t; })));
 });
 
-var Bool = mcurry(util.Categorical, 2);
+var Tuple2 = fromMonad(function(args) {
+  return mreturn(expfam.Tuple([].slice.call(args)));
+});
+
+var Bool = util.Categorical(2);
 
 
 module.exports = {
@@ -24,7 +28,7 @@ module.exports = {
   testParamInferenceSplit: param_inference.testParamInferenceSplit,
   Double: expfam.Double,
   Bool: Bool,
-  Tuple: util.makeWpplFunction(expfam.Tuple),
+  Tuple: Tuple2,
   Vector: Vector,
   Categorical: util.makeWpplFunction(expfam.Categorical),
   randomValue: fromMonad(function(t) { return t.randomDefault; })

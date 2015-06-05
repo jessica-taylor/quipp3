@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 22:51
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 23:18
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -131,6 +131,15 @@ LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
+ex/tools/array.sty
+Package: array 2008/09/09 v2.4c Tabular extension package (FMi)
+\col@sep=\dimen116
+\extrarowheight=\dimen117
+\NC@list=\toks21
+\extratabsurround=\skip46
+\backup@length=\skip47
+)
+(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/hyperref/hyperref.sty
 Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
 
@@ -193,7 +202,7 @@ Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
 ex/oberdiek/kvoptions.sty
 Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 )
-\@linkdim=\dimen116
+\@linkdim=\dimen118
 \Hy@linkcounter=\count107
 \Hy@pagecounter=\count108
 
@@ -222,10 +231,10 @@ ex/url/url.sty
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5041.
-\XeTeXLinkMargin=\dimen117
+\XeTeXLinkMargin=\dimen119
 \Fld@menulength=\count111
-\Field@Width=\dimen118
-\Fld@charsize=\dimen119
+\Field@Width=\dimen120
+\Fld@charsize=\dimen121
 Package hyperref Info: Hyper figures OFF on input line 6295.
 Package hyperref Info: Link nesting OFF on input line 6300.
 Package hyperref Info: Hyper index ON on input line 6303.
@@ -255,7 +264,7 @@ Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 82.
 )
-\Hy@SectionHShift=\skip46
+\Hy@SectionHShift=\skip48
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/amsfonts/amsfonts.sty
@@ -270,21 +279,21 @@ ex/tools/multicol.sty
 Package: multicol 2014/08/24 v1.8g multicolumn formatting (FMi)
 \c@tracingmulticols=\count117
 \mult@box=\box30
-\multicol@leftmargin=\dimen120
+\multicol@leftmargin=\dimen122
 \c@unbalance=\count118
 \c@collectmore=\count119
 \doublecol@number=\count120
 \multicoltolerance=\count121
 \multicolpretolerance=\count122
-\full@width=\dimen121
-\page@free=\dimen122
-\premulticols=\dimen123
-\postmulticols=\dimen124
-\multicolsep=\skip47
-\multicolbaselineskip=\skip48
+\full@width=\dimen123
+\page@free=\dimen124
+\premulticols=\dimen125
+\postmulticols=\dimen126
+\multicolsep=\skip49
+\multicolbaselineskip=\skip50
 \partial@page=\box31
 \last@line=\box32
-\maxbalancingoverflow=\dimen125
+\maxbalancingoverflow=\dimen127
 \mult@rightbox=\box33
 \mult@grightbox=\box34
 \mult@gfirstbox=\box35
@@ -308,9 +317,9 @@ Package: multicol 2014/08/24 v1.8g multicolumn formatting (FMi)
 \@tempa=\box53
 \c@columnbadness=\count123
 \c@finalcolumnbadness=\count124
-\last@try=\dimen126
-\multicolovershoot=\dimen127
-\multicolundershoot=\dimen128
+\last@try=\dimen128
+\multicolovershoot=\dimen129
+\multicolundershoot=\dimen130
 \mult@nat@firstbox=\box54
 \colbreak@box=\box55
 \mc@col@check@num=\count125
@@ -335,15 +344,15 @@ Package fancyheadings Warning: Please stop using fancyheadings!
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/fancyhdr/fancyhdr.sty
-\fancy@headwidth=\skip49
-\f@ncyO@elh=\skip50
-\f@ncyO@erh=\skip51
-\f@ncyO@olh=\skip52
-\f@ncyO@orh=\skip53
-\f@ncyO@elf=\skip54
-\f@ncyO@erf=\skip55
-\f@ncyO@olf=\skip56
-\f@ncyO@orf=\skip57
+\fancy@headwidth=\skip51
+\f@ncyO@elh=\skip52
+\f@ncyO@erh=\skip53
+\f@ncyO@olh=\skip54
+\f@ncyO@orh=\skip55
+\f@ncyO@elf=\skip56
+\f@ncyO@erf=\skip57
+\f@ncyO@olf=\skip58
+\f@ncyO@orf=\skip59
 ))
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/pdfpages/pdfpages.sty
@@ -358,14 +367,14 @@ ex/tools/calc.sty
 Package: calc 2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
 \calc@Acount=\count126
 \calc@Bcount=\count127
-\calc@Adimen=\dimen129
-\calc@Bdimen=\dimen130
-\calc@Askip=\skip58
-\calc@Bskip=\skip59
+\calc@Adimen=\dimen131
+\calc@Bdimen=\dimen132
+\calc@Askip=\skip60
+\calc@Bskip=\skip61
 LaTeX Info: Redefining \setlength on input line 75.
 LaTeX Info: Redefining \addtolength on input line 76.
 \calc@Ccount=\count128
-\calc@Cskip=\skip60
+\calc@Cskip=\skip62
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/eso-pic/eso-pic.sty
@@ -414,23 +423,23 @@ File: graphics.cfg 2010/04/23 v1.9 graphics configuration of TeX Live
 )
 Package graphics Info: Driver file: pdftex.def on input line 91.
 )
-\Gin@req@height=\dimen131
-\Gin@req@width=\dimen132
+\Gin@req@height=\dimen133
+\Gin@req@width=\dimen134
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/pdfpages/pppdftex.def
 File: pppdftex.def 2013/08/25 v0.4v Pdfpages driver for pdfTeX (AM)
 )
 \AM@pagebox=\box56
-\AM@toc@title=\toks21
+\AM@toc@title=\toks22
 \c@AM@survey=\count130
 \AM@templatesizebox=\box57
 ) (./nips15submit_e.sty
 \nipsrulerbox=\box58
 \nipsrulercount=\count131
-\nipsruleroffset=\dimen133
-\cv@lineheight=\dimen134
-\cv@boxheight=\dimen135
+\nipsruleroffset=\dimen135
+\cv@lineheight=\dimen136
+\cv@boxheight=\dimen137
 \cv@tmpbox=\box59
 \cv@refno=\count132
 \cv@tot=\count133
@@ -445,21 +454,21 @@ Package: times 2005/04/12 PSNFSS-v9.2a (SPQR)
  (./paper.aux)
 \openout1 = `paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 67.
-LaTeX Font Info:    ... okay on input line 67.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 67.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 72.
+LaTeX Font Info:    ... okay on input line 72.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 72.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/psnfss/ot1ptm.fd
@@ -467,7 +476,7 @@ File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
 \c@lstlisting=\count137
 \AtBeginShipoutBox=\box60
-Package hyperref Info: Link coloring OFF on input line 67.
+Package hyperref Info: Link coloring OFF on input line 72.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/hyperref/nameref.sty
@@ -479,9 +488,9 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count138
 )
-LaTeX Info: Redefining \ref on input line 67.
-LaTeX Info: Redefining \pageref on input line 67.
-LaTeX Info: Redefining \nameref on input line 67.
+LaTeX Info: Redefining \ref on input line 72.
+LaTeX Info: Redefining \pageref on input line 72.
+LaTeX Info: Redefining \nameref on input line 72.
  (./paper.out) (./paper.out)
 \@outlinefile=\write3
 \openout3 = `paper.out'.
@@ -491,16 +500,16 @@ LaTeX Info: Redefining \nameref on input line 67.
 text/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count139
-\scratchdimen=\dimen136
+\scratchdimen=\dimen138
 \scratchbox=\box61
 \nofMPsegments=\count140
 \nofMParguments=\count141
-\everyMPshowfont=\toks22
+\everyMPshowfont=\toks23
 \MPscratchCnt=\count142
-\MPscratchDim=\dimen137
+\MPscratchDim=\dimen139
 \MPnumerator=\count143
 \makeMPintoPDFobject=\count144
-\everyMPtoPDFconversion=\toks23
+\everyMPtoPDFconversion=\toks24
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/oberdiek/epstopdf-base.sty
@@ -521,34 +530,34 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 69.
-LaTeX Font Info:    Try loading font information for U+msa on input line 69.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Try loading font information for U+msa on input line 74.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 69.
+LaTeX Font Info:    Try loading font information for U+msb on input line 74.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 69.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 69.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 74.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 74.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 71.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 76.
  [1{/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-config/fo
 nts/map/pdftex/updmap/pdftex.map}
 
 ]
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 157.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 162.
 
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
@@ -556,142 +565,141 @@ ex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 157.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 162.
 
 <../plots/irisclusters_orig.png, id=18, 578.16pt x 433.62pt>
 File: ../plots/irisclusters_orig.png Graphic file (type png)
 
 <use ../plots/irisclusters_orig.png>
-Package pdftex.def Info: ../plots/irisclusters_orig.png used on input line 180.
+Package pdftex.def Info: ../plots/irisclusters_orig.png used on input line 185.
 
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
-Underfull \hbox (badness 6063) in paragraph at lines 198--204
+Underfull \hbox (badness 6063) in paragraph at lines 203--209
 \OT1/ptm/m/n/10 In the pre-vi-ous ex-am-ple, we that \OT1/pcr/m/n/10 randFuncti
 on(Categorical(2), Vector(2,
  []
 
 [2 <../plots/irisclusters_orig.png>]
-Overfull \hbox (35.0159pt too wide) in paragraph at lines 230--247
-[][] 
- []
-
-
-Overfull \hbox (40.6541pt too wide) in paragraph at lines 259--261
+Overfull \hbox (40.6541pt too wide) in paragraph at lines 280--282
 [][][][][][][][][][][][][][][][][][][] 
  []
 
-[3] <../plots/irisclusters_indep.png, id=62, 578.16pt x 433.62pt>
+[3] <../plots/irisclusters_indep.png, id=63, 578.16pt x 433.62pt>
 File: ../plots/irisclusters_indep.png Graphic file (type png)
 
 <use ../plots/irisclusters_indep.png>
-Package pdftex.def Info: ../plots/irisclusters_indep.png used on input line 268
+Package pdftex.def Info: ../plots/irisclusters_indep.png used on input line 289
 .
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
-Overfull \hbox (70.6544pt too wide) in paragraph at lines 278--280
+Overfull \hbox (70.6544pt too wide) in paragraph at lines 299--301
 [][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-<../plots/irisclusters_dep.png, id=63, 578.16pt x 433.62pt>
+<../plots/irisclusters_dep.png, id=64, 578.16pt x 433.62pt>
 File: ../plots/irisclusters_dep.png Graphic file (type png)
 
 <use ../plots/irisclusters_dep.png>
-Package pdftex.def Info: ../plots/irisclusters_dep.png used on input line 290.
+Package pdftex.def Info: ../plots/irisclusters_dep.png used on input line 311.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
  [4 <../plots/irisclusters_indep.png>] [5 <../plots/irisclusters_dep.png>]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 349.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 370.
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 353.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 374.
 
-<../plots/accuracy_nd_clustering.png, id=90, 578.16pt x 433.62pt>
+<../plots/accuracy_nd_clustering.png, id=94, 578.16pt x 433.62pt>
 File: ../plots/accuracy_nd_clustering.png Graphic file (type png)
 
 <use ../plots/accuracy_nd_clustering.png>
 Package pdftex.def Info: ../plots/accuracy_nd_clustering.png used on input line
- 363.
+ 384.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
-Overfull \hbox (11.2538pt too wide) in paragraph at lines 378--380
+Overfull \hbox (11.2538pt too wide) in paragraph at lines 399--401
 [][][][][][][][][][][][][][][][][][][] 
  []
 
 [6 <../plots/accuracy_nd_clustering.png>]
-<../plots/accuracy_factor_analysis.png, id=118, 578.16pt x 433.62pt>
+<../plots/accuracy_factor_analysis.png, id=122, 578.16pt x 433.62pt>
 File: ../plots/accuracy_factor_analysis.png Graphic file (type png)
 
 <use ../plots/accuracy_factor_analysis.png>
 Package pdftex.def Info: ../plots/accuracy_factor_analysis.png used on input li
-ne 410.
+ne 431.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
-<../plots/accuracy_hmm.png, id=119, 578.16pt x 433.62pt>
+<../plots/accuracy_hmm.png, id=123, 578.16pt x 433.62pt>
 File: ../plots/accuracy_hmm.png Graphic file (type png)
 
 <use ../plots/accuracy_hmm.png>
-Package pdftex.def Info: ../plots/accuracy_hmm.png used on input line 440.
+Package pdftex.def Info: ../plots/accuracy_hmm.png used on input line 461.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
  [7 <../plots/accuracy_factor_analysis.png>]
-Overfull \hbox (70.6544pt too wide) in paragraph at lines 453--454
+Overfull \hbox (70.6544pt too wide) in paragraph at lines 474--475
 [][][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
-<../plots/accuracy_lda.png, id=157, 578.16pt x 433.62pt>
+<../plots/accuracy_lda.png, id=161, 578.16pt x 433.62pt>
 File: ../plots/accuracy_lda.png Graphic file (type png)
 
 <use ../plots/accuracy_lda.png>
-Package pdftex.def Info: ../plots/accuracy_lda.png used on input line 464.
+Package pdftex.def Info: ../plots/accuracy_lda.png used on input line 485.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
  [8 <../plots/accuracy_hmm.png> <../plots/accuracy_lda.png>] (./paper.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 495.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 516.
  [9]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 495.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 516.
  (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 495.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 495.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 516.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 516.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 495.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 516.
  ) 
 Here is how much of TeX's memory you used:
- 8771 strings out of 493109
- 131321 string characters out of 6117083
- 238136 words of memory out of 5000000
- 11977 multiletter control sequences out of 15000+600000
- 22502 words of font info for 50 fonts, out of 8000000 for 9000
+ 8822 strings out of 493109
+ 131980 string characters out of 6117083
+ 238931 words of memory out of 5000000
+ 12024 multiletter control sequences out of 15000+600000
+ 23879 words of font info for 52 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
- 37i,14n,45p,424b,1162s stack positions out of 5000i,500n,10000p,200000b,80000s
+ 37i,14n,45p,424b,1645s stack positions out of 5000i,500n,10000p,200000b,80000s
 {/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts
 /enc/dvips/base/8r.enc}</nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-lin
 kdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></nix/store/a5h94i4ys
 xcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/
 cm/cmbx7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf
 -dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></nix/store/a5h94i4ysxcjzm493i0
-7hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.
-pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fon
-ts/type1/public/amsfonts/cm/cmmi7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h
-0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></nix/s
-tore/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/pu
-blic/amsfonts/cm/cmr7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-
-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></nix/store/a5h94i
-4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfon
-ts/cm/cmsy7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/te
-xmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></nix/store/a5h94i4ysxcjzm493
-i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/courier/ucrr8a.pfb><
-/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/ty
-pe1/urw/helvetic/uhvb8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLiv
-e-linkdir/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></nix/store/a5h94i4ysxcjz
-m493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/utmr8a.pfb
-></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/
-type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (9 pages, 496921 bytes).
+7hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cmextra/cm
+ex7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmmi10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4c
+z1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi5.pfb></
+nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/typ
+e1/public/amsfonts/cm/cmmi7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-Te
+XLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></nix/store/a
+5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmr5.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdi
+r/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></nix/store/a5h94i4ysxcjzm
+493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cm
+sy10.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmsy7.pfb></nix/store/a5h94i4ysxcjzm493i07hc4c
+z1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy9.pfb></
+nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/typ
+e1/urw/courier/ucrr8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-
+linkdir/texmf-dist/fonts/type1/urw/helvetic/uhvb8a.pfb></nix/store/a5h94i4ysxcj
+zm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/utmb8a.pf
+b></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts
+/type1/urw/times/utmr8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLiv
+e-linkdir/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
+Output written on paper.pdf (9 pages, 522300 bytes).
 PDF statistics:
- 278 PDF objects out of 1000 (max. 8388607)
- 235 compressed objects within 3 object streams
+ 291 PDF objects out of 1000 (max. 8388607)
+ 245 compressed objects within 3 object streams
  133 named destinations out of 1000 (max. 500000)
  36 words of extra memory for PDF output out of 10000 (max. 10000000)
 
