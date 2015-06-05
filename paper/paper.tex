@@ -74,14 +74,14 @@ Stanford, CA 94305
   \maketitle
 
   \begin{abstract}
-    In probabilistic programs, sometimes it is difficult to specify the correct
+    When writing probabilistic programs, sometimes it is difficult for the programmer to specify the correct
     parameterized family of distributions.  We explore an extension to
     probabilistic programming languages that allows programmers to mark some
-    distributions as unspecified.  Then, we can fill in the distribution with
-    some family and infer parameters.
+    distributions as unspecified.  Then, for each distribution, the system can
+    determine some reasonable family of distributions and infer maximum likelihood
+    parameters.
   \end{abstract}
 
-   % TODO syntax coloring
 
   \section{Introduction}
 
@@ -356,7 +356,9 @@ var model = function() {
       \item
         Use the EM algorithm to infer approximate parameters $\hat{\theta}$ from $x_{train}$
       \item
-        Estimate the regret $\log P(x_{test} | \hat{\theta}) - \log P(x_{test} | \theta)$
+        Estimate $\log P(x_{test} | \hat{\theta})$
+      \item
+        Use the previous estimates to estimate the regret  $\log P(x_{test} | \hat{\theta}) - \log P(x_{test} | \theta)$
     \end{itemize}
     Estimating $\log P(x_{test} | \theta)$ is nontrivial, given that the model contains latent variables.
     We use the Sequential Monte Carlo algorithm for this, as described in \cite{dippl}.
