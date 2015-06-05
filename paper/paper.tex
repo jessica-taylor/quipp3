@@ -144,8 +144,7 @@ Stanford, CA 94305
   and present the expectation maximization algorithm used to learn them.
   We then demonstrate the expressiveness of our language, and the broad
   applicability of our algorithm, by writing some of the most common machine learning models
-  in Quipp: clustering, naive Bayes, factor analysis, a Hidden Markov model, Latent Dirichlet Allocation, and
-  a neural net.
+  in Quipp: clustering, naive Bayes, factor analysis, a Hidden Markov model and Latent Dirichlet Allocation.
   
   \section{Syntax}
 
@@ -183,13 +182,14 @@ var model = function() {
 
   To demonstrate, let us run this example on the Iris dataset, which consists of 150 points \cite{Lichman:2013}.  When we run the program on this data, we infer the parameters to the random function \texttt{getPoint}.
   In this case, \texttt{getPoint} is a linear function with Gaussian noise, so it will naturally
-  split the data into 2 clusters with equal variance, as seen in Figure 1.
+  split the data into 2 clusters with equal variance, as seen in Figure \ref{iris-orig}.
 
   \begin{figure}[h]
   \begin{center}
     \includegraphics[scale=0.5]{../plots/irisclusters_orig.png}
   \end{center}
   \caption{Clustering the Iris dataset}
+  \label{iris-orig}
 \end{figure}
 
   The first cluster is at (6.3, 5.0) and the second is at (5.0, 1.6).  They both
@@ -243,7 +243,7 @@ var model = function() {
     natural parameters that are features of $y$ are affected by $x$.
     
     Additionally, we provide a $\texttt{randomValue}$ function for convenience, which
-    returns a sample from the ``default'' distribution for a given type.  Table 1 shows the types
+    returns a sample from the ``default'' distribution for a given type.  Table \ref{type-table} shows the types
     in Quipp and their corresponding sufficient statistics, features, and English descriptions.
 
 \begin{table}[t]
@@ -285,7 +285,7 @@ var model = function() {
 
   \section{Example: improving the clustering model}
   Using this knowledge about the form of the random functions, we can improve the clustering model from before.
-  As observed in Figure 1, the two clusters are forced to have the
+  As observed in Figure \ref{iris-orig}, the two clusters are forced to have the
   same variance. They do not fit the data well, since the data has a different
   shape in each location.  To fix this problem, we can substitute the following
   model, which uses a separate random function (and therefore a separate axis-aligned Gaussian distribution) for each cluster:
@@ -304,8 +304,9 @@ var model = function() {
     \includegraphics[scale=0.5]{../plots/irisclusters_indep.png}
   \end{center}
   \caption{Clustering the Iris dataset with independent variances}
+  \label{iris-indep}
 \end{figure}
-  Using this model, we get the clusters shown in Figure 2.
+Using this model, we get the clusters shown in Figure \ref{iris-indep}.
   This model (with the parameters filled in) is estimated to assign probability density $e^{-337}$ to the data, yielding a perplexity of 0.1058.  This is a significantly improved fit.
 
   The fact that the gaussian distribution for each cluster must be axis-aligned limits the degree to which the model can fit the data.   To allow each cluster to be an arbitrary Gaussian distributions (where the $x$ and $y$ coordinates may be correlated),
@@ -323,7 +324,7 @@ var model = function() {
 };
 \end{lstlisting}
 
-  Here, there are 2 random functions for each cluster, one to get the $x$ coordinate and one to get the $y$ coordinate (whose distribution may depend linearly on the $x$ coordinate).  This allows $x$ and $y$ to be correlated, improving fit, as seen in Figure 3.
+Here, there are 2 random functions for each cluster, one to get the $x$ coordinate and one to get the $y$ coordinate (whose distribution may depend linearly on the $x$ coordinate).  This allows $x$ and $y$ to be correlated, improving fit, as seen in Figure \label{iris-dep}.
   This model is estimated to assign probability $e^{-269}$ to the data, yielding a perplexity of 0.166.  This is a large improvement from the previous model.
 
   \begin{figure}[h]
@@ -331,6 +332,7 @@ var model = function() {
     \includegraphics[scale=0.5]{../plots/irisclusters_dep.png}
   \end{center}
   \caption{Clustering the Iris dataset with multivariate Gaussian distributions}
+  \label{iris-dep}
 \end{figure}
 
 
@@ -391,6 +393,7 @@ var model = function() {
 
   \section{Examples}
 
+\FloatBarrier
   \subsection{Clustering}
 
 {\small
@@ -407,7 +410,7 @@ var model = function() {
 }
 
 
-In this example, we cluster 2d points into 3 different clusters.  Given a cluster, the distribution for a point is some independent Gaussian distribution.  This is similar to fuzzy c-means clustering.
+In this example, we cluster 2d points into 3 different clusters.  Given a cluster, the distribution for a point is some independent Gaussian distribution.  This is similar to fuzzy c-means clustering.  Regret usually reduces quite a lot as iterations increase.
 
   \begin{figure}[h]
 \begin{center}
@@ -422,6 +425,7 @@ In this example, we cluster 2d points into 3 different clusters.  Given a cluste
 % \includegraphics[scale=0.4]{cluster_accuracy.png}
 % \end{center}
 
+\FloatBarrier
 \subsection{Naive Bayes}
 
 {\small
@@ -443,6 +447,7 @@ a different categorical distribution for each class.  The main difference from c
 since this is a supervised learning method, we observe the class in addition to the features.  Since there
 are no latent variables, the system finds the correct parameters in a single iteration, so the regret plot is uninteresting.
 
+\FloatBarrier
   \subsection{Factor analysis}
 {\small
 \begin{lstlisting}
@@ -457,7 +462,7 @@ var model = function() {
 \end{lstlisting}
 }
 
-The factor analysis model is very similar to the clustering model.  The main difference is that we replace the categorical \texttt{ClusterType} type with a vector type.  \texttt{randomValue(Factors)} will return a vector from the standard multivariate normal distribution.  This results in the model attempting to predict each point as an affine function of a vector of standard normal values, with Gaussian noise.
+The factor analysis model is very similar to the clustering model.  The main difference is that we replace the categorical \texttt{ClusterType} type with a vector type.  \texttt{randomValue(Factors)} will return a vector from the standard multivariate normal distribution.  This results in the model attempting to predict each point as an affine function of a vector of standard normal values, with Gaussian noise.  Regret reduces as iterations increase.
 
   \begin{figure}[h]
 \begin{center}
@@ -466,6 +471,7 @@ The factor analysis model is very similar to the clustering model.  The main dif
 \caption{Regret-per-sample quantiles for factor analysis}
 \end{figure}
 
+\FloatBarrier
   \subsection{Hidden Markov model}
 {\small
 \begin{lstlisting}
@@ -490,7 +496,7 @@ var model = function() {
 \end{lstlisting}
 }
 
-In this example, we use the unknown function \texttt{transFun} for state transitions and \texttt{obsFun} for observations.  This means that we will learn both the state transition matrix and the observation matrix.
+In this example, we use the unknown function \texttt{transFun} for state transitions and \texttt{obsFun} for observations.  This means that we will learn both the state transition matrix and the observation matrix.  Regret starts low and does not change over time, indicating that only one EM iteration was necessary to accurately estimate the parameters.
 
   \begin{figure}[h]
 \begin{center}
@@ -499,6 +505,7 @@ In this example, we use the unknown function \texttt{transFun} for state transit
 \caption{Regret-per-sample quantiles for hidden Markov model}
 \end{figure}
 
+\FloatBarrier
 \subsection{Latent Dirichlet allocation}
 {\small
 \begin{lstlisting}
@@ -517,7 +524,7 @@ var model = function() {
 \end{lstlisting}
 }
 
-For latent Dirichlet allocation, we use the unknown function \texttt{topicToWord} to map latent topics to word distributions.  We will learn a different categorical distribution for each topic.
+For latent Dirichlet allocation, we use the unknown function \texttt{topicToWord} to map latent topics to word distributions.  We will learn a different categorical distribution for each topic.  Regret generally reduces over iterations.
 
   \begin{figure}[h]
 \begin{center}
@@ -525,24 +532,26 @@ For latent Dirichlet allocation, we use the unknown function \texttt{topicToWord
 \end{center}
 \caption{Regret-per-sample quantiles for latent Dirichlet allocation}
 \end{figure}
-\subsection{Neural network}
 
-{\small
-\begin{lstlisting}
-var Input = Vector(30, Bool);
-var Hidden = Vector(10, Bool);
-var Output = Bool;
-
-var inputToHidden = randFunction(Input, Hidden);
-var hiddenToOutput = randFunction(Hidden, Output);
-
-var model = function() {
-  var inputLayer = observe(randomValue, Input);
-  var hiddenLayer = inputToHidden(inputs[sampIndex]);
-  observe(hiddenToOutput, hiddenLayer);
-};
-\end{lstlisting}
-}
+% \FloatBarrier
+% \subsection{Neural network}
+% 
+% {\small
+% \begin{lstlisting}
+% var Input = Vector(30, Bool);
+% var Hidden = Vector(10, Bool);
+% var Output = Bool;
+% 
+% var inputToHidden = randFunction(Input, Hidden);
+% var hiddenToOutput = randFunction(Hidden, Output);
+% 
+% var model = function() {
+%   var inputLayer = observe(randomValue, Input);
+%   var hiddenLayer = inputToHidden(inputs[sampIndex]);
+%   observe(hiddenToOutput, hiddenLayer);
+% };
+% \end{lstlisting}
+% }
 
   \section{Discussion}
 

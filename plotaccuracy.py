@@ -49,7 +49,8 @@ def concat(lst):
 
 niters = len(run_results[0]['infLps'])
 
-niters = min(12, niters)
+if program_name == 'factor_analysis':
+  niters = min(12, niters)
 
 def mean(xs):
   return sum(xs) / len(xs)
