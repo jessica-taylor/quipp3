@@ -5,8 +5,19 @@ import sys
 import json
 import subprocess
 
-
 program_name = sys.argv[1]
+
+nsamps = 1
+if program_name == 'nd_clustering':
+  nsamps = 100
+elif program_name == 'factor_analysis':
+  nsamps = 50
+elif program_name == 'hmm':
+  nsamps = 40
+elif program_name == 'lda':
+  nsamps = 40
+
+
 
 run_results = []
 for line in open('plots/' + program_name + '.data'):
@@ -38,6 +49,8 @@ def concat(lst):
 
 niters = len(run_results[0]['infLps'])
 
+niters = min(12, niters)
+
 def mean(xs):
   return sum(xs) / len(xs)
 
@@ -55,7 +68,7 @@ regret_distrs = [[r['origLp'] - r['infLps'][i] for r in run_results] for i in ra
 print 'rd', len(regret_distrs), niters
 
 xlabel('iteration')
-ylabel('regret')
+ylabel('regret per sample')
 
 quantiles = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9]
 quantiles = [0.1, 0.3, 0.5, 0.7, 0.9]
@@ -63,12 +76,12 @@ for q in quantiles:
   quants = []
   for i in range(burn, niters):
     regrets = regret_distrs[i-burn]
-    quants.append(max(0, quantile(regrets, q)))
-  plot(range(burn, niters), quants, label=str(q))
+    quants.append(max(0, quantile(regrets, q))/nsamps)
+  plot(range(burn+1, niters+1), quants, label=str(q))
   
 
-title('Regret quantiles by iteration')
 legend()
+axis(xmin=2)
 
 
 plot_name = 'plots/accuracy_' + program_name + '.png'

@@ -80,13 +80,13 @@ def iparams3(px, py):
 
 
 
-which_plot = 2
+which_plot = 1
 
 if which_plot == 0:
 
-  xstdev0, xmean0, xmean1 = iparams1(params[0][0])
+  xstdev0, xmean0, xmean1 = iparams1(params1[0][0])
   xstdev1 = xstdev0
-  ystdev0, ymean0, ymean1 = iparams1(params[0][1])
+  ystdev0, ymean0, ymean1 = iparams1(params1[0][1])
   ystdev1 = ystdev0
 
 elif which_plot == 1:
@@ -101,20 +101,23 @@ else:
   xmean0, ymean0, angle0, ustdev0, vstdev0 = iparams3(params3[0], params3[2])
   xmean1, ymean1, angle1, ustdev1, vstdev1 = iparams3(params3[1], params3[3])
 
+fig = figure()
+ax = fig.add_subplot(111)
+ax.scatter(xs, ys)
 
 ellipses = []
 if which_plot != 2:
   for x,y,xs,ys,c in [(xmean0, ymean0,xstdev0, ystdev0, 'blue'), (xmean1, ymean1, xstdev1, ystdev1, 'red')]:
     ellipses.append((Ellipse(xy=(x,y), width=xs*2, height=ys*2), c))
 else:
-  for x,y,a,us,vs,c in [(xmean0, ymean0, angle0, ustdev0, vstdev0, 'blue'), (xmean1, ymean1, angle1, ustdev1, vstdev1, 'red')]:
+  for x,y,a,us,vs,c in [(xmean0, ymean0, angle0, ustdev0, vstdev0, 'red'), (xmean1, ymean1, angle1, ustdev1, vstdev1, 'blue')]:
     print 'xy', x, y, a, us, vs, c
     ellipses.append((Ellipse(xy=(x,y), width=us*2, height=vs*2, angle=a*180/math.pi), c))
 
-fig = figure()
-ax = fig.add_subplot(111)
 # ax.scatter(xs, ys, c=list(map(boolcolor, clusters)))
-ax.scatter(xs, ys)
+
+ylabel('Petal length (in)')
+xlabel('Sepal length (in)')
 
 for e,c in ellipses:
   ax.add_artist(e)

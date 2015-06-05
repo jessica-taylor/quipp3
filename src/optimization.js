@@ -81,6 +81,7 @@ function elementsToMat(nrows, elems) {
 }
 
 function transpose(mat) {
+  assert (mat.length != 0);
   var res = [];
   for (var i = 0; i < mat[0].length; ++i) {
     res.push(matCol(mat, i));

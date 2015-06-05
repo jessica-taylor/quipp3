@@ -6,8 +6,8 @@ var repeat = function(n, fn) {
 testParamInference(function(randFunction) {
 
 var chainLength = 20;
-var State = Categorical(2);
-var Obs = Categorical(4);
+var State = Categorical(3);
+var Obs = Categorical(10);
 var transFun = randFunction(State, State);
 var obsFun = randFunction(State, Obs);
 

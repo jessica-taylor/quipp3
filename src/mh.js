@@ -168,6 +168,10 @@ module.exports = function(env) {
       }
       this.returnHist[stringifiedVal].prob += 1;
 
+      if (this.trace.length == 0) {
+        return this.exit(s, val);
+      }
+
       // make a new proposal:
       this.regenFrom = Math.floor(Math.random() * this.trace.length);
       var regen = this.trace[this.regenFrom];

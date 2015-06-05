@@ -31,5 +31,5 @@ module.exports = {
   Tuple: Tuple2,
   Vector: Vector,
   Categorical: util.makeWpplFunction(expfam.Categorical),
-  randomValue: fromMonad(function(t) { return t.randomDefault; })
+  randomValue: expfam.randomValue
 };

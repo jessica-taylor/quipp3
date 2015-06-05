@@ -65,7 +65,7 @@ var Double = {
     var mean = nps[0] * variance;
     return global.sample(s, k, a, erp.gaussianERP, [mean, Math.sqrt(variance)]);
   },
-  defaultNatParam: [0.0, -0.001],
+  defaultNatParam: [0.0, -0.5],
   randNatParam: fromMonad(function() {
     return mbind(global.sample, erp.gaussianERP, [0, 5], function(mean) {
       return mbind(global.sample, erp.gaussianERP, [0, 5], function(stdev) {
@@ -86,9 +86,6 @@ var Double = {
         });
       });
     });
-  }),
-  randomDefault: fromMonad(function() {
-    return mcurry(global.sample, erp.gaussianERP, [0, 1]);
   }),
   featuresMask: [true, false],
   mle: function(samples, natParam) {
@@ -132,13 +129,13 @@ function Categorical(n) {
     randParams: fromMonad(function(nfeatures) {
       var getRow = mcurry(randCategoricalNp, n);
       return mbind(getRow, function(base) {
+        if (nfeatures == 0) {
+          return mreturn({base: base, weights: _.times(n-1, function() { return []; })});
+        }
         return mbind(util.replicateM, nfeatures, getRow, function(weights) {
           return mreturn({base: base, weights: opt.transpose(weights)});
         });
       });
-    }),
-    randomDefault: fromMonad(function() {
-      return mcurry(global.sample, erp.randomIntegerERP, [n]);
     }),
     featuresMask: _.times(n-1, function() { return true; }),
     formatParams: function(params) { return params; }
@@ -203,9 +200,6 @@ function Tuple(types) {
         weights: util.concat(_.pluck(subParams, 'weights'))
       };
     },
-    randomDefault: mcurry(util.mapM, types, fromMonad(function(t) {
-      return t.randomDefault;
-    })),
     formatParams: function(params) {
       return types.map(function(type, i) {
         var subParams = {
@@ -311,7 +305,7 @@ function gaussianMle(samples) {
   ys.forEach(function(y, i) {
     var lp = logProbability(ad.standardNumType, Double, params, samples[i][1], samples[i][2]);
     var predLp = - 0.5 * Math.log(2 * Math.PI * resid2) - Math.pow(y - predYs[i], 2) / (2 * resid2); 
-    assert(Math.abs(lp - predLp) < 0.01);
+    // assert(Math.abs(lp - predLp) < 0.01);
   });
   return params;
 }
@@ -369,6 +363,10 @@ var simpleSample = fromMonad(function(expfam, nps) {
   });
 });
 
+var randomValue = fromMonad(function(t) {
+  return mcurry(t.sample, t.defaultNatParam);
+});
+
 module.exports = {
   dim: dim,
   featuresDim: featuresDim,
@@ -381,6 +379,7 @@ module.exports = {
   mle: mle,
   paramsScoreFunction: paramsScoreFunction,
   defaultParameters: defaultParameters,
-  simpleSample: simpleSample
+  simpleSample: simpleSample,
+  randomValue: randomValue
 };
 

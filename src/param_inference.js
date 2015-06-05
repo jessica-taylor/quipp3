@@ -32,11 +32,17 @@ var resetObsIndex = function(s, k, a) {
 DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
-  if (typeof addr == 'function' || typeof addr == 'object') {
+  if (typeof addr != 'string') {
     // return mbind(util.getAddress, function(a) {
     return mbind(nextObsIndex, function(a) {
-      return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
+      return mcurryMethod.apply(null, [self, 'sampleOrCondition', '' + a, addr, rf].concat(args));
     });
+  }
+
+  if (typeof rf == 'number') {
+    assert(rf == Math.floor(rf));
+    self.valueMap[addr] = rf;
+    return mreturn(rf);
   }
 
   if (rf.constructor == erp.ERP) {
@@ -45,6 +51,7 @@ DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
       return mreturn(samp);
     });
   }
+
 
   return mbind.apply(null, [rf].concat(args).concat([function(samp) {
     self.valueMap[addr] = samp;
@@ -70,18 +77,32 @@ function DataConditioner(valueMap) {
 DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
-  if (typeof addr == 'function' || typeof addr == 'object') {
+  if (typeof addr != 'string') {
     return mbind(nextObsIndex, function(a) {
     // return mbind(util.getAddress, function(a) {
-      return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
+      return mcurryMethod.apply(null, [self, 'sampleOrCondition', '' + a, addr, rf].concat(args));
     });
   }
 
   assert(addr in self.valueMap);
   var ret = self.valueMap[addr];
 
+  if (typeof rf == 'number') {
+    return mbind(factor, rf == ret ? 0.0 : -Infinity, function() {
+      return mreturn(rf);
+    });
+  }
+
   if (rf.constructor == erp.ERP) {
     return mbind(global.factor, rf.score(args, ret), function() {
+      return mreturn(ret);
+    });
+  }
+
+  if (rf == expfam.randomValue) {
+    var ef = args[0];
+    var params = {base: ef.defaultNatParam, weights: _.times(expfam.featuresDim(ef), function() { return []; })};
+    return mbind(global.factor, expfam.logProbability(ad.standardNumType, ef, params, [], ef.sufStat(ret)), function() {
       return mreturn(ret);
     });
   }
@@ -318,7 +339,7 @@ var testParamInferenceSplit = fromMonad(function(fun, opts) {
       console.log('orig params', JSON.stringify(upmWrong.formatParameters(origParams)));
       console.log('also', JSON.stringify(origParams));
       return mbind(generateRandData, fun, opts, origParams, function(trainingData) {
-        // console.log('training data', trainingData);
+        console.log('training data', trainingData);
         return mbind(generateRandData, fun, opts, origParams, function(testData) {
           // console.log('test data', testData);
 
@@ -371,7 +392,6 @@ var testParamInference = fromMonad(function(fun, opts) {
   });
   return mcurry(testParamInferenceSplit, fun2, opts);
 });
-
 
 module.exports = {
   inferParameters: inferParameters,

@@ -53,9 +53,6 @@ function trampoline(f) {
   };
 }
 
-// 18008723377
-// 1800 traders
-
 function mbind(x) {
   assert(typeof x == 'function', x);
   var args = [].slice.call(arguments);
