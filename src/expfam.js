@@ -87,6 +87,9 @@ var Double = {
       });
     });
   }),
+  randomDefault: fromMonad(function() {
+    return mcurry(global.sample, erp.gaussianERP, [0, 1]);
+  }),
   featuresMask: [true, false],
   mle: function(samples, natParam) {
     return gaussianMle(samples);
@@ -126,6 +129,9 @@ function Categorical(n) {
           return mreturn({base: base, weights: opt.transpose(weights)});
         });
       });
+    }),
+    randomDefault: fromMonad(function() {
+      return mcurry(global.sample, erp.randomIntegerERP, [n]);
     }),
     featuresMask: _.times(n-1, function() { return true; }),
     formatParams: function(params) { return params; }
@@ -190,6 +196,9 @@ function Tuple(types) {
         weights: util.concat(_.pluck(subParams, 'weights'))
       };
     },
+    randomDefault: mcurry(util.mapM, types, fromMonad(function(t) {
+      return t.randomDefault;
+    })),
     formatParams: function(params) {
       return types.map(function(type, i) {
         var subParams = {

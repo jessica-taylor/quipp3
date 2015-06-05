@@ -1,29 +1,33 @@
 
-var nstates = 2;
-var nobs = 3;
-
-var chainLength = 8;
-
-var n = 30;
-
+var repeat = function(n, fn) {
+  return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
+};
 
 testParamInference(function(randFunction) {
-  var stateType = Categorical(nstates);
-  var obsType = Categorical(nobs);
-  var transFun = randFunction(stateType, stateType);
-  var obsFun = randFunction(stateType, obsType);
 
-  var observeStates = function(sampIndex, startState, i) {
-    if (i == chainLength) {
-      return [];
-    } else {
-      observe('obs' + sampIndex + '_' + i, obsFun, startState);
-      return [startState].concat(observeStates(sampIndex, transFun(startState), i+1));
-    }
-  };
-  return function() {
-    return repeat(n, function(sampIndex) {
-      return observeStates(sampIndex, randomInteger(nstates), 0);
-    });
-  };
-});
+var chainLength = 20;
+
+var n = 10;
+
+var State = Categorical(2);
+var Obs = Categorical(4);
+var transFun = randFunction(State, State);
+var obsFun = randFunction(State, Obs);
+
+var observeStates = function(sampIndex, startState, i) {
+  if (i == chainLength) {
+    return [];
+  } else {
+    observe('obs' + sampIndex + '_' + i, obsFun, startState);
+    return [startState].concat(observeStates(sampIndex, transFun(startState), i+1));
+  }
+};
+
+return function() {
+  return repeat(n, function(sampIndex) {
+    return observeStates(sampIndex, randomValue(State), 0);
+  });
+};
+
+},
+{logPartitionParticles: 30});

@@ -5,9 +5,15 @@ import json
 
 
 nparallel = 4
-niters = 5
 
 program_name = sys.argv[1]
+
+niters = 30
+if program_name == 'factor_analysis':
+  niters = 12
+if program_name == 'hmm':
+  niters = 10
+
 
 
 def append_result(line):

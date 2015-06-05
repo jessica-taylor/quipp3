@@ -27,8 +27,11 @@ function withStackMessage(msg, x) {
 }
 
 function catchStack(x) {
+  assert(typeof x == 'function', x);
   try {
-    return x();
+    var result = x();
+    assert(typeof result == 'function', result);
+    return result;
   } catch (ex) {
     console.log(ex.stack);
     console.log(labelStack);
@@ -42,6 +45,7 @@ function getAddress(s, k, a) {
 }
 
 function trampoline(f) {
+  assert(typeof f == 'function', f);
   return function(s, k, a) {
     return function() {
       return f(s, k, a)();

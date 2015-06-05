@@ -1,0 +1,31 @@
+
+var repeat = function(n, fn) {
+  return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
+};
+
+testParamInference(function(randFunction) {
+
+var maxWordsPerDocument = 100;
+var nDocuments = 20;
+
+var Class = Categorical(3);
+var Word = Categorical(10);
+var classToWord = randFunction(Class, Word);
+
+return function() {
+  return repeat(nDocuments, function(docIndex) {
+    var whichClass = randomValue(Class);
+    var nWords = observe('len' + docIndex, randomIntegerERP, maxWordsPerDocument);
+    repeat(nWords, function(wordIndex) {
+      observe('word' + docIndex + '_' + wordIndex, classToWord, whichClass);
+    });
+    return whichClass;
+  });
+};
+
+
+},
+
+{logPartitionParticles: 30}
+
+);

@@ -4,18 +4,24 @@ var repeat = function(n, fn) {
 };
 
 
+
+testParamInference(function(randFunction) {
+
 var nclusters = 3;
 var dim = 2;
 
 var n = 100;
+var clusterType = Categorical(nclusters);
+var pointType = Vector(dim, Double);
+var getPoint = randFunction(Categorical(nclusters), pointType);
+return function() {
+  return repeat(n, function(i) {
+    var cluster = randomValue(clusterType);
+    return observe('point' + i, getPoint, cluster);
+  });
+};
 
-testParamInference(function(randFunction) {
-  var pointType = Vector(dim, Double);
-  var getPoint = randFunction(Categorical(nclusters), pointType);
-  return function() {
-    return repeat(n, function(i) {
-      var cluster = randomInteger(nclusters);
-      return observe('point' + i, getPoint, cluster);
-    });
-  };
-});
+},
+
+{logPartitionParticles: 30}
+);

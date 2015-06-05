@@ -3,22 +3,23 @@ var repeat = function(n, fn) {
   return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
 };
 
+testParamInference(function(randFunction) {
+
 var nfactors = 1;
 var dim = 5;
 
 var n = 50;
 
-testParamInference(function(randFunction) {
-  var factorType = Vector(nfactors, Double);
-  var pointType = Vector(dim, Double);
-  var getPoint = randFunction(factorType, pointType);
-  var getFactors = function() {
-    return repeat(nfactors, function() { return gaussian(0, 1); });
-  };
-  return function() {
-    return repeat(n, function(i) {
-      var factors = getFactors();
-      return observe('point' + i, getPoint, factors);
-    });
-  };
-});
+var Factors = Vector(nfactors, Double);
+var Point = Vector(dim, Double);
+var getPoint = randFunction(Factors, Point);
+return function() {
+  return repeat(n, function(i) {
+    var factors = randomValue(Factors);
+    return observe('point' + i, getPoint, factors);
+  });
+};
+
+},
+{logPartitionParticles: 200}
+);

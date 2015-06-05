@@ -1,5 +1,7 @@
 \documentclass{article}
+\usepackage{cite}
 \usepackage{amsmath}
+\usepackage{hyperref}
 \usepackage{amsfonts}
 \usepackage{multicol} \usepackage{fancyheadings} \usepackage{pdfpages}
 \usepackage{nips15submit_e,times}
@@ -128,36 +130,34 @@ Stanford, CA 94305
   
   \section{Syntax}
 
-  Quipp is implemented as a library for webppl programs.  Webppl [TODO cite] is a probabilistic programming language
-  implemented in Javascript. Quipp programs are written as webppl programs that have access to special functions.
+  Quipp is implemented as a library for webppl programs.  Webppl \cite{dippl} is a probabilistic programming language
+  that is similar to Javascript but also contains features for generating random values, conditioning on values,
+  and estimating expectations. Quipp programs are written as webppl programs that have access to additional special functions.
 
-  Here is an example of a Quipp program to cluster 2d points into 3 clusters:
+  Here is an example of a Quipp program to cluster 2d points into 2 clusters:
   \begin{verbatim}
-var nclusters = 3;
-var dim = 2;
-
 var n = 100;
 
-testParamInference(function(randFunction) {
-  var pointType = Vector(dim, Double);
-  var getPoint = randFunction(Categorical(nclusters), pointType);
-  return function() {
-    repeat(n, function(i) {
-      var cluster = randomInteger(nclusters);
-      observe('point' + i, getPoint, cluster);
-    });
-  };
-});
+var Cluster = Categorical(2);
+var Point = Vector(2, Double);
+var getPoint = randFunction(Categorical(2), pointType);
+return function() {
+  repeat(n, function(i) {
+    var cluster = randomValue(Cluster);
+    observe(getPoint, cluster);
+  });
+};
   \end{verbatim}
 
-  It is written as a generative model producing the observations.  Notice that
-  we declared two types (\texttt{PointType} and \texttt{ClusterType}) and one
+  It is written as a generative model for the observations.  Notice that
+  we declared two types (\texttt{Point} and \texttt{Cluster}) and one
   random function \texttt{getPoint}).  Type annotations are necessary for random
   functions.  The type \texttt{Vector(2, Double)} expresses the fact that the
-  points are 2-dimensional, and the type \texttt{Categorical(3)} expresses the
-  fact that there are 3 possible clusters (so a cluster may be either 0, 1, or
-  2).    We assume the distribution over clusters is uniform, but we do not know
-  the distribution of points in each cluster.  We will fill in the
+  points are 2-dimensional, and the type \texttt{Categorical(2)} expresses the
+  fact that there are 2 possible clusters (so a cluster may be either 0 or 1).
+  We use the \texttt{randomValue} function to generate a random uniform cluster. We do not know
+  the distribution of points in each cluster, represented by the fact that \texttt{getPoint}
+  is an unknown random function.  We will fill in the
   \texttt{getPoint} function with a learned function that will take a random
   sample from the given cluster.  The \texttt{observe} function allows us to
   observe data; here it says that the observation named \texttt{point3} is equal
@@ -186,36 +186,56 @@ testParamInference(function(randFunction) {
 
   Note that, because the two clusters are forced to have the same variance, they do not fit the data well,
   since the data has a different shape in each location.  To fix this problem, we can substitute the following
-  model:
+  model, which uses a separate random function for each cluster:
   \begin{verbatim}
-testParamInference(function() {
-  var pointType = Vector(dim, Double);
-  var getPointFunctions = repeat(nclusters, function(i) {
-    return randFunction(pointType);
-  });
-  return function() {
-    return repeat(n, function(i) {
-      var cluster = randomInteger(nclusters);
-      return observe('point' + i, getPointFunctions[cluster]);
-    });
-  };
+var Cluster = Categorical(2);
+var Point = Vector(2, Double);
+var getPointFunctions = [randFunction(Point), randFunction(Point)];
+return repeat(n, function(i) {
+  var cluster = randomValue(Cluster);
+  observe('point' + i, getPointFunctions[cluster]);
 });
-  \end{verbatim}
+\end{verbatim}
   Using this model, we get the following clusters:
   \begin{center}
     \includegraphics[scale=0.5]{../plots/irisclusters_indep.png}
   \end{center}
-  This model (with the parameters filled in) is estimated to assign probability density $e^{-337}$ to the data, or 0.1058 per point, which means it
-  fits the data better.
+  This model (with the parameters filled in) is estimated to assign probability density $e^{-337}$ to the data, or 0.1058 per point, so it assigns significantly higher likelihood to the data.
+
+  Note that the clusters are still restricted to have $x$ and $y$ be independent.  To allow these coordinates
+  to be correlated within a cluster, we can use the following model:
+
+\begin{verbatim}
+
+var Cluster = Categorical(2);
+var getX = [randFunction(Double), randFunction(Double)];
+var getY = [randFunction(Double, Double), randFunction(Double, Double)];
+
+return function() {
+  return repeat(n, function(i) {
+    var cluster = randomInteger(nclusters);
+    var x = observe(getX[cluster]);
+    var y = observe(getY[cluster], x);
+  });
+};
+\end{verbatim}
+  
+  Here, there are 2 random functions for each cluster, one to get the $x$ coordinate and one to get the $y$ coordinate (whose distribution may depend on the $x$ coordinate).  This allows $x$ and $y$ to be correlated, improving fit:
+
+  \begin{center}
+    \includegraphics[scale=0.5]{../plots/irisclusters_dep.png}
+  \end{center}
+
+  This model is estimated to assign probability $e^{-269}$ to the data, or 0.166 per point, a large improvement from the previous model.
 
 
   \section{Family of distributions}
   
     For unknown functions, the family of random functions used is a kind
     of generalized linear model.  We assume that the distribution
-    of the function's return value
+    of the function's return value $y$
     is some exponential family whose natural
-    parameters are determined from the arguments:
+    parameters are determined from the arguments $x$:
 
     $$p_{\eta}(y | x) = \exp\left(\eta(x)^T \phi(y) - g(\eta(x))\right)$$
 
@@ -223,20 +243,42 @@ testParamInference(function() {
     and $g$ is the log partition function.
 
     To determine $\eta(x)$, we label
-    some subset of the sufficient statistics of both $x$ and $y$ as \emph{features}.  The natural
+    some subset of the sufficient statistics of both $x$ and $y$ as \emph{features}.  For the gaussian
+    distribution, the sufficient statistics are $X$ and $X^2$ but the only feature is $X$.  For the
+    categorical distribution \texttt{Categorical(n)}, the sufficient statistics
+    and features are both $[X = 1], [X = 2] ..., [X=n - 1]$.
+    The natural
     parameters corresponding to non-features are constant, while natural
     parameters corresponding to features are determined as an affine
-    function of the features of the arguments.  Features are the same as sufficient
-    statistics for the categorical distribution, but while both $X$ and $X^2$ are
-    sufficient statistics for the Gaussian distribution, only $X$ is a feature.
+    function of the features of the arguments.
 
     Let $\psi(x)$ be the features of $x$.  Then
+  $$\eta(x) = \mathbf{N}^T \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix}$$
     $$p_{\mathbf{N}}(y | x) = \exp\left(\begin{bmatrix} 1 \\ \psi(x) \end{bmatrix} ^T \mathbf{N} \phi(y) - g\left(\mathbf{N}^T \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix}\right)\right)$$
 
     where $\mathbf{N}$ is a matrix containing our parameters.  It must have 0 for each entry whose row corresponds
     to a sufficient statistics of $y$ that is not a feature and whose column is not 1.
     This ensures that only the
     natural parameters that are features of $y$ are affected by $x$.
+
+    \begin{tabular}{| c | c | c | c|}
+      \hline
+      T & $\phi_T(X)$ & $\psi_T(X)$ & Random function class \\
+
+      \hline
+    \texttt{Double} & $\begin{bmatrix} X \\ X^2 \end{bmatrix}$ & $\begin{bmatrix} X \end{bmatrix}$ & Linear regression with Gaussian noise \\
+
+      \hline
+    \texttt{Categorical(n)} & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $n$-class logistic regression \\
+
+      \hline
+    \texttt{Tuple(T1, T2)} & $\begin{bmatrix} \phi_{T1}(X_1) \\ \phi_{T2}(X_2) \end{bmatrix}$
+                           & $\begin{bmatrix} \psi_{T1}(X_1) \\ \psi_{T2}(X_2) \end{bmatrix}$ &
+      Independent prediction of each component
+      \\
+      \hline
+    \end{tabular}
+
 
 
   \section{Inference}
@@ -295,16 +337,14 @@ var dim = 2;
 
 var n = 100;
 
-testParamInference(function(randFunction) {
-  var pointType = Vector(dim, Double);
-  var getPoint = randFunction(Categorical(nclusters), pointType);
-  return function() {
-    return repeat(n, function(i) {
-      var cluster = randomInteger(nclusters);
-      return observe('point' + i, getPoint, cluster);
-    });
-  };
-});
+var pointType = Vector(dim, Double);
+var getPoint = randFunction(Categorical(nclusters), pointType);
+return function() {
+  return repeat(n, function(i) {
+    var cluster = randomInteger(nclusters);
+    return observe('point' + i, getPoint, cluster);
+  });
+};
 \end{verbatim}
 }
 
@@ -325,23 +365,20 @@ var featuresType = Vector(nfeatures, Bool);
 var nclasses = 2;
 var n = 50;
 
+var class0Features = randFunction(featuresType);
+var class1Features = randFunction(featuresType);
 
-testParamInference(function(randFunction) {
-  var class0Features = randFunction(featuresType);
-  var class1Features = randFunction(featuresType);
-
-  var getFeatures = randFunction(Categorical(nclusters), pointType);
-  return function() {
-    repeat(n, function(i) {
-      var whichClass = randomInteger(2);
-      if (whichClass == 0) {
-        observe('features' + i, class0Features);
-      } else {
-        observe('features' + i, class1Features);
-      }
-    });
-  };
-});
+var getFeatures = randFunction(Categorical(nclusters), pointType);
+return function() {
+  repeat(n, function(i) {
+    var whichClass = randomInteger(2);
+    if (whichClass == 0) {
+      observe('features' + i, class0Features);
+    } else {
+      observe('features' + i, class1Features);
+    }
+  });
+};
 \end{verbatim}
 }
 
@@ -360,20 +397,18 @@ var dim = 4;
 
 var n = 50;
 
-testParamInference(function(randFunction) {
-  var factorType = Vector(nfactors, Double);
-  var pointType = Vector(dim, Double);
-  var getPoint = randFunction(factorType, pointType);
-  var getFactors = function() {
-    return repeat(nfactors, function() { return gaussian(0, 1); });
-  };
-  return function() {
-    return repeat(n, function(i) {
-      var factors = getFactors();
-      return observe('point' + i, getPoint, factors);
-    });
-  };
-});
+var factorType = Vector(nfactors, Double);
+var pointType = Vector(dim, Double);
+var getPoint = randFunction(factorType, pointType);
+var getFactors = function() {
+  return repeat(nfactors, function() { return gaussian(0, 1); });
+};
+return function() {
+  return repeat(n, function(i) {
+    var factors = getFactors();
+    return observe('point' + i, getPoint, factors);
+  });
+};
 \end{verbatim}
 }
 
@@ -391,26 +426,25 @@ var chainLength = 8;
 var n = 30;
 
 
-testParamInference(function(randFunction) {
-  var stateType = Categorical(nstates);
-  var obsType = Categorical(nobs);
-  var transFun = randFunction(stateType, stateType);
-  var obsFun = randFunction(stateType, obsType);
+var stateType = Categorical(nstates);
+var obsType = Categorical(nobs);
+var transFun = randFunction(stateType, stateType);
+var obsFun = randFunction(stateType, obsType);
 
-  var observeStates = function(sampIndex, startState, i) {
-    if (i == chainLength) {
-      return [];
-    } else {
-      observe('obs' + sampIndex + '_' + i, obsFun, startState);
-      return [startState].concat(observeStates(sampIndex, transFun(startState), i+1));
-    }
-  };
-  return function() {
-    return repeat(n, function(sampIndex) {
-      return observeStates(sampIndex, randomInteger(nstates), 0);
-    });
-  };
-});
+var observeStates = function(sampIndex, startState, i) {
+  if (i == chainLength) {
+    return [];
+  } else {
+    observe('obs' + sampIndex + '_' + i, obsFun, startState);
+    return [startState].concat(observeStates(sampIndex, transFun(startState), i+1));
+  }
+};
+
+return function() {
+  return repeat(n, function(sampIndex) {
+    return observeStates(sampIndex, randomInteger(nstates), 0);
+  });
+};
 \end{verbatim}
 }
 
@@ -428,19 +462,17 @@ var nDocuments = 20;
 var classType = Categorical(nClasses);
 var wordType = Categorical(nWords);
 
-testParamInference(function(randFunction) {
-  var classToWord = randFunction(ClassType, WordType);
-  return function() {
-    return repeat(nDocuments, function(docIndex) {
-      var whichClass = randomInteger(nClasses);
-      var nWords = observe('len' + docIndex, randomInteger, maxWordsPerDocument);
-      repeat(nWordsPerDocument, function(wordIndex) {
-        observe('word' + doc + '_' + wordIndex, classToWord, whichClass);
-      });
-      return whichClass;
+var classToWord = randFunction(ClassType, WordType);
+return function() {
+  return repeat(nDocuments, function(docIndex) {
+    var whichClass = randomInteger(nClasses);
+    var nWords = observe('len' + docIndex, randomInteger, maxWordsPerDocument);
+    repeat(nWordsPerDocument, function(wordIndex) {
+      observe('word' + doc + '_' + wordIndex, classToWord, whichClass);
     });
-  };
-});
+    return whichClass;
+  });
+};
 \end{verbatim}
 }
 
@@ -487,6 +519,9 @@ TODO: if there is time, we should put a more complex data science type example, 
   We have found that it is possible to write many useful machine learning models as Quipp programs and then use generic algorithms for inference.  Furthermore, performance is <???>.  This should make it much easier for non-experts to write useful machine learning models.
   
   In the future, it will be useful to expand the set of types supported.  It is possible to define reasonable default distributions for non-recursive algebraic data types, and it may also be possible to define them for recursive algebraic data types using catamorphisms.  Also, it will be useful to create a more usable interface to infer parameters and perform additional data pracessing given these parameters.
+
+\bibliography{bibliography}{}
+\bibliographystyle{plain}
 
 
 \end{document}
