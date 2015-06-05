@@ -1,6 +1,6 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 20:36
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 21:24
 entering extended mode
- restricted \write18 enabled.
+ \write18 enabled.
  %&-line parsing enabled.
 **paper.tex
 (./paper.tex
@@ -417,28 +417,28 @@ Package: times 2005/04/12 PSNFSS-v9.2a (SPQR)
  (./paper.aux)
 \openout1 = `paper.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 56.
-LaTeX Font Info:    ... okay on input line 56.
-LaTeX Font Info:    Try loading font information for OT1+ptm on input line 56.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 57.
+LaTeX Font Info:    ... okay on input line 57.
+LaTeX Font Info:    Try loading font information for OT1+ptm on input line 57.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
 \AtBeginShipoutBox=\box58
-Package hyperref Info: Link coloring OFF on input line 56.
+Package hyperref Info: Link coloring OFF on input line 57.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/hyperref/nameref.sty
@@ -450,9 +450,9 @@ Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
 \c@section@level=\count129
 )
-LaTeX Info: Redefining \ref on input line 56.
-LaTeX Info: Redefining \pageref on input line 56.
-LaTeX Info: Redefining \nameref on input line 56.
+LaTeX Info: Redefining \ref on input line 57.
+LaTeX Info: Redefining \pageref on input line 57.
+LaTeX Info: Redefining \nameref on input line 57.
  (./paper.out) (./paper.out)
 \@outlinefile=\write3
 \openout3 = `paper.out'.
@@ -492,29 +492,29 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
 e
 ))
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <17.28> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 58.
-LaTeX Font Info:    Try loading font information for U+msa on input line 58.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 59.
+LaTeX Font Info:    Try loading font information for U+msa on input line 59.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
-LaTeX Font Info:    Try loading font information for U+msb on input line 58.
+LaTeX Font Info:    Try loading font information for U+msb on input line 59.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <10> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 58.
-LaTeX Font Info:    Try loading font information for OT1+pcr on input line 58.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 59.
+LaTeX Font Info:    Try loading font information for OT1+pcr on input line 59.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/psnfss/ot1pcr.fd
 File: ot1pcr.fd 2001/06/04 font definitions for OT1/pcr.
 )
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <12> not available
-(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 60.
+(Font)              Font shape `OT1/ptm/b/n' tried instead on input line 61.
  [1{/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-config/fo
 nts/map/pdftex/updmap/pdftex.map}
 
@@ -523,11 +523,11 @@ nts/map/pdftex/updmap/pdftex.map}
 File: ../plots/irisclusters_orig.png Graphic file (type png)
 
 <use ../plots/irisclusters_orig.png>
-Package pdftex.def Info: ../plots/irisclusters_orig.png used on input line 172.
+Package pdftex.def Info: ../plots/irisclusters_orig.png used on input line 174.
 
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
  [2 <../plots/irisclusters_orig.png>]
-Overfull \hbox (4.51501pt too wide) in paragraph at lines 198--198
+Overfull \hbox (4.51501pt too wide) in paragraph at lines 200--200
 []\OT1/pcr/m/n/10 var getPointFunctions = [randFunction(Point), randFunction(Po
 int)];[] 
  []
@@ -536,11 +536,11 @@ int)];[]
 File: ../plots/irisclusters_indep.png Graphic file (type png)
 
 <use ../plots/irisclusters_indep.png>
-Package pdftex.def Info: ../plots/irisclusters_indep.png used on input line 201
+Package pdftex.def Info: ../plots/irisclusters_indep.png used on input line 203
 .
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
-Overfull \hbox (34.51501pt too wide) in paragraph at lines 221--221
+Overfull \hbox (34.51501pt too wide) in paragraph at lines 223--223
 []\OT1/pcr/m/n/10 var getY = [randFunction(Double, Double), randFunction(Double
 , Double)];[] 
  []
@@ -553,15 +553,15 @@ Underfull \vbox (badness 1603) has occurred while \output is active []
 File: ../plots/irisclusters_dep.png Graphic file (type png)
 
 <use ../plots/irisclusters_dep.png>
-Package pdftex.def Info: ../plots/irisclusters_dep.png used on input line 226.
+Package pdftex.def Info: ../plots/irisclusters_dep.png used on input line 228.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
-Overfull \hbox (34.61584pt too wide) in paragraph at lines 264--281
+Overfull \hbox (34.61584pt too wide) in paragraph at lines 268--285
 [][] 
  []
 
 [4 <../plots/irisclusters_dep.png>]
-LaTeX Font Info:    Try loading font information for OMS+ptm on input line 316.
+LaTeX Font Info:    Try loading font information for OMS+ptm on input line 320.
 
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
@@ -569,30 +569,57 @@ ex/psnfss/omsptm.fd
 File: omsptm.fd 
 )
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 316.
- [5] <cluster_accuracy.png, id=55, 578.16pt x 433.62pt>
-File: cluster_accuracy.png Graphic file (type png)
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 320.
+ [5]
+<../plots/accuracy_nd_clustering.png, id=57, 578.16pt x 433.62pt>
+File: ../plots/accuracy_nd_clustering.png Graphic file (type png)
 
-<use cluster_accuracy.png>
-Package pdftex.def Info: cluster_accuracy.png used on input line 357.
-(pdftex.def)             Requested size: 231.2599pt x 173.44492pt.
- [6 <./cluster_accuracy.png>] [7] (./paper.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 506.
+<use ../plots/accuracy_nd_clustering.png>
+Package pdftex.def Info: ../plots/accuracy_nd_clustering.png used on input line
+ 359.
+(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
+ [6 <../plots/accuracy_nd_clustering.png>] <../plots/accuracy_factor_analysis.p
+ng, id=65, 578.16pt x 433.62pt>
+File: ../plots/accuracy_factor_analysis.png Graphic file (type png)
 
-[8]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 506.
- (./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 506.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 506.
+<use ../plots/accuracy_factor_analysis.png>
+Package pdftex.def Info: ../plots/accuracy_factor_analysis.png used on input li
+ne 419.
+(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
+ [7 <../plots/accuracy_factor_analysis.png>] <../plots/accuracy_hmm.png, id=73,
+ 578.16pt x 433.62pt>
+File: ../plots/accuracy_hmm.png Graphic file (type png)
+
+<use ../plots/accuracy_hmm.png>
+Package pdftex.def Info: ../plots/accuracy_hmm.png used on input line 456.
+(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
+
+<../plots/accuracy_lda.png, id=74, 578.16pt x 433.62pt>
+File: ../plots/accuracy_lda.png Graphic file (type png)
+
+<use ../plots/accuracy_lda.png>
+Package pdftex.def Info: ../plots/accuracy_lda.png used on input line 487.
+(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [8 <../plots/accuracy_hmm.png>] (./paper.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 522.
+ [9 <../plots/accuracy_lda.png>]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 522.
+
+(./paper.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 522.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 522.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 506.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 522.
  ) 
 Here is how much of TeX's memory you used:
- 7364 strings out of 493109
- 110326 string characters out of 6117083
- 209980 words of memory out of 5000000
- 10696 multiletter control sequences out of 15000+600000
+ 7382 strings out of 493109
+ 110878 string characters out of 6117083
+ 210006 words of memory out of 5000000
+ 10709 multiletter control sequences out of 15000+600000
  18612 words of font info for 44 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  37i,14n,45p,424b,469s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -617,10 +644,10 @@ store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/u
 rw/times/utmb8a.pfb></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdi
 r/texmf-dist/fonts/type1/urw/times/utmr8a.pfb></nix/store/a5h94i4ysxcjzm493i07h
 c4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (8 pages, 240972 bytes).
+Output written on paper.pdf (9 pages, 463884 bytes).
 PDF statistics:
- 130 PDF objects out of 1000 (max. 8388607)
- 97 compressed objects within 1 object stream
- 24 named destinations out of 1000 (max. 500000)
- 21 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 144 PDF objects out of 1000 (max. 8388607)
+ 103 compressed objects within 2 object streams
+ 26 named destinations out of 1000 (max. 500000)
+ 36 words of extra memory for PDF output out of 10000 (max. 10000000)
 
