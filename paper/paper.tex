@@ -160,20 +160,18 @@ var model = function() {
 };
   \end{lstlisting}
 
-  It is written as a generative model for the observations.  Notice that
-  we declared two types (\texttt{Point} and \texttt{Cluster}) and one
-  random function \texttt{getPoint}).  Type annotations are necessary for random
+  We declared two types (\texttt{Point} and \texttt{Cluster}) and one
+  random function (\texttt{getPoint}).  Type annotations are necessary for random
   functions.  The type \texttt{Vector(2, Double)} expresses the fact that the
   points are 2-dimensional, and the type \texttt{Categorical(2)} expresses the
   fact that there are 2 possible clusters (so a cluster may be either 0 or 1).
-  We use the \texttt{randomValue} function to generate a random uniform cluster. We do not know
-  the distribution of points in each cluster, represented by the fact that \texttt{getPoint}
-  is an unknown random function.  We will fill in the
-  \texttt{getPoint} function with a learned function that will take a random
-  sample from the given cluster.  The \texttt{observe} function allows us to
-  observe data; here it says that our observations consist of \texttt{getPoint(cluster)} for
-  each cluster.
 
+  The variable \texttt{model} specifies a generative model for a single data point.
+  We use the \texttt{randomValue} function to generate a random uniform cluster, and then
+  use \texttt{getPoint} to generate the point given the cluster.  Since \texttt{getPoint}
+  is an unknown random function, we will need to infer its parameters.
+  The \texttt{observe} function allows us to observe data; here it says that our
+  observation consist of the result of the call \texttt{getPoint(cluster)}.
 
   To demonstrate, let us run this example on a dataset consisting of 150 points (TODO cite).  When we run the program on this data, we infer the parameters to the random function \texttt{getPoint}.
   In this case, \texttt{getPoint} is a linear function with Gaussian noise, so it will naturally
@@ -194,9 +192,67 @@ var model = function() {
   \end{lstlisting}
   This model is estimated to assign probability density $e^{-393}$ to the data, yielding a perplexity of $e^{-393/150} = 0.0728$.
 
-  Note that, because the two clusters are forced to have the same variance, they do not fit the data well,
-  since the data has a different shape in each location.  To fix this problem, we can substitute the following
-  model, which uses a separate random function for each cluster:
+  \section{Family of distributions}
+  
+    
+  In the previous example, we that \texttt{randFunction(Categorical(2), Vector(2, Double))} represented 2 axis-aligned Gaussian clusters with equal variances.  In general, \texttt{randFunction} returns a randomized function that is a member of some generalized linear model
+    determined by the desired argument types and return type.
+    The distribution
+    of the function's return value $y$
+    is some exponential family whose natural
+    parameters are determined from the arguments $x$:
+
+    $$p_{\eta}(y | x) = \exp\left(\eta(x)^T \phi(y) - g(\eta(x))\right)$$
+
+    Here, $\eta(x)$ is the natural parameter, $\phi(y)$ is a vector of $y$'s sufficient statistics,
+    and $g$ is the log partition function.
+
+    To determine $\eta(x)$, we label
+    some subset of the sufficient statistics of both $x$ and $y$ as \emph{features}.  For the gaussian
+    distribution, the sufficient statistics are $X$ and $X^2$ but the only feature is $X$.  For the
+    categorical distribution \texttt{Categorical(n)}, the sufficient statistics
+    and features are both $[X = 1], [X = 2], ..., [X=n - 1]$.
+    The natural
+    parameters corresponding to non-features are constant, while natural
+    parameters corresponding to features are determined as an affine
+    function of the features of the arguments.
+
+    Let $\psi(x)$ be the features of $x$.  Then
+  $$\eta(x) = \mathbf{N}^T \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix}$$
+    $$p_{\mathbf{N}}(y | x) = \exp\left(\begin{bmatrix} 1 \\ \psi(x) \end{bmatrix} ^T \mathbf{N} \phi(y) - g\left(\mathbf{N}^T \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix}\right)\right)$$
+
+    where $\mathbf{N}$ is a matrix containing our parameters.  It must have 0 for each entry whose row corresponds
+    to a sufficient statistics of $y$ that is not a feature and whose column is not 1.
+    This ensures that only the
+    natural parameters that are features of $y$ are affected by $x$.  The following shows the types
+    in Quipp and their corresponding sufficient statistics, features, and English descriptions.
+
+    \begin{tabular}{| c | c | c | c|}
+      \hline
+      T & $\phi_T(X)$ & $\psi_T(X)$ & Random function class \\
+
+      \hline
+    \texttt{Double} & $\begin{bmatrix} X \\ X^2 \end{bmatrix}$ & $\begin{bmatrix} X \end{bmatrix}$ & Linear regression with Gaussian noise \\
+
+      \hline
+    \texttt{Categorical(n)} & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $n$-class logistic regression \\
+
+      \hline
+    \texttt{Tuple(T1, T2)} & $\begin{bmatrix} \phi_{T1}(X_1) \\ \phi_{T2}(X_2) \end{bmatrix}$
+                           & $\begin{bmatrix} \psi_{T1}(X_1) \\ \psi_{T2}(X_2) \end{bmatrix}$ &
+      Independent regression of each component
+      \\
+      \hline
+    \end{tabular}
+
+    Note that $\texttt{Vector(n, T)}$ is shorthand for $Tuple(T, T, ..., T)$, with $n$ copies of $T$.
+
+  \section{Example: improving the clustering model}
+  Using this knowledge about the form of the random functions, we can improve the clustering model from before.
+  As observed in the previous graph, the two clusters are forced to have the
+  same variance. They do not fit the data well, since the data has a different
+  shape in each location.  To fix this problem, we can substitute the following
+  model, which uses a separate random function (and therefore a separate axis-aligned Gaussian distribution) for each cluster:
   \begin{lstlisting}
 var Cluster = Categorical(2);
 var Point = Vector(2, Double);
@@ -213,7 +269,7 @@ var model = function() {
   \end{center}
   This model (with the parameters filled in) is estimated to assign probability density $e^{-337}$ to the data, yielding a perplexity of 0.1058.  This is a significantly improved fit.
 
-  Note that the clusters represent axis-aligned multivariate Gaussian distributions.   To allow them to be arbitrary Gaussian distributions (where the $x$ and $y$ coordinates may be correlated),
+  The fact that the gaussian distribution for each cluster must be axis-aligned limits the degree to which the model can fit the data.   To allow each cluster to be an arbitrary Gaussian distributions (where the $x$ and $y$ coordinates may be correlated),
   we can use the following model:
 
 \begin{lstlisting}
@@ -227,67 +283,14 @@ var model = function() {
   var y = observe(getY[cluster], x);
 };
 \end{lstlisting}
-  
-  Here, there are 2 random functions for each cluster, one to get the $x$ coordinate and one to get the $y$ coordinate (whose distribution may depend on the $x$ coordinate).  This allows $x$ and $y$ to be correlated, improving fit:
+
+  Here, there are 2 random functions for each cluster, one to get the $x$ coordinate and one to get the $y$ coordinate (whose distribution may depend linearly on the $x$ coordinate).  This allows $x$ and $y$ to be correlated, improving fit:
 
   \begin{center}
     \includegraphics[scale=0.5]{../plots/irisclusters_dep.png}
   \end{center}
 
   This model is estimated to assign probability $e^{-269}$ to the data, yielding a perplexity of 0.166.  This is a large improvement from the previous model.
-
-
-  \section{Family of distributions}
-  
-    
-    \texttt{randFunction} returns a randomized function that is a member of some generalized linear model
-    determined by the desired argument types and return type.
-    The distribution
-    of the function's return value $y$
-    is some exponential family whose natural
-    parameters are determined from the arguments $x$:
-
-    $$p_{\eta}(y | x) = \exp\left(\eta(x)^T \phi(y) - g(\eta(x))\right)$$
-
-    Here, $\eta(x)$ is the natural parameter, $\phi(y)$ is a vector of $y$'s sufficient statistics,
-    and $g$ is the log partition function.
-
-    To determine $\eta(x)$, we label
-    some subset of the sufficient statistics of both $x$ and $y$ as \emph{features}.  For the gaussian
-    distribution, the sufficient statistics are $X$ and $X^2$ but the only feature is $X$.  For the
-    categorical distribution \texttt{Categorical(n)}, the sufficient statistics
-    and features are both $[X = 1], [X = 2] ..., [X=n - 1]$.
-    The natural
-    parameters corresponding to non-features are constant, while natural
-    parameters corresponding to features are determined as an affine
-    function of the features of the arguments.
-
-    Let $\psi(x)$ be the features of $x$.  Then
-  $$\eta(x) = \mathbf{N}^T \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix}$$
-    $$p_{\mathbf{N}}(y | x) = \exp\left(\begin{bmatrix} 1 \\ \psi(x) \end{bmatrix} ^T \mathbf{N} \phi(y) - g\left(\mathbf{N}^T \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix}\right)\right)$$
-
-    where $\mathbf{N}$ is a matrix containing our parameters.  It must have 0 for each entry whose row corresponds
-    to a sufficient statistics of $y$ that is not a feature and whose column is not 1.
-    This ensures that only the
-    natural parameters that are features of $y$ are affected by $x$.
-
-    \begin{tabular}{| c | c | c | c|}
-      \hline
-      T & $\phi_T(X)$ & $\psi_T(X)$ & Random function class \\
-
-      \hline
-    \texttt{Double} & $\begin{bmatrix} X \\ X^2 \end{bmatrix}$ & $\begin{bmatrix} X \end{bmatrix}$ & Linear regression with Gaussian noise \\
-
-      \hline
-    \texttt{Categorical(n)} & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $\begin{bmatrix} [X = 1] \\ [X = 2] \\ ...\\ [X = n-1] \end{bmatrix}$ & $n$-class logistic regression \\
-
-      \hline
-    \texttt{Tuple(T1, T2)} & $\begin{bmatrix} \phi_{T1}(X_1) \\ \phi_{T2}(X_2) \end{bmatrix}$
-                           & $\begin{bmatrix} \psi_{T1}(X_1) \\ \psi_{T2}(X_2) \end{bmatrix}$ &
-      Independent prediction of each component
-      \\
-      \hline
-    \end{tabular}
 
 
 
@@ -299,10 +302,11 @@ var model = function() {
     parameters using gradient descent.
 
     For the expectation step, we must estimate latent variable distributions given
-    fixed values for the parameters.  To do this, we can run the Quipp program
-    with random functions set to use these fixed parameter values to generate their results.
+    fixed values for the parameters.  To do this, we can replace unknown random functions in the Quipp program
+    with random functions set to use these fixed parameter values, yielding a probabilistic program.
     We use the Metropolis Hastings algorithm to perform inference in this program,
-    yielding traces.  Next, for each random function, we can find all calls
+    yielding a distribution of execution traces (where each execution trace specifies the result of every
+    call to a random function).  Next, for each random function, we can find all calls
     to it in the trace to get the training data.
 
     For the maximization step, given samples from each random function, we set the
@@ -310,7 +314,7 @@ var model = function() {
     we use gradient descent.
 
     Given $(x, y)$ samples, parameter estimation to maximize log probability is a convex
-    problem because the log probability function is concave:
+    problem because the log probability function is concave as a function of $\mathbf{N}$:
     $$\log p_{\mathbf{N}}(y | x) = \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix} ^T \mathbf{N} \phi(y) - g\left(\mathbf{N}^T \begin{bmatrix} 1 \\ \psi(x) \end{bmatrix}\right)$$
 
     This relies on the fact that $g$ is convex, but this is true in general for any exponential family distribution.
