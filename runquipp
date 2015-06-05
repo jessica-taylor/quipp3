@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-node_modules/.bin/webppl --require-header ./src/quipp.js $@
+node_modules/.bin/webppl --require-header ./src/quipp.js --require-wppl ./src/extraheader.wppl $@

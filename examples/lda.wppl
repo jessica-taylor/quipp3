@@ -6,23 +6,20 @@ var repeat = function(n, fn) {
 testParamInference(function(randFunction) {
 
 var maxWordsPerDocument = 100;
-var nDocuments = 20;
-
 var Class = Categorical(3);
 var Word = Categorical(10);
 var classToWord = randFunction(Class, Word);
 
-return function() {
-  return repeat(nDocuments, function(docIndex) {
-    var whichClass = randomValue(Class);
-    var nWords = observe('len' + docIndex, randomIntegerERP, maxWordsPerDocument);
-    repeat(nWords, function(wordIndex) {
-      observe('word' + docIndex + '_' + wordIndex, classToWord, whichClass);
-    });
-    return whichClass;
+var model = function() {
+  var whichClass = randomValue(Class);
+  var nWords = observe('len' + docIndex, randomIntegerERP, maxWordsPerDocument);
+  repeat(nWords, function(wordIndex) {
+    observe(classToWord, whichClass);
   });
 };
 
+var nDocuments = 20;
+return samplingModel(model, nDocuments);
 
 },
 

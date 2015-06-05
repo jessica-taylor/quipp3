@@ -18,13 +18,24 @@ function DataSampler() {
   this.valueMap = {};
 }
 
+var nextObsIndex = function(s, k, a) {
+  var res = s._obsIndex++;
+  return k(s, res);
+};
+
+var resetObsIndex = function(s, k, a) {
+  s = _.clone(s);
+  s._obsIndex = 0;
+  return k(s);
+};
+
 DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
   if (typeof addr == 'function') {
-    return mbind(util.getAddress, function(a) {
-      // return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
-      return mcurryMethod.apply(null, [self, 'sampleOrCondition', self.index++, addr, rf].concat(args));
+    // return mbind(util.getAddress, function(a) {
+    return mbind(nextObsIndex, function(a) {
+      return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
     });
   }
 
@@ -42,10 +53,12 @@ DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
 });
 
 var sampleData = fromMonad(function(s) {
-  var sampler = new DataSampler();
-  global.observe = sampler.sampleOrCondition.bind(sampler);
-  return mbind(s, function(res) {
-    return mreturn(sampler.valueMap);
+  return mbind(resetObsIndex, function() {
+    var sampler = new DataSampler();
+    global.observe = sampler.sampleOrCondition.bind(sampler);
+    return mbind(s, function(res) {
+      return mreturn(sampler.valueMap);
+    });
   });
 });
 
@@ -58,9 +71,9 @@ DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
   if (typeof addr == 'function') {
-    return mbind(util.getAddress, function(a) {
-      // return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
-      return mcurryMethod.apply(null, [self, 'sampleOrCondition', self.index++, addr, rf].concat(args));
+    return mbind(nextObsIndex, function(a) {
+    // return mbind(util.getAddress, function(a) {
+      return mcurryMethod.apply(null, [self, 'sampleOrCondition', a, addr, rf].concat(args));
     });
   }
 
@@ -77,10 +90,12 @@ DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
 });
 
 var conditionData = fromMonad(function(s, valueMap) {
-  var conditioner = new DataConditioner(valueMap);
-  global.observe = conditioner.sampleOrCondition.bind(conditioner);
-  return mbind(s, function(res) {
-    return mreturn(null);
+  return mbind(resetObsIndex, function() {
+    var conditioner = new DataConditioner(valueMap);
+    global.observe = conditioner.sampleOrCondition.bind(conditioner);
+    return mbind(s, function(res) {
+      return mreturn(null);
+    });
   });
 });
 

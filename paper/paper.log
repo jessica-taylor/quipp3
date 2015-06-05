@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 22:02
+This is pdfTeX, Version 3.14159265-2.6-1.40.15 (TeX Live 2015/dev) (preloaded format=pdflatex 2015.4.23)  4 JUN 2015 22:30
 entering extended mode
  \write18 enabled.
  %&-line parsing enabled.
@@ -129,129 +129,6 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 \mathdisplay@stack=\toks20
 LaTeX Info: Redefining \[ on input line 2665.
 LaTeX Info: Redefining \] on input line 2666.
-) (./minted1.sty
-Package: minted1 2015/01/31 v1.0 minted 1.7 compatibility package
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/fancyvrb/fancyvrb.sty
-Package: fancyvrb 2008/02/07
-
-Style option: `fancyvrb' v2.7a, with DG/SPQR fixes, and firstline=lastline fix 
-<2008/02/07> (tvz)
-\FV@CodeLineNo=\count107
-\FV@InFile=\read1
-\FV@TabBox=\box30
-\c@FancyVerbLine=\count108
-\FV@StepNumber=\count109
-\FV@OutFile=\write3
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/xcolor/xcolor.sty
-Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/latexconfig/color.cfg
-File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
-)
-Package xcolor Info: Driver file: pdftex.def on input line 225.
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/pdftex-def/pdftex.def
-File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/gen
-eric/oberdiek/infwarerr.sty
-Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/gen
-eric/oberdiek/ltxcmds.sty
-Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
-)
-\Gread@gobject=\count110
-)
-Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
-Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1341.
-Package xcolor Info: Model `RGB' extended on input line 1353.
-Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
-Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
-Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1357.
-Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1358.
-Package xcolor Info: Model `Gray' substituted by `gray' on input line 1359.
-Package xcolor Info: Model `wave' substituted by `hsb' on input line 1360.
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/float/float.sty
-Package: float 2001/11/08 v1.3d Float enhancements (AL)
-\c@float@type=\count111
-\float@exts=\toks21
-\float@box=\box31
-\@float@everytoks=\toks22
-\@floatcapt=\box32
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/base/ifthen.sty
-Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/tools/calc.sty
-Package: calc 2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
-\calc@Acount=\count112
-\calc@Bcount=\count113
-\calc@Adimen=\dimen116
-\calc@Bdimen=\dimen117
-\calc@Askip=\skip46
-\calc@Bskip=\skip47
-LaTeX Info: Redefining \setlength on input line 75.
-LaTeX Info: Redefining \addtolength on input line 76.
-\calc@Ccount=\count114
-\calc@Cskip=\skip48
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
-ex/ifplatform/ifplatform.sty
-Package: ifplatform 2010/10/22 v0.4 Testing for the operating system
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/gen
-eric/oberdiek/pdftexcmds.sty
-Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
-)
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/gen
-eric/oberdiek/ifluatex.sty
-Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
-Package ifluatex Info: LuaTeX not detected.
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/gen
-eric/oberdiek/ifpdf.sty
-Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
-Package ifpdf Info: pdfTeX in PDF mode is detected.
-)
-Package pdftexcmds Info: LuaTeX not detected.
-Package pdftexcmds Info: \pdf@primitive is available.
-Package pdftexcmds Info: \pdf@ifprimitive is available.
-Package pdftexcmds Info: \pdfdraftmode found.
-)
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/gen
-eric/oberdiek/catchfile.sty
-Package: catchfile 2011/03/01 v1.6 Catch the contents of a file (HO)
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/gen
-eric/oberdiek/etexcmds.sty
-Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
-Package etexcmds Info: Could not find \expanded.
-(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
-(etexcmds)             that some package has redefined \expanded.
-(etexcmds)             In the latter case, load this package earlier.
-))
-runsystem(uname -s > "paper.w18")...executed.
-
- (./paper.w18)
-runsystem(rm -- "paper.w18")...executed.
-
-)
-\minted@bgbox=\box33
-\minted@code=\write4
-\@float@every@listing=\toks23
-\c@listing=\count115
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/hyperref/hyperref.sty
@@ -266,17 +143,28 @@ Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
 eric/oberdiek/hobsub-generic.sty
 Package: hobsub-generic 2012/05/28 v1.13 Bundle oberdiek, subset generic (HO)
 Package: hobsub 2012/05/28 v1.13 Construct package bundles (HO)
-Package hobsub Info: Skipping package `infwarerr' (already loaded).
-Package hobsub Info: Skipping package `ltxcmds' (already loaded).
-Package hobsub Info: Skipping package `ifluatex' (already loaded).
+Package: infwarerr 2010/04/08 v1.3 Providing info/warning/error messages (HO)
+Package: ltxcmds 2011/11/09 v1.22 LaTeX kernel commands for general use (HO)
+Package: ifluatex 2010/03/01 v1.3 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
 Package: ifvtex 2010/03/01 v1.5 Detect VTeX and its facilities (HO)
 Package ifvtex Info: VTeX not detected.
 Package: intcalc 2007/09/27 v1.1 Expandable calculations with integers (HO)
-Package hobsub Info: Skipping package `ifpdf' (already loaded).
-Package hobsub Info: Skipping package `etexcmds' (already loaded).
+Package: ifpdf 2011/01/30 v2.3 Provides the ifpdf switch (HO)
+Package ifpdf Info: pdfTeX in PDF mode is detected.
+Package: etexcmds 2011/02/16 v1.5 Avoid name clashes with e-TeX commands (HO)
+Package etexcmds Info: Could not find \expanded.
+(etexcmds)             That can mean that you are not using pdfTeX 1.50 or
+(etexcmds)             that some package has redefined \expanded.
+(etexcmds)             In the latter case, load this package earlier.
 Package: kvsetkeys 2012/04/25 v1.16 Key value parser (HO)
 Package: kvdefinekeys 2011/04/07 v1.3 Define keys (HO)
-Package hobsub Info: Skipping package `pdftexcmds' (already loaded).
+Package: pdftexcmds 2011/11/29 v0.20 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
 Package: pdfescape 2011/11/25 v1.13 Implements pdfTeX's escape features (HO)
 Package: bigintcalc 2012/04/08 v1.3 Expandable calculations on big integers (HO
 )
@@ -305,15 +193,15 @@ Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
 ex/oberdiek/kvoptions.sty
 Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 )
-\@linkdim=\dimen118
-\Hy@linkcounter=\count116
-\Hy@pagecounter=\count117
+\@linkdim=\dimen116
+\Hy@linkcounter=\count107
+\Hy@pagecounter=\count108
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/hyperref/pd1enc.def
 File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
 )
-\Hy@SavedSpaceFactor=\count118
+\Hy@SavedSpaceFactor=\count109
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/latexconfig/hyperref.cfg
@@ -326,7 +214,7 @@ Package hyperref Info: Plain pages OFF on input line 4458.
 Package hyperref Info: Backreferencing OFF on input line 4463.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4688.
-\c@Hy@tempcnt=\count119
+\c@Hy@tempcnt=\count110
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/url/url.sty
@@ -334,10 +222,10 @@ ex/url/url.sty
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 5041.
-\XeTeXLinkMargin=\dimen119
-\Fld@menulength=\count120
-\Field@Width=\dimen120
-\Fld@charsize=\dimen121
+\XeTeXLinkMargin=\dimen117
+\Fld@menulength=\count111
+\Field@Width=\dimen118
+\Fld@charsize=\dimen119
 Package hyperref Info: Hyper figures OFF on input line 6295.
 Package hyperref Info: Link nesting OFF on input line 6300.
 Package hyperref Info: Hyper index ON on input line 6303.
@@ -347,9 +235,9 @@ Package hyperref Info: Link coloring with OCG OFF on input line 6320.
 Package hyperref Info: PDF/A mode OFF on input line 6325.
 LaTeX Info: Redefining \ref on input line 6365.
 LaTeX Info: Redefining \pageref on input line 6369.
-\Hy@abspage=\count121
-\c@Item=\count122
-\c@Hfootnote=\count123
+\Hy@abspage=\count112
+\c@Item=\count113
+\c@Hfootnote=\count114
 )
 
 Package hyperref Message: Driver (autodetected): hpdftex.
@@ -358,8 +246,8 @@ Package hyperref Message: Driver (autodetected): hpdftex.
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/hyperref/hpdftex.def
 File: hpdftex.def 2012/11/06 v6.83m Hyperref driver for pdfTeX
-\Fld@listcount=\count124
-\c@bookmark@seq@number=\count125
+\Fld@listcount=\count115
+\c@bookmark@seq@number=\count116
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/oberdiek/rerunfilecheck.sty
@@ -367,7 +255,7 @@ Package: rerunfilecheck 2011/04/15 v1.7 Rerun checks for auxiliary files (HO)
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 82.
 )
-\Hy@SectionHShift=\skip49
+\Hy@SectionHShift=\skip46
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/amsfonts/amsfonts.sty
@@ -380,27 +268,31 @@ LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/tools/multicol.sty
 Package: multicol 2014/08/24 v1.8g multicolumn formatting (FMi)
-\c@tracingmulticols=\count126
-\mult@box=\box34
-\multicol@leftmargin=\dimen122
-\c@unbalance=\count127
-\c@collectmore=\count128
-\doublecol@number=\count129
-\multicoltolerance=\count130
-\multicolpretolerance=\count131
-\full@width=\dimen123
-\page@free=\dimen124
-\premulticols=\dimen125
-\postmulticols=\dimen126
-\multicolsep=\skip50
-\multicolbaselineskip=\skip51
-\partial@page=\box35
-\last@line=\box36
-\maxbalancingoverflow=\dimen127
-\mult@rightbox=\box37
-\mult@grightbox=\box38
-\mult@gfirstbox=\box39
-\mult@firstbox=\box40
+\c@tracingmulticols=\count117
+\mult@box=\box30
+\multicol@leftmargin=\dimen120
+\c@unbalance=\count118
+\c@collectmore=\count119
+\doublecol@number=\count120
+\multicoltolerance=\count121
+\multicolpretolerance=\count122
+\full@width=\dimen121
+\page@free=\dimen122
+\premulticols=\dimen123
+\postmulticols=\dimen124
+\multicolsep=\skip47
+\multicolbaselineskip=\skip48
+\partial@page=\box31
+\last@line=\box32
+\maxbalancingoverflow=\dimen125
+\mult@rightbox=\box33
+\mult@grightbox=\box34
+\mult@gfirstbox=\box35
+\mult@firstbox=\box36
+\@tempa=\box37
+\@tempa=\box38
+\@tempa=\box39
+\@tempa=\box40
 \@tempa=\box41
 \@tempa=\box42
 \@tempa=\box43
@@ -414,18 +306,14 @@ Package: multicol 2014/08/24 v1.8g multicolumn formatting (FMi)
 \@tempa=\box51
 \@tempa=\box52
 \@tempa=\box53
-\@tempa=\box54
-\@tempa=\box55
-\@tempa=\box56
-\@tempa=\box57
-\c@columnbadness=\count132
-\c@finalcolumnbadness=\count133
-\last@try=\dimen128
-\multicolovershoot=\dimen129
-\multicolundershoot=\dimen130
-\mult@nat@firstbox=\box58
-\colbreak@box=\box59
-\mc@col@check@num=\count134
+\c@columnbadness=\count123
+\c@finalcolumnbadness=\count124
+\last@try=\dimen126
+\multicolovershoot=\dimen127
+\multicolundershoot=\dimen128
+\mult@nat@firstbox=\box54
+\colbreak@box=\box55
+\mc@col@check@num=\count125
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/fancyhdr/fancyheadings.sty
@@ -447,24 +335,67 @@ Package fancyheadings Warning: Please stop using fancyheadings!
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/fancyhdr/fancyhdr.sty
-\fancy@headwidth=\skip52
-\f@ncyO@elh=\skip53
-\f@ncyO@erh=\skip54
-\f@ncyO@olh=\skip55
-\f@ncyO@orh=\skip56
-\f@ncyO@elf=\skip57
-\f@ncyO@erf=\skip58
-\f@ncyO@olf=\skip59
-\f@ncyO@orf=\skip60
+\fancy@headwidth=\skip49
+\f@ncyO@elh=\skip50
+\f@ncyO@erh=\skip51
+\f@ncyO@olh=\skip52
+\f@ncyO@orh=\skip53
+\f@ncyO@elf=\skip54
+\f@ncyO@erf=\skip55
+\f@ncyO@olf=\skip56
+\f@ncyO@orf=\skip57
 ))
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/pdfpages/pdfpages.sty
 Package: pdfpages 2013/08/25 v0.4v Insert pages of external PDF documents (AM)
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
+ex/base/ifthen.sty
+Package: ifthen 2001/05/26 v1.1c Standard LaTeX ifthen package (DPC)
+)
+(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
+ex/tools/calc.sty
+Package: calc 2007/08/22 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count126
+\calc@Bcount=\count127
+\calc@Adimen=\dimen129
+\calc@Bdimen=\dimen130
+\calc@Askip=\skip58
+\calc@Bskip=\skip59
+LaTeX Info: Redefining \setlength on input line 75.
+LaTeX Info: Redefining \addtolength on input line 76.
+\calc@Ccount=\count128
+\calc@Cskip=\skip60
+)
+(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/eso-pic/eso-pic.sty
 Package: eso-pic 2013/10/06 v2.0d eso-pic (RN)
+
+(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
+ex/xcolor/xcolor.sty
+Package: xcolor 2007/01/21 v2.11 LaTeX color extensions (UK)
+
+(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
+ex/latexconfig/color.cfg
+File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 )
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+
+(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
+ex/pdftex-def/pdftex.def
+File: pdftex.def 2011/05/27 v0.06d Graphics/color for pdfTeX
+\Gread@gobject=\count129
+)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1337.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1341.
+Package xcolor Info: Model `RGB' extended on input line 1353.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1355.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1356.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1357.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1358.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1359.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1360.
+))
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/graphics/graphicx.sty
 Package: graphicx 2014/04/25 v1.0g Enhanced LaTeX Graphics (DPC,SPQR)
@@ -490,27 +421,27 @@ Package graphics Info: Driver file: pdftex.def on input line 91.
 ex/pdfpages/pppdftex.def
 File: pppdftex.def 2013/08/25 v0.4v Pdfpages driver for pdfTeX (AM)
 )
-\AM@pagebox=\box60
-\AM@toc@title=\toks24
-\c@AM@survey=\count135
-\AM@templatesizebox=\box61
+\AM@pagebox=\box56
+\AM@toc@title=\toks21
+\c@AM@survey=\count130
+\AM@templatesizebox=\box57
 ) (./nips15submit_e.sty
-\nipsrulerbox=\box62
-\nipsrulercount=\count136
+\nipsrulerbox=\box58
+\nipsrulercount=\count131
 \nipsruleroffset=\dimen133
 \cv@lineheight=\dimen134
 \cv@boxheight=\dimen135
-\cv@tmpbox=\box63
-\cv@refno=\count137
-\cv@tot=\count138
-\cv@tmpc@=\count139
-\cv@tmpc=\count140
+\cv@tmpbox=\box59
+\cv@refno=\count132
+\cv@tot=\count133
+\cv@tmpc@=\count134
+\cv@tmpc=\count135
 )
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/psnfss/times.sty
 Package: times 2005/04/12 PSNFSS-v9.2a (SPQR) 
 )
-\c@theorem=\count141
+\c@theorem=\count136
  (./paper.aux)
 \openout1 = `paper.aux'.
 
@@ -534,27 +465,8 @@ LaTeX Font Info:    Try loading font information for OT1+ptm on input line 58.
 ex/psnfss/ot1ptm.fd
 File: ot1ptm.fd 2001/06/04 font definitions for OT1/ptm.
 )
-\c@lstlisting=\count142
-
-(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/con
-text/base/supp-pdf.mkii
-[Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count143
-\scratchdimen=\dimen136
-\scratchbox=\box64
-\nofMPsegments=\count144
-\nofMParguments=\count145
-\everyMPshowfont=\toks25
-\MPscratchCnt=\count146
-\MPscratchDim=\dimen137
-\MPnumerator=\count147
-\makeMPintoPDFobject=\count148
-\everyMPtoPDFconversion=\toks26
-)
-runsystem(pygmentize -S default -f latex > paper.pyg)...executed.
-
- (./paper.pyg)
-\AtBeginShipoutBox=\box65
+\c@lstlisting=\count137
+\AtBeginShipoutBox=\box60
 Package hyperref Info: Link coloring OFF on input line 58.
 
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
@@ -565,16 +477,31 @@ Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 eric/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
 )
-\c@section@level=\count149
+\c@section@level=\count138
 )
 LaTeX Info: Redefining \ref on input line 58.
 LaTeX Info: Redefining \pageref on input line 58.
 LaTeX Info: Redefining \nameref on input line 58.
  (./paper.out) (./paper.out)
-\@outlinefile=\write5
-\openout5 = `paper.out'.
+\@outlinefile=\write3
+\openout3 = `paper.out'.
 
 
+(/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/con
+text/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count139
+\scratchdimen=\dimen136
+\scratchbox=\box61
+\nofMPsegments=\count140
+\nofMParguments=\count141
+\everyMPshowfont=\toks22
+\MPscratchCnt=\count142
+\MPscratchDim=\dimen137
+\MPnumerator=\count143
+\makeMPintoPDFobject=\count144
+\everyMPtoPDFconversion=\toks23
+)
 (/nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/tex/lat
 ex/oberdiek/epstopdf-base.sty
 Package: epstopdf-base 2010/02/09 v2.5 Base part for package epstopdf
@@ -672,64 +599,65 @@ Underfull \vbox (badness 2717) has occurred while \output is active []
  [4 <../plots/irisclusters_dep.png>]
 LaTeX Font Info:    Font shape `OT1/ptm/bx/n' in size <9> not available
 (Font)              Font shape `OT1/ptm/b/n' tried instead on input line 349.
- [5]
 LaTeX Font Info:    Font shape `OMS/ptm/m/n' in size <9> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 357.
-
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 353.
+ [5]
 <../plots/accuracy_nd_clustering.png, id=100, 578.16pt x 433.62pt>
 File: ../plots/accuracy_nd_clustering.png Graphic file (type png)
 
 <use ../plots/accuracy_nd_clustering.png>
 Package pdftex.def Info: ../plots/accuracy_nd_clustering.png used on input line
- 369.
+ 363.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
-Overfull \hbox (11.2538pt too wide) in paragraph at lines 387--389
+Overfull \hbox (11.2538pt too wide) in paragraph at lines 378--380
 [][][][][][][][][][][][][][][][][][][] 
  []
 
-[6 <../plots/accuracy_nd_clustering.png>]
-<../plots/accuracy_factor_analysis.png, id=137, 578.16pt x 433.62pt>
+<../plots/accuracy_factor_analysis.png, id=101, 578.16pt x 433.62pt>
 File: ../plots/accuracy_factor_analysis.png Graphic file (type png)
 
 <use ../plots/accuracy_factor_analysis.png>
 Package pdftex.def Info: ../plots/accuracy_factor_analysis.png used on input li
-ne 429.
+ne 410.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
- [7 <../plots/accuracy_factor_analysis.png>] <../plots/accuracy_hmm.png, id=180
-, 578.16pt x 433.62pt>
+ [6 <../plots/accuracy_nd_clustering.png>] <../plots/accuracy_hmm.png, id=133, 
+578.16pt x 433.62pt>
 File: ../plots/accuracy_hmm.png Graphic file (type png)
 
 <use ../plots/accuracy_hmm.png>
-Package pdftex.def Info: ../plots/accuracy_hmm.png used on input line 466.
-(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
-
-<../plots/accuracy_lda.png, id=181, 578.16pt x 433.62pt>
-File: ../plots/accuracy_lda.png Graphic file (type png)
-
-<use ../plots/accuracy_lda.png>
-Package pdftex.def Info: ../plots/accuracy_lda.png used on input line 497.
+Package pdftex.def Info: ../plots/accuracy_hmm.png used on input line 440.
 (pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
 
 Underfull \vbox (badness 10000) has occurred while \output is active []
 
- [8 <../plots/accuracy_hmm.png>] (./paper.bbl)
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 532.
- [9 <../plots/accuracy_lda.png>]
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 532.
+ [7 <../plots/accuracy_factor_analysis.png>]
+Overfull \hbox (70.6544pt too wide) in paragraph at lines 453--454
+[][][][][][][][][][][][][][][][][][][][][][][][][][] 
+ []
 
-(./paper.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 532.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 532.
+<../plots/accuracy_lda.png, id=161, 578.16pt x 433.62pt>
+File: ../plots/accuracy_lda.png Graphic file (type png)
+
+<use ../plots/accuracy_lda.png>
+Package pdftex.def Info: ../plots/accuracy_lda.png used on input line 464.
+(pdftex.def)             Requested size: 289.07928pt x 216.80946pt.
+ [8 <../plots/accuracy_hmm.png> <../plots/accuracy_lda.png>] (./paper.bbl)
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 495.
+ [9]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 495.
+ (./paper.aux)
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 495.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 495.
 Package rerunfilecheck Info: File `paper.out' has not changed.
 (rerunfilecheck)             Checksum: D41D8CD98F00B204E9800998ECF8427E;0.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 532.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 495.
  ) 
 Here is how much of TeX's memory you used:
- 9522 strings out of 493109
- 144156 string characters out of 6117083
- 255489 words of memory out of 5000000
- 12644 multiletter control sequences out of 15000+600000
+ 8772 strings out of 493109
+ 131341 string characters out of 6117083
+ 235491 words of memory out of 5000000
+ 11974 multiletter control sequences out of 15000+600000
  21056 words of font info for 46 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191
  37i,14n,45p,424b,1678s stack positions out of 5000i,500n,10000p,200000b,80000s
@@ -756,10 +684,10 @@ e-linkdir/texmf-dist/fonts/type1/urw/times/utmb8a.pfb></nix/store/a5h94i4ysxcjz
 m493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/type1/urw/times/utmr8a.pfb
 ></nix/store/a5h94i4ysxcjzm493i07hc4cz1m1h0ma-TeXLive-linkdir/texmf-dist/fonts/
 type1/urw/times/utmri8a.pfb>
-Output written on paper.pdf (9 pages, 490877 bytes).
+Output written on paper.pdf (9 pages, 478885 bytes).
 PDF statistics:
- 325 PDF objects out of 1000 (max. 8388607)
- 282 compressed objects within 3 object streams
- 173 named destinations out of 1000 (max. 500000)
+ 282 PDF objects out of 1000 (max. 8388607)
+ 239 compressed objects within 3 object streams
+ 137 named destinations out of 1000 (max. 500000)
  36 words of extra memory for PDF output out of 10000 (max. 10000000)
 

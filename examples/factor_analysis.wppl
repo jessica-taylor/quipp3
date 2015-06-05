@@ -5,20 +5,17 @@ var repeat = function(n, fn) {
 
 testParamInference(function(randFunction) {
 
-var nfactors = 1;
-var dim = 5;
 
-var n = 50;
-
-var Factors = Vector(nfactors, Double);
-var Point = Vector(dim, Double);
+var Factors = Vector(2, Double);
+var Point = Vector(5, Double);
 var getPoint = randFunction(Factors, Point);
-return function() {
-  return repeat(n, function(i) {
-    var factors = randomValue(Factors);
-    return observe('point' + i, getPoint, factors);
-  });
+
+var model = function() {
+  var factors = randomValue(Factors);
+  return observe(getPoint, factors);
 };
+
+return samplingModel(model, 50);
 
 },
 {logPartitionParticles: 200}

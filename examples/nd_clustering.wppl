@@ -1,25 +1,17 @@
 
-var repeat = function(n, fn) {
-  return n == 0 ? [] : append(repeat(n - 1, fn), [fn(n-1)]);
-};
-
-
 
 testParamInference(function(randFunction) {
 
-var nclusters = 3;
-var dim = 2;
+var Cluster = Categorical(3);
+var Point = Vector(2, Double);
+var getPoint = randFunction(Cluster, Point);
 
-var n = 100;
-var clusterType = Categorical(nclusters);
-var pointType = Vector(dim, Double);
-var getPoint = randFunction(Categorical(nclusters), pointType);
-return function() {
-  return repeat(n, function(i) {
-    var cluster = randomValue(clusterType);
-    return observe('point' + i, getPoint, cluster);
-  });
+var model = function() {
+  var cluster = randomValue(Cluster);
+  observe(getPoint, cluster);
 };
+
+return samplingModel(model, 100);
 
 },
 

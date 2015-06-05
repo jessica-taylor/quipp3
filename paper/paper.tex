@@ -346,19 +346,13 @@ return function() {
   \subsection{Clustering}
 {\small
 \begin{lstlisting}
-var nclusters = 3;
-var dim = 2;
-
-var n = 100;
-
-var Point = Vector(3, Double);
 var Cluster = Categorical(3);
+var Point = Vector(2, Double);
 var getPoint = randFunction(Cluster, Point);
-return function() {
-  return repeat(n, function(i) {
-    var cluster = randomValue(Cluster);
-    observe(getPoint, cluster);
-  });
+
+var model = function() {
+  var cluster = randomValue(Cluster);
+  observe(getPoint, cluster);
 };
 \end{lstlisting}
 }
@@ -379,18 +373,13 @@ In this example, we cluster 2d points into 3 different clusters.  Given a cluste
 
 {\small
 \begin{lstlisting}
-var n = 50;
-
 var Class = Categorical(2);
 var Features = Vector(10, Bool);
-
 var classFeatures = [randFunction(Features), randFunction(Features)];
 
-return function() {
-  repeat(n, function(i) {
-    var whichClass = randomValue(Class);
-    observe(classFeatures, whichClass);
-  });
+var model = function() {
+  var whichClass = randomValue(Class);
+  observe(classFeatures, whichClass);
 };
 \end{lstlisting}
 }
@@ -404,21 +393,13 @@ a different categorical distribution for each class.
   \subsection{Factor analysis}
 {\small
 \begin{lstlisting}
-
-var nfactors = 2;
-var dim = 4;
-
-var n = 50;
-
 var Factors = Vector(2, Double);
 var Point = Vector(5, Double);
 var getPoint = randFunction(Factors, Point);
 
-return function() {
-  return repeat(n, function(i) {
-    var factors = randomValue(Factors);
-    observe(getPoint, factors);
-  });
+var model = function() {
+  var factors = randomValue(Factors);
+  return observe(getPoint, factors);
 };
 \end{lstlisting}
 }
@@ -432,12 +413,7 @@ The factor analysis model is very similar to the clustering model.  The main dif
   \subsection{Hidden Markov model}
 {\small
 \begin{lstlisting}
-
-
 var chainLength = 20;
-
-var n = 10;
-
 var State = Categorical(2);
 var Obs = Categorical(4);
 var transFun = randFunction(State, State);
@@ -452,10 +428,8 @@ var observeStates = function(startState, i) {
   }
 };
 
-return function() {
-  return repeat(n, function(sampIndex) {
-    observeStates(randomValue(State), 0);
-  });
+var model = function() {
+  return observeStates(randomValue(State), 0);
 };
 \end{lstlisting}
 }
@@ -469,25 +443,18 @@ In this example, we use the unknown function \texttt{transFun} for state transit
 \subsection{Latent Dirichlet allocation}
 {\small
 \begin{lstlisting}
-
 var maxWordsPerDocument = 100;
-var nDocuments = 20;
-
 var Class = Categorical(3);
 var Word = Categorical(10);
 var classToWord = randFunction(Class, Word);
 
-return function() {
-  return repeat(nDocuments, function() {
-    var whichClass = randomValue(Class);
-    var nWords = observe(randomIntegerERP, maxWordsPerDocument);
-    repeat(nWords, function(wordIndex) {
-      observe(classToWord, whichClass);
-    });
-    return whichClass;
+var model = function() {
+  var whichClass = randomValue(Class);
+  var nWords = observe('len' + docIndex, randomIntegerERP, maxWordsPerDocument);
+  repeat(nWords, function(wordIndex) {
+    observe(classToWord, whichClass);
   });
 };
-
 \end{lstlisting}
 }
 
@@ -500,21 +467,17 @@ In this example, we use the unknown function \texttt{classToWord} to map classes
 
 {\small
 \begin{lstlisting}
-
-var Input = Categorical(30);
-var Hidden = Categorical(10);
-var Output = Categorical(2);
-
-var inputs = [...];
+var Input = Vector(30, Bool);
+var Hidden = Vector(10, Bool);
+var Output = Bool;
 
 var inputToHidden = randFunction(Input, Hidden);
 var hiddenToOutput = randFunction(Hidden, Output);
 
-return function() {
-  return repeat(inputs.length, function(sampIndex) {
-    var hiddenLayer = inputToHidden(inputs[sampIndex]);
-    observe(hiddenToOutput, hiddenLayer);
-  });
+var model = function() {
+  var inputLayer = randomValue(Input);
+  var hiddenLayer = inputToHidden(inputs[sampIndex]);
+  observe(hiddenToOutput, hiddenLayer);
 };
 \end{lstlisting}
 }
