@@ -32,6 +32,9 @@ var resetObsIndex = function(s, k, a) {
 DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
+  if (typeof addr == 'number') {
+    addr = '' + addr;
+  }
   if (typeof addr != 'string') {
     // return mbind(util.getAddress, function(a) {
     return mbind(nextObsIndex, function(a) {
@@ -39,11 +42,11 @@ DataSampler.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
     });
   }
 
-  if (typeof rf == 'number') {
-    assert(rf == Math.floor(rf));
-    self.valueMap[addr] = rf;
-    return mreturn(rf);
-  }
+  // if (typeof rf == 'number') {
+  //   assert(rf == Math.floor(rf));
+  //   self.valueMap[addr] = rf;
+  //   return mreturn(rf);
+  // }
 
   if (rf.constructor == erp.ERP) {
     return mbind(global.sample, rf, args, function(samp) {
@@ -77,6 +80,9 @@ function DataConditioner(valueMap) {
 DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   var self = this;
   var args = [].slice.call(arguments, 2, arguments.length);
+  if (typeof addr == 'number') {
+    addr = '' + addr;
+  }
   if (typeof addr != 'string') {
     return mbind(nextObsIndex, function(a) {
     // return mbind(util.getAddress, function(a) {
@@ -87,11 +93,15 @@ DataConditioner.prototype.sampleOrCondition = fromMonad(function(addr, rf) {
   assert(addr in self.valueMap);
   var ret = self.valueMap[addr];
 
-  if (typeof rf == 'number') {
-    return mbind(factor, rf == ret ? 0.0 : -Infinity, function() {
-      return mreturn(rf);
-    });
-  }
+  // if (typeof rf == 'number') {
+  //   return mbind(factor, rf == ret ? 0.0 : -Infinity, function() {
+  //     return mreturn(rf);
+  //   });
+  // }
+  //
+
+  // hack :/
+  if (rf.name == 'randomInteger') rf = randomIntegerERP;
 
   if (rf.constructor == erp.ERP) {
     return mbind(global.factor, rf.score(args, ret), function() {
